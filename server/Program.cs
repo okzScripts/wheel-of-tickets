@@ -5,6 +5,7 @@ var app = builder.Build();
 List<User> users = new()
 {
     new(1, "Viktor", "indian@gmail.com", "hejhej", "Tombula", "Admin", true),
+    new(2, "Jonas", "indian@gmail.com", "hejhej", "Tombula", "Admin", true)
 };
 
 app.MapGet("/api/users", GetUsers);

@@ -15,20 +15,44 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route index element={<HomePage />} />
+        <Route path='/add-admin' element={<AddAdmin />} />
       </Routes>
     </BrowserRouter>
   </UsersContext.Provider>
 }
+
+
+function AddAdmin()
+{
+  return <main>
+    <form action="submit.php" method="POST">
+      <label for="username">Användarnamn:</label>
+      <input type="text" id="username" name="username" required/>
+        <label for="email">E-post:</label>
+        <input type="email" id="email" name="email" required/>
+          <label for="password">Lösenord:</label>
+          <input type="password" id="password" name="password" required/>
+            <button type="submit">Registrera</button>
+          </form>
+  </main>
+}
+
+
 function HomePage() {
   const { users, setUsers } = use(UsersContext);
   useEffect(() => {
     fetch("/api/users")
       .then(response => response.json()
-        .then(data => (setUsers(data))),[])
+        .then(data => (setUsers(data))), [])
   })
-  return <ul>
+  return <main>
+
+  <ul>
     {users.map(user => (
-      <li>{ user.name}</li>
+      <li key={user.id}>{ user.name}</li>
         ))}
   </ul>
+
+    <NavLink to="/add-admin"><button>Add admin</button></NavLink>
+  </main>
 }
