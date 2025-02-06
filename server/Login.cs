@@ -4,6 +4,7 @@
 
 public class Login
 {
+
     private List<Persons> persons = new List<Persons>{new Persons("kalle@anka.com", "1234", Roles.admin),
                                                  new Persons("peter@nicklas.com", "1234", Roles.support),
                                                  new Persons("donald@anka.com", "1234", Roles.customer)};
