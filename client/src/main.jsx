@@ -22,53 +22,69 @@ function App() {
 }
 
 
-function AddAdminForm()
-{
+function AddAdminForm() {
+  const { users, setUsers } = use(UsersContext);
 
-  return <main>
-    <form id="userForm">
-      <label for="username">Användarnamn:</label>
-      <input type="text" id="username" name="username" required/>
-        <label for="email">E-post:</label>
-        <input type="email" id="email" name="email" required/>
-          <label for="password">Lösenord:</label>
-      <input type="password" id="password" name="password" required />
-      <input type="company" id="company" name="company" required />
-            <button onClick={AddAdmin} type="submit">Registrera</button>
-    </form>
-    
-  </main>
-}
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [company, setCompany] = useState("");
 
-function AddAdmin() {
-  let username = document.getElementById("username").value;
-  let email = document.getElementById("email").value;
-  let password = document.getElementById("password").value;
-   let company = document.getElementById("company").value;
-  let role = "admin";
-  
-  let userData = {
-            id: 1,
-            name: username,
-            email: email,
-            password: password,
-            company: company,
-            role: role,
-            active: true,
-  };
-  
+  function handleSubmit(event) {
+    event.preventDefault();
+    let id = users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
+
+    let userData = {
+      id,
+      name: username,
+      email,
+      password,
+      company,
+      role: "admin",
+      active: true,
+    };
     fetch("/api/users", {
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-      body: JSON.stringify(userData),
-    })
-      .then(response => {
-        if (response.ok) {
-          console.log("added")
-        }
-      })
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+    body: JSON.stringify(userData),
+})
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.text().then(text => (text ? JSON.parse(text) : {}));
+  })
+  .then(newUser => {
+    if (Object.keys(newUser).length !== 0) {
+      setUsers([...users, newUser]);
+      console.log("User added:", newUser);
+    } else {
+      console.log("User added but no JSON returned");
+    }
+  })
+  .catch(error => console.error("Error:", error));
+  }
+
+  return (
+    <main>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="username">Användarnamn:</label>
+        <input type="text" id="username" value={username} onChange={e => setUsername(e.target.value)} required />
+
+        <label htmlFor="email">E-post:</label>
+        <input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} required />
+
+        <label htmlFor="password">Lösenord:</label>
+        <input type="password" id="password" value={password} onChange={e => setPassword(e.target.value)} required />
+
+        <label htmlFor="company">Företag:</label>
+        <input type="text" id="company" value={company} onChange={e => setCompany(e.target.value)} required />
+
+        <button type="submit">Registrera</button>
+      </form>
+    </main>
+  );
 }
-  
 
 function HomePage() {
   const { users, setUsers } = use(UsersContext);
@@ -82,6 +98,7 @@ function HomePage() {
     <ul>
       {users.map(user => (
         <li key={user.id}>
+          <p>{ user.id}</p>
           <p>{user.name}</p>
          <p>{user.active.toString()}</p>
           <button onClick={() => {
