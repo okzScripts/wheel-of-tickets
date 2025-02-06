@@ -1,4 +1,4 @@
-import { createContext, StrictMode, useState, use, useEffect } from 'react'
+import { createContext, StrictMode, useState, use, useEffect, act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route, NavLink } from "react-router"
 
@@ -15,14 +15,14 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route index element={<HomePage />} />
-        <Route path='/add-admin' element={<AddAdmin />} />
+        <Route path='/add-admin' element={<AddAdminForm />} />
       </Routes>
     </BrowserRouter>
   </UsersContext.Provider>
 }
 
 
-function AddAdmin()
+function AddAdminForm()
 {
 
   return <main>
@@ -34,19 +34,18 @@ function AddAdmin()
           <label for="password">Lösenord:</label>
       <input type="password" id="password" name="password" required />
       <input type="company" id="company" name="company" required />
-      <input type="role" id="role" name="role" required/>
-            <button onClick={AddUser} type="submit">Registrera</button>
+            <button onClick={AddAdmin} type="submit">Registrera</button>
     </form>
     
   </main>
 }
 
-function AddUser() {
+function AddAdmin() {
   let username = document.getElementById("username").value;
   let email = document.getElementById("email").value;
   let password = document.getElementById("password").value;
    let company = document.getElementById("company").value;
-  let role = document.getElementById("role").value;
+  let role = "admin";
   let userData = {
             id: 1,
             name: username,
@@ -67,7 +66,8 @@ function AddUser() {
           console.log("added")
         }
       })
-  }
+}
+  
 
 function HomePage() {
   const { users, setUsers } = use(UsersContext);
@@ -78,12 +78,38 @@ function HomePage() {
   })
   return <main>
 
-  <ul>
-    {users.map(user => (
-      <li key={user.id}>{ user.name}</li>
-        ))}
-  </ul>
+    <ul>
+      {users.map(user => (
+        <li key={user.id}>
+          {user.name}
+          {user.active}
+          <button onClick={() => {
+            fetch(`/api/users/${user.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ active: false }),
+            })
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Network response was not ok');
+                }
+                return response.text().then(text => text ? JSON.parse(text) : {});
+              })
+              .then(data => {
+                // Handle the response data
+                console.log('User blocked:', data);
+              })
+              .catch(error => {
+                console.error('Error blocking user:', error);
+              });
+          }}>Block admin</button>
+        </li>
+      ))}
+    </ul>
 
     <NavLink to="/add-admin"><button>Add admin</button></NavLink>
+
   </main>
 }
