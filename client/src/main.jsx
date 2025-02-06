@@ -46,6 +46,7 @@ function AddAdmin() {
   let password = document.getElementById("password").value;
    let company = document.getElementById("company").value;
   let role = "admin";
+  
   let userData = {
             id: 1,
             name: username,
@@ -81,8 +82,8 @@ function HomePage() {
     <ul>
       {users.map(user => (
         <li key={user.id}>
-          {user.name}
-          {user.active}
+          <p>{user.name}</p>
+         <p>{user.active.toString()}</p>
           <button onClick={() => {
             fetch(`/api/users/${user.id}`, {
               method: 'PUT',
@@ -91,19 +92,6 @@ function HomePage() {
               },
               body: JSON.stringify({ active: false }),
             })
-              .then(response => {
-                if (!response.ok) {
-                  throw new Error('Network response was not ok');
-                }
-                return response.text().then(text => text ? JSON.parse(text) : {});
-              })
-              .then(data => {
-                // Handle the response data
-                console.log('User blocked:', data);
-              })
-              .catch(error => {
-                console.error('Error blocking user:', error);
-              });
           }}>Block admin</button>
         </li>
       ))}
