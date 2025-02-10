@@ -1,4 +1,4 @@
-import { StrictMode, use, useState } from 'react'
+import { StrictMode, use, useState, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router'
 
@@ -19,20 +19,33 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null)
+  const [role, setRole] = useState(null)
 
   // Handle form submission
   const handleLogin = async (event) => {
     event.preventDefault(); // Prevent page reload
-    console.log('Email:', email);
-    console.log('Password:', password);
-
     const response = await fetch(`/api/users/${email}`);
     const data = await response.json();
-    setUser(data)
-    console.log(data)
-
-
+    setUser(data);
+    
+    const roleResponse = await fetch(`/api/roles/${data.role}`);
+    const roleData = await roleResponse.text();
+    setRole(roleData);
   };
+
+  useEffect(() => {
+  if (user) {
+    console.log("User role:", user.role);
+  }
+}, [user]);
+
+useEffect(() => {
+  if (role) {
+    console.log("Role data:", role);
+  }
+}, [role]);
+
+  
 
   return (
     <main>

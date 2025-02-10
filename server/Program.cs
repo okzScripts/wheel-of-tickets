@@ -13,7 +13,8 @@ db = database.Connection();
 var app = builder.Build();
 
 app.MapGet("/api/users/{email}", GetUserById);
-
+app.MapGet("/api/roles/{number}", GetUserRole);
+app.Run();
 async Task<User> GetUserById(string email)
 {
     User user = null;
@@ -22,7 +23,6 @@ async Task<User> GetUserById(string email)
     cmd.Parameters.AddWithValue(email);
     await using (var reader = await cmd.ExecuteReaderAsync())
     {
-        Console.WriteLine("HEJ!");
         while (await reader.ReadAsync())
         {
             user = new User(
@@ -40,6 +40,19 @@ async Task<User> GetUserById(string email)
     return user;
 }
 
-app.Run();
+async Task<string?> GetUserRole(int number)
+{
+    string? result = null;
+    await using var cmd = db.CreateCommand("SELECT role FROM roles WHERE id = $1");
+    cmd.Parameters.AddWithValue(number);
+
+    await using var reader = await cmd.ExecuteReaderAsync();
+    if (await reader.ReadAsync()) // Vi hämtar endast en rad
+    {
+        result = reader.GetString(0); // Fixat indexfelet
+    }
+
+    return result;
+}
 
 public record User(int id, string name, string email, string password, int company, int role, bool isactive);
