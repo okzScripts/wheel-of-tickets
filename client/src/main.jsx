@@ -28,9 +28,6 @@ function LoginPage() {
         <label htmlFor="password">Lösenord:</label>
         <input type="password" id="password" />
 
-
-
-
         <button type="submit">Registrera</button>
       </form>
     </main>
