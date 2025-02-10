@@ -1,6 +1,6 @@
 using System.Data;
 using Npgsql; 
-
+using enums;
 namespace server;
 
 public class ServerActions
@@ -10,18 +10,22 @@ public class ServerActions
 
     public ServerActions(WebApplication app)
     {
-        db = database.Connection(); 
-       
+        db = database.Connection();
+
         app.MapPost("api/users/admin", async (HttpContext context) =>
         {
-            var requestBody = await context.Request.ReadFromJsonAsync<Move>();
-            if (requestBody?.tile is null || requestBody?.player is null || requestBody?.game is null || requestBody?.value is null)
+            var user = await context.Request.ReadFromJsonAsync<User>();
+            if (user.role == (int)Roles.admin)
             {
-                return Results.BadRequest("tile (index), player (id), game (id), and value are required.");
+            Admins.addAdmin(user.name, user.email, user.password, user.company, db);
+                
             }
-            bool success = await PlayTile(requestBody.tile, requestBody.player, requestBody.game, requestBody.value);
-            return success ? Results.Ok(true) : Results.Ok(false);
+
         });
     }
-    
+
 }
+
+record User(string name, string email, string password, int company, int role);
+
+

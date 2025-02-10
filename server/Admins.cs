@@ -1,5 +1,5 @@
 ﻿using Npgsql;
-
+using enums;
 namespace server;
 
 public static class Admins
@@ -34,12 +34,4 @@ public static class Admins
 
     }
     
-}
-
-enum Roles
-{
-    customer = 1,
-    support = 2,
-    admin = 3,
-    superAdmin = 4
 }
