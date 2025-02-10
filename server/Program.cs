@@ -14,22 +14,15 @@ var app = builder.Build();
 
 app.MapGet("/api/users/{email}", GetUserById);
 
-
-
-
-
-app.Run();
-
-
-async Task<User> GetUserById(string mail)
+async Task<User> GetUserById(string email)
 {
-    User user;
-    await using var cmd = new NpgsqlCommand("SELECT * FROM users WHERE email = $1", db);
+    User user = null;
+    await using var cmd = db.CreateCommand("SELECT * FROM users WHERE email = $1");
 
-    cmd.Parameters.AddWithValue(mail);
+    cmd.Parameters.AddWithValue(email);
     await using (var reader = await cmd.ExecuteReaderAsync())
     {
-
+        Console.WriteLine("HEJ!");
         while (await reader.ReadAsync())
         {
             user = new User(
@@ -46,5 +39,7 @@ async Task<User> GetUserById(string mail)
     }
     return user;
 }
+
+app.Run();
 
 public record User(int id, string name, string email, string password, int company, int role, bool isactive);
