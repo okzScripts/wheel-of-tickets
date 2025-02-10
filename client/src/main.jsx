@@ -18,7 +18,7 @@ function LoginPage() {
   // State to track email and password
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState()
+  const [user, setUser] = useState(null)
 
   // Handle form submission
   const handleLogin = async (event) => {
@@ -26,12 +26,10 @@ function LoginPage() {
     console.log('Email:', email);
     console.log('Password:', password);
 
-    fetch(`/api/users/${email}`)
-      .then(response => response.json())
-      .then(data => setUser(data));
-    console.log(user)
-
-
+    const response = await fetch(`/api/users/${email}`);
+    const data = await response.json();
+    setUser(data)
+    console.log(data)
 
 
   };
