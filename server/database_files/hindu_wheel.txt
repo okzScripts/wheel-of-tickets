@@ -83,6 +83,9 @@ create table users
 );
 
 alter table users
+    alter column active set default true;
+
+alter table users
     owner to postgres;
 
 create table tickets

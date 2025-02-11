@@ -1,59 +1,61 @@
 
+INSERT INTO public.companies (name, email, phone, description,domain) 
+VALUES ('Tech Solutions', 'contact@techsolutions.com', '+1-800-123456', 'A leading provider of IT services and solutions.', 'techsolutions.com'),
+('Eco Enterprises', 'support@ecoenterprises.com', '+1-800-987654', 'An eco-friendly company focused on sustainable products.', 'ecoenterprises.com'),
+( 'Innovative Designs', 'info@innovativedesigns.com', '+1-800-234567', 'Creative design firm specializing in branding and marketing.', 'innovativedesigns.com'),
+('Global Ventures', 'info@globalventures.com', '+1-800-345678', 'A multinational company involved in various industries.', 'globalventures.com');
+
+INSERT INTO public.products ( product_name, product_description, price, product_category, company)
+VALUES ( 'IT Support Service', 'Comprehensive IT support including troubleshooting and system maintenance.', 200, 'Service', 1),
+( 'Cloud Storage Solution', 'Cloud-based storage solution for businesses of all sizes.', 500, 'Service', 1),
+('Biodegradable Packaging', 'Eco-friendly packaging made from biodegradable materials.', 50, 'Product', 2),
+('Sustainable Clothing Line', 'A clothing line made from 100% sustainable materials.', 80, 'Product', 2), 
+('Branding Consultation', 'Professional consultation to develop a unique brand identity.', 350, 'Service', 3),
+('Website Design Package', 'Custom website design services including setup and optimization.', 1000, 'Service', 3),
+( 'Business Consulting', 'Consulting services for global business expansion and strategy.', 700, 'Service', 4),
+('Logistics Management Software', 'Software solution to optimize global logistics and supply chain management.', 1200, 'Product', 4);
 
 
-INSERT INTO public.companies (id, name, email, phone, description, domain) VALUES (2, 'Eco Enterprises', 'support@ecoenterprises.com', '+1-800-987654', 'An eco-friendly company focused on sustainable products.', 'ecoenterprises.com');
-INSERT INTO public.companies (id, name, email, phone, description, domain) VALUES (4, 'Global Ventures', 'info@globalventures.com', '+1-800-345678', 'A multinational company involved in various industries.', 'globalventures.com');
-INSERT INTO public.companies (id, name, email, phone, description, domain) VALUES (3, 'Innovative Designs', 'info@innovativedesigns.com', '+1-800-234567', 'Creative design firm specializing in branding and marketing.', 'innovativedesigns.com');
-INSERT INTO public.companies (id, name, email, phone, description, domain) VALUES (1, 'Tech Solutions', 'contact@techsolutions.com', '+1-800-123456', 'A leading provider of IT services and solutions.', 'techsolutions.com');
+INSERT INTO public.roles (role) 
+VALUES ('costumer'),('service_agents')
+,('admin'),('super_admin'); 
 
-
-
-INSERT INTO public.products (id, product_name, product_description, price, product_category, company) VALUES (2, 'Cloud Storage Solution', 'Cloud-based storage solution for businesses of all sizes.', 500, 'Service', 1);
-INSERT INTO public.products (id, product_name, product_description, price, product_category, company) VALUES (4, 'Sustainable Clothing Line', 'A clothing line made from 100% sustainable materials.', 80, 'Product', 2);
-INSERT INTO public.products (id, product_name, product_description, price, product_category, company) VALUES (6, 'Website Design Package', 'Custom website design services including setup and optimization.', 1000, 'Service', 3);
-INSERT INTO public.products (id, product_name, product_description, price, product_category, company) VALUES (8, 'Logistics Management Software', 'Software solution to optimize global logistics and supply chain management.', 1200, 'Product', 4);
-INSERT INTO public.products (id, product_name, product_description, price, product_category, company) VALUES (1, 'IT Support Service', 'Comprehensive IT support including troubleshooting and system maintenance.', 200, 'Service', 1);
-INSERT INTO public.products (id, product_name, product_description, price, product_category, company) VALUES (3, 'Biodegradable Packaging', 'Eco-friendly packaging made from biodegradable materials.', 50, 'Product', 2);
-INSERT INTO public.products (id, product_name, product_description, price, product_category, company) VALUES (5, 'Branding Consultation', 'Professional consultation to develop a unique brand identity.', 350, 'Service', 3);
-INSERT INTO public.products (id, product_name, product_description, price, product_category, company) VALUES (7, 'Business Consulting', 'Consulting services for global business expansion and strategy.', 700, 'Service', 4);
-
-
-
-
-INSERT INTO public.roles (id, role) VALUES (1, 'costumer');
-INSERT INTO public.roles (id, role) VALUES (2, 'service agent');
-INSERT INTO public.roles (id, role) VALUES (3, 'admin');
-INSERT INTO public.roles (id, role) VALUES (4, 'super admin');
-
-
-INSERT INTO public.ticket_categories (id, category_name) OVERRIDING SYSTEM VALUE VALUES (1, 'Technical Support');
-INSERT INTO public.ticket_categories (id, category_name) OVERRIDING SYSTEM VALUE VALUES (2, 'Billing Issues');
-INSERT INTO public.ticket_categories (id, category_name) OVERRIDING SYSTEM VALUE VALUES (3, 'General Inquiry');
-INSERT INTO public.ticket_categories (id, category_name) OVERRIDING SYSTEM VALUE VALUES (4, 'Product Feedback');
-INSERT INTO public.ticket_categories (id, category_name) OVERRIDING SYSTEM VALUE VALUES (5, 'Account Management');
-INSERT INTO public.ticket_categories (id, category_name) OVERRIDING SYSTEM VALUE VALUES (6, 'Shipping and Delivery');
-INSERT INTO public.ticket_categories (id, category_name) OVERRIDING SYSTEM VALUE VALUES (7, 'Warranty Claims');
-INSERT INTO public.ticket_categories (id, category_name) OVERRIDING SYSTEM VALUE VALUES (8, 'Software Bugs');
-INSERT INTO public.ticket_categories (id, category_name) OVERRIDING SYSTEM VALUE VALUES (9, 'Security Issues');
+INSERT INTO public.ticket_categories (category_name)
+VALUES
+( 'Technical Support'),
+( 'Billing Issues'),
+( 'General Inquiry'),
+( 'Product Feedback'),
+( 'Account Management'),
+( 'Shipping and Delivery'),
+( 'Warranty Claims'),
+( 'Software Bugs'),
+( 'Security Issues');
 
 
 
-INSERT INTO public.ticket_status (id, status) VALUES (1, 'new');
-INSERT INTO public.ticket_status (id, status) VALUES (2, 'active');
-INSERT INTO public.ticket_status (id, status) VALUES (3, 'closed');
+INSERT INTO public.ticket_status ( status)
+ VALUES 
+('new'),
+('active'),
+('closed');
 
 
 
+INSERT INTO public.users(name, email, password, company, role, active)
+VALUES
+( 'Alice Johnson', 'alice.johnson@example.com', 'password123', null, 1, true),
+( 'Bob Smith', 'bob.smith@example.com', 'password123', 1, 2, true),
+( 'Charlie Brown', 'charlie.brown@example.com', 'password123', 1, 3, true),
+( 'Diana Green', 'diana.green@example.com', 'password123', 1, 4, true);
 
-INSERT INTO public.users (id, name, email, password, company, role, active) OVERRIDING SYSTEM VALUE VALUES (1, 'Alice Johnson', 'alice.johnson@example.com', 'password123', 1, 1, true);
-INSERT INTO public.users (id, name, email, password, company, role, active) OVERRIDING SYSTEM VALUE VALUES (2, 'Bob Smith', 'bob.smith@example.com', 'password123', 1, 2, true);
-INSERT INTO public.users (id, name, email, password, company, role, active) OVERRIDING SYSTEM VALUE VALUES (3, 'Charlie Brown', 'charlie.brown@example.com', 'password123', 1, 3, true);
-INSERT INTO public.users (id, name, email, password, company, role, active) OVERRIDING SYSTEM VALUE VALUES (4, 'Diana Green', 'diana.green@example.com', 'password123', 1, 4, true);
 
+INSERT INTO public.tickets (message, status, customer, product_id, customer_agent, ticket_category)
+VALUES
+( 'I am facing issues with my internet connection.', 1, 1, 1, 1, 1),
+( 'There seems to be a mistake in my latest bill.', 1, 1, 2, NULL, 2),
+( 'I would like to suggest improvements for the user interface of your product.', 1, 1, 3, NULL, 3),
+( 'My recent order hasn’t been delivered yet.', 1, 1, 4, 1, 6);
 
-
-INSERT INTO public.tickets (id, message, status, customer, product_id, customer_agent, ticket_category) OVERRIDING SYSTEM VALUE VALUES (1, 'I am facing issues with my internet connection.', 1, 1, 1, 1, 1);
-INSERT INTO public.tickets (id, message, status, customer, product_id, customer_agent, ticket_category) OVERRIDING SYSTEM VALUE VALUES (4, 'My recent order hasn’t been delivered yet.', 1, 1, 4, 1, 6);
-INSERT INTO public.tickets (id, message, status, customer, product_id, customer_agent, ticket_category) OVERRIDING SYSTEM VALUE VALUES (3, 'I would like to suggest improvements for the user interface of your product.', 1, 1, 3, NULL, 3);
-INSERT INTO public.tickets (id, message, status, customer, product_id, customer_agent, ticket_category) OVERRIDING SYSTEM VALUE VALUES (2, 'There seems to be a mistake in my latest bill.', 1, 1, 2, NULL, 2);
+  
 
