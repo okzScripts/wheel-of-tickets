@@ -5,11 +5,11 @@ using Npgsql;
 public class Database
 {
 
-    // databasuppgifter
+    
     private readonly string _host = "localhost";
     private readonly string _port = "5432";
     private readonly string _username = "postgres";
-    private readonly string _password = "Sanooj14321"; // root OR postgres
+    private readonly string _password = "1234"; // root OR postgres
     private readonly string _database = "hindu_wheels";
 
     private NpgsqlDataSource _connection;
