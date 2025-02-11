@@ -10,23 +10,21 @@ export default function AddAdmin()
                     placeholder="Enter name" />
              
             </label>
-        </form>
-        <form>
+        
             <label>Email:
                 <input type="text"
                     id="mail"
                 placeholder="Enter email"/>
 
             </label>
-        </form>
-        <form>
+    
             <label>Password:
                 <input type="text"
                     id="password"
                     placeholder="Enter password" />
             </label>
-        </form>
-        <form>
+        
+        
             <label>Company:
                 <input type="text"
                     id="company"
