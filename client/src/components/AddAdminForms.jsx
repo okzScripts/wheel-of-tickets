@@ -1,5 +1,5 @@
 
-export default function AddAdmin()
+export default function AddAdminForms()
 
 {
     return <>
