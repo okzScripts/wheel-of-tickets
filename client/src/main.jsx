@@ -15,15 +15,14 @@ createRoot(document.getElementById('root')).render(
 )
 
 function LoginPage() {
-  // State to track email and password
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null)
   const [role, setRole] = useState(null)
 
-  // Handle form submission
+
   const handleLogin = async (event) => {
-    event.preventDefault(); // Prevent page reload
+    event.preventDefault();
     const response = await fetch(`/api/users/${email}`);
     const data = await response.json();
     setUser(data);
