@@ -1,5 +1,6 @@
 import { NavLink } from "react-router";
 import "./styles.css"
+import { useState } from "react";
 
 
 
@@ -11,7 +12,16 @@ export function SuperAdminView() {
 }
 
 export function SuperAdminCompanyView() {
+
+    const [admins,setAdmins] = useState([]);
+    
+
     return <main>
         <h1>Companyview</h1>
+        <div className="company-list-container">
+            <ul className="company-list">
+
+            </ul>
+        </div>
     </main>;
 }
