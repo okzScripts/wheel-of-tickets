@@ -12,14 +12,13 @@ public class CompanyRoutes
 
     public record Company(int id, string name, string email, string phone, string description, string domain);
 
-
     public static async Task<Results<Ok<List<Company>>, BadRequest<string>>> GetCompanies(NpgsqlDataSource db)
     {
         List<Company> companies = new List<Company>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM companies");
+            using var cmd = db.CreateCommand("SELECT * FROM companies ORDER BY id ASC");
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())

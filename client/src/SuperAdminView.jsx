@@ -7,9 +7,10 @@ import { useEffect, useState } from "react";
 export function SuperAdminView() {
     return <main>
         <NavLink to="/superadmincompany"><button className="super-admin-button">Companys</button></NavLink>
-        <button className="super-admin-button">Admins</button>
+        <NavLink to="/superadminadmin"><button className="super-admin-button">Admins</button></NavLink>
     </main>;
 }
+
 
 export function SuperAdminCompanyView() {
 
@@ -33,12 +34,49 @@ export function SuperAdminCompanyView() {
 
 
     return <main>
-        <h1>Companyview</h1>
+        <h1>All Registered Companies</h1>
         <div className="company-list-container">
             <ul className="company-list">
 
                 {companies.map(company =>
-                    <li key={company.id}>{company.id} {company.name} <br></br> email: {company.email} </li>)}
+                    <li className="company-list-item" key={company.id}><div><p>{company.name}</p> <p>Email: {company.email}</p></div><div className="delete-button-div-li"><button>Delete</button></div></li>
+                )}
+
+            </ul>
+        </div>
+    </main>;
+}
+
+export function SuperAdminAdminView() {
+
+    const [admins, setAdmins] = useState([]);
+    const [admin, setAdmin] = useState([]);
+
+    useEffect(() => {
+        fetch("/api/users/3").then(response =>
+            response.json())
+            .then(data => setAdmins(data));
+    }, []);
+
+    useEffect(() => {
+        console.log(admin)
+    }, [admin]);
+
+    function GetAdmin(email) {
+        fetch(`/api/users/3/${email}`).then(response =>
+            response.json())
+            .then(data => setAdmin(data));
+    }
+
+    return <main>
+        <h1>All Registered Admins</h1>
+        <div className="company-list-container">
+            <ul className="company-list">
+
+                {admins.map(admin =>
+                    <li className="company-list-item" key={admin.id}><div><p>{admin.name}</p> <p>Email: {admin.email}</p><p>Company: {admin.company}</p></div><div className="delete-button-div-li"><button onClick={() => GetAdmin(admin.email)}>Edit</button>
+</div></li>
+                )}
 
             </ul>
         </div>

@@ -11,3 +11,20 @@
   align-items: center;
   padding: 10px;
 }
+.company-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.company-list-item {
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  border: 1px solid black;
+  padding: 10px;
+}
+.delete-button-div-li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
