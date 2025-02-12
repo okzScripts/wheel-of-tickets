@@ -1,0 +1,53 @@
+*{
+    margin: 0;
+    box-sizing: border-box;
+    
+}
+
+header{
+    background-color: bisque;
+    height: 100%;
+    font-size: 130%;
+}
+
+main{
+    display: flex;
+    flex-direction: column;
+    div{
+        max-width: 100%;
+        align-self: center;
+        text-align: center;
+        option{
+            overflow: hidden;
+        }
+    }
+}
+
+
+form{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin: 1rem;
+   
+}
+
+select{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin: 1rem;
+    
+    
+
+}
+input{
+    margin: 4px;
+}
+
+button{
+    max-width: 10rem;
+    align-self: center;
+
+}
+    
