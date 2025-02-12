@@ -5,7 +5,7 @@ import AddAdmin from './components/AddAdminForms';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <AddAdmin/>
+    <AddAdmin/> 
   </StrictMode>,
 );
 
