@@ -2,3 +2,12 @@
   height: 100px;
   width: 200px;
 }
+
+.company-list-container {
+  border: 1px solid black;
+  width: 50%;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  padding: 10px;
+}
