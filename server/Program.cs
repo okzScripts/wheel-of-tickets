@@ -19,7 +19,7 @@ app.MapGet("/api/companies", CompanyRoutes.GetCompanies);
 app.MapGet("/api/users/{admins}", UserRoutes.GetAdmins);
 app.MapGet("/api/users/{admins}/{email}", UserRoutes.GetAdmin);
 app.MapPut("/api/users/{email}/{active}", UserRoutes.BlockAdmin);
-app.MapPost("/api/users/hejhej", UserRoutes.AddAdmin);
+app.MapPost("/api/users/{admin}", UserRoutes.AddAdmin);
 
 
 app.Run();

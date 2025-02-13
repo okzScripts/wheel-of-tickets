@@ -106,23 +106,26 @@ public class UserRoutes
             return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
     }
-
-    public static async Task<Results<Ok<string>, BadRequest<string>>> AddAdmin(string name, string email, string password, int company, NpgsqlDataSource db)
+    public class AdminRequest
     {
-        Console.WriteLine($"name {name}");
-        Console.WriteLine($"email {email}");
-        Console.WriteLine($"password {password}");
-        Console.WriteLine($"company {company}");
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public int Company { get; set; }
+    }
 
+    public static async Task<IResult> AddAdmin(AdminRequest request, NpgsqlDataSource db)
+    {
         try
         {
+            using var cmd = db.CreateCommand(
+                "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
 
-            using var cmd = db.CreateCommand("INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6)");
-            cmd.Parameters.AddWithValue(name);
-            cmd.Parameters.AddWithValue(email);
-            cmd.Parameters.AddWithValue(password);
-            cmd.Parameters.AddWithValue(company);
-            cmd.Parameters.AddWithValue(3);
+            cmd.Parameters.AddWithValue(request.Name);
+            cmd.Parameters.AddWithValue(request.Email);
+            cmd.Parameters.AddWithValue(request.Password);
+            cmd.Parameters.AddWithValue(request.Company);
+            cmd.Parameters.AddWithValue(3); // Role för admin
             cmd.Parameters.AddWithValue(true);
 
             var result = await cmd.ExecuteScalarAsync();
@@ -135,13 +138,14 @@ public class UserRoutes
             {
                 return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
             }
-
-
+        }
+        catch (PostgresException ex) when (ex.SqlState == "23505") // Hanterar unikhetsfel
+        {
+            return TypedResults.BadRequest("Email-adressen är redan registrerad!");
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest($"An error occurred :( ): {ex.Message}");
+            return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
         }
     }
-
 }
