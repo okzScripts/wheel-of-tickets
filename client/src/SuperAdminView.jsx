@@ -47,6 +47,7 @@ export function SuperAdminCompanyView() {
     </main>;
 }
 
+
 export function SuperAdminAdminView() {
 
     const [admins, setAdmins] = useState([]);
@@ -68,14 +69,22 @@ export function SuperAdminAdminView() {
             .then(data => setAdmin(data));
     }
 
+    function BlockAdminById(id) {
+
+
+
+
+
+    }
+
     return <main>
         <h1>All Registered Admins</h1>
         <div className="company-list-container">
             <ul className="company-list">
 
                 {admins.map(admin =>
-                    <li className="company-list-item" key={admin.id}><div><p>{admin.name}</p> <p>Email: {admin.email}</p><p>Company: {admin.company}</p></div><div className="delete-button-div-li"><button onClick={() => GetAdmin(admin.email)}>Edit</button>
-</div></li>
+                    <li className="company-list-item" key={admin.id}><div><p>{admin.name}</p> <p>Email: {admin.email}</p><p>Company: {admin.company}</p></div><div className="delete-button-div-li"><button onClick={() => GetAdmin(admin.email)}>Edit</button><div className="block-button-div-li"><button className="block-button" onClick={() => BlockAdminById(admin.email, admin.active)}>{admin.active ? "block" : "un-block"}</button></div>
+                    </div></li>
                 )}
 
             </ul>

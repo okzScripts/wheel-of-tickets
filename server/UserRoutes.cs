@@ -42,6 +42,37 @@ public class UserRoutes
         }
     }
 
+    public static async Task<Results<Ok<string>, BadRequest<string>>> BlockAdmin(string email, bool active, NpgsqlDataSource db)
+    {
+
+        try
+        {
+
+            using var cmd = db.CreateCommand("UPDATE users SET active = $1 WHERE email = $2");
+            cmd.Parameters.AddWithValue(active ? false : true);
+            cmd.Parameters.AddWithValue(email);
+
+
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+            if (rowsAffected > 0)
+            {
+                return TypedResults.Ok("Det funkade!");
+            }
+            else
+            {
+                return TypedResults.BadRequest("Ajsing bajsing, det funkade ej");
+            }
+
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"(Detta är Catch) Det funkade inte: {ex.Message}");
+        }
+
+    }
+
+
     public static async Task<Results<Ok<Admin>, BadRequest<string>>> GetAdmin(string email, NpgsqlDataSource db)
     {
         try
