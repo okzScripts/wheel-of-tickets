@@ -84,64 +84,100 @@ export function SuperAdminAdminView() {
 }
 
 export function SuperAdminAddAdminView() {
-
-
-
-
-
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [company, setCompany] = useState("");
     const [companies, setCompanies] = useState([]);
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        password: "",
-        company: "",
-    });
 
     useEffect(() => {
-        fetch("/api/companies").then(response =>
-            response.json())
-            .then(data => setCompanies(data));
+        fetch("/api/companies")
+            .then(response => response.json())
+            .then(data => setCompanies(data))
+            .catch(error => console.error("Error fetching companies:", error));
     }, []);
 
-    function HandleSubmit() {
+    function HandleSubmit(event) {
+        event.preventDefault(); // Förhindra sidladdning
 
-        function formToObject(form) {
-            console.log(Object.fromEntries(new FormData(form)));
-            return Object.fromEntries(new FormData(form));
-
-        }
-        const newAdmin = formToObject(document.querySelector('.adminform'));
-
-        fetch(`/api/users/3`, {
+        fetch("/api/users/3", {
             headers: { "Content-Type": "application/json" },
             method: "POST",
-            body: JSON.stringify(newAdmin.name, newAdmin.email, newAdmin.password, newAdmin.company)
+            body: JSON.stringify({ name, email, password, company }),
         })
             .then(response => {
-                if (response.ok) { console.log("Det Funkade Igen"), GetAdmins() }
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                console.log("Det Funkade Igen");
+                alert("Admin added to DB");
+
+                // Rensa formuläret efter lyckad inmatning
+                setName("");
+                setEmail("");
+                setPassword("");
+                setCompany("");
             })
-
-
-
-
-        alert("Admin added to DB");
-
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Fel vid skapandet av admin: " + error.message);
+            });
     }
 
+    return (
+        <main>
+            <form className="adminform" onSubmit={HandleSubmit}>
+                <label>
+                    Name:
+                    <input 
+                        name="name" 
+                        type="text" 
+                        value={name} 
+                        onChange={(e) => setName(e.target.value)} 
+                        required 
+                    />
+                </label>
+                
+                <label>
+                    Email:
+                    <input 
+                        name="email" 
+                        type="email" 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)} 
+                        required 
+                    />
+                </label>
 
+                <label>
+                    Password:
+                    <input 
+                        name="password" 
+                        type="password" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)} 
+                        required 
+                    />
+                </label>
 
+                <label>
+                    Company:
+                    <select 
+                        name="company" 
+                        value={company} 
+                        onChange={(e) => setCompany(e.target.value)} 
+                        required
+                    >
+                        <option value="" disabled hidden>Välj ett företag</option>
+                        {companies.map(company => (
+                            <option key={company.id} value={company.id}>{company.name}</option>
+                        ))}
+                    </select>
+                </label>
 
-
-    return <main>
-        <form className="adminform" onSubmit={HandleSubmit}>
-            Name: <input name="name" type="name" ></input>
-            Email: <input name="email" type="email" required ></input>
-            Password: <input name="password" type="password" required ></input>
-            <select name="company" required defaultValue="" >
-                <option value="" disabled hidden>Välj ett företag</option>
-                {companies.map(company => (<option key={company.name} value={company.id}>{company.name}</option>))}
-            </select>
-            <button type="submit">Save</button>
-        </form>
-    </main>
+                <button type="submit">Save</button>
+            </form>
+            <NavLink to={"/super-admin-admin"}><button className="add-admin-button">Back</button></NavLink>
+        </main>
+    );
 }
