@@ -107,4 +107,41 @@ public class UserRoutes
         }
     }
 
+    public static async Task<Results<Ok<string>, BadRequest<string>>> AddAdmin(string name, string email, string password, int company, NpgsqlDataSource db)
+    {
+        Console.WriteLine($"name {name}");
+        Console.WriteLine($"email {email}");
+        Console.WriteLine($"password {password}");
+        Console.WriteLine($"company {company}");
+
+        try
+        {
+
+            using var cmd = db.CreateCommand("INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6)");
+            cmd.Parameters.AddWithValue(name);
+            cmd.Parameters.AddWithValue(email);
+            cmd.Parameters.AddWithValue(password);
+            cmd.Parameters.AddWithValue(company);
+            cmd.Parameters.AddWithValue(3);
+            cmd.Parameters.AddWithValue(true);
+
+            var result = await cmd.ExecuteScalarAsync();
+
+            if (result != null)
+            {
+                return TypedResults.Ok("Det funkade! Du la till en admin!");
+            }
+            else
+            {
+                return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
+            }
+
+
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"An error occurred :( ): {ex.Message}");
+        }
+    }
+
 }

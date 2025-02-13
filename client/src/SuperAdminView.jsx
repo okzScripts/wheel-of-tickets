@@ -55,14 +55,14 @@ export function SuperAdminAdminView() {
     }
 
     function BlockAdminById(email, active) {
-         fetch(`/api/users/${email}/${active}`, {
-      headers: { "Content-Type": "application/json" },
-      method: "PUT",
-      body: JSON.stringify(email,active),
-    })
-      .then(response => {
-        if (response.ok) {console.log("Det Funkade Igen"), GetAdmins()}
-      })
+        fetch(`/api/users/${email}/${active}`, {
+            headers: { "Content-Type": "application/json" },
+            method: "PUT",
+            body: JSON.stringify(email, active),
+        })
+            .then(response => {
+                if (response.ok) { console.log("Det Funkade Igen"), GetAdmins() }
+            })
     }
 
     GetAdmins();
@@ -84,34 +84,64 @@ export function SuperAdminAdminView() {
 }
 
 export function SuperAdminAddAdminView() {
+
+
+
+
+
     const [companies, setCompanies] = useState([]);
     const [formData, setFormData] = useState({
-            name: "",
-            email: "",
-            password: "",
-            company: "",
-        });
+        name: "",
+        email: "",
+        password: "",
+        company: "",
+    });
 
-        useEffect(() => {
-            fetch("/api/companies").then(response =>
-                response.json())
-                .then(data => setCompanies(data));
-        }, []);
+    useEffect(() => {
+        fetch("/api/companies").then(response =>
+            response.json())
+            .then(data => setCompanies(data));
+    }, []);
 
-        function HandleSubmit() {
-            console.log(formData)
+    function HandleSubmit() {
+
+        function formToObject(form) {
+            console.log(Object.fromEntries(new FormData(form)));
+            return Object.fromEntries(new FormData(form));
+
         }
+        const newAdmin = formToObject(document.querySelector('.adminform'));
 
-        return <main>
-            <form onSubmit={HandleSubmit}>
-                Name: <input name="name" type="name" onChange={HandleSubmit}></input>
-                Email: <input name="email" type="email" required onChange={HandleSubmit}></input>
-                Password: <input name="password" type="password" required onChange={HandleSubmit}></input>
-                <select name="company" required defaultValue="" onChange={HandleSubmit}>
-                    <option value="" disabled hidden>Välj ett företag</option>
-                    {companies.map(company => (<option key={company.name} value={company.name}>{company.name}</option>))}
-                </select>
-                <button type="submit">Save</button>
-            </form>
-        </main>
+        fetch(`/api/users/3`, {
+            headers: { "Content-Type": "application/json" },
+            method: "POST",
+            body: JSON.stringify(newAdmin.name, newAdmin.email, newAdmin.password, newAdmin.company)
+        })
+            .then(response => {
+                if (response.ok) { console.log("Det Funkade Igen"), GetAdmins() }
+            })
+
+
+
+
+        alert("Admin added to DB");
+
     }
+
+
+
+
+
+    return <main>
+        <form className="adminform" onSubmit={HandleSubmit}>
+            Name: <input name="name" type="name" ></input>
+            Email: <input name="email" type="email" required ></input>
+            Password: <input name="password" type="password" required ></input>
+            <select name="company" required defaultValue="" >
+                <option value="" disabled hidden>Välj ett företag</option>
+                {companies.map(company => (<option key={company.name} value={company.id}>{company.name}</option>))}
+            </select>
+            <button type="submit">Save</button>
+        </form>
+    </main>
+}
