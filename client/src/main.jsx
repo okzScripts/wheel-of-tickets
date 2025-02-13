@@ -8,7 +8,7 @@ import "./styles.css"
 createRoot(document.getElementById('root')).render(
   <StrictMode>
 
-      <CustomerTicket/>
+      <CreateCustomer/>
   </StrictMode>,
 );
 

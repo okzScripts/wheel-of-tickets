@@ -29,7 +29,7 @@ export default function CustomerTicket()
             <div id="messageContainer" >
 
                 <p>Message</p>
-                <textarea name="postTicket">
+                <textarea name="postTicket" rows={10} cols={25}>
 
                 </textarea>
 

@@ -1,43 +1,62 @@
 
 export default function CreateCustomer()
-
 {
+    const handleChange = async () => {
+        e.preventDefault();
+    }
+
+    const createCustomer = async () => {
+        
+    }
+
+
+
     return <>
         <header> Logga</header>
         <main>
             <form>
-                <label>
+                <label onSubmit={handleOnSubmit}>
                     <input type="text"
-                           id="name"
+                           name="name"
+                           value={setData.firstName}
+                           onChange={handleChange}
                            placeholder="Enter Firstname:"/>
                 </label>
 
-                <label>
+                <label onSubmit={handleOnSubmit}>
                     <input type="text"
-                           id="name"
+                           name="name"
+                           value={setData.lastName}
+                           onChange={handleChange}
                            placeholder="Enter Lastname:"/>
                 </label>
 
-                <label>
+                <label onSubmit={handleOnSubmit}>
                     <input type="text"
-                           id="mail"
+                           name="mail"
+                           value={setData.email}
+                           onChange={handleChange}
                            placeholder="Enter email:"/>
                 </label>
 
-                <label>
+                <label onSubmit={handleOnSubmit}>
                     <input type="text"
-                           id="password"
+                           name="password"
+                           value={setData.password}
+                           onChange={handleChange}
                            placeholder="Enter password"/>
                 </label>
 
 
-                <label>
+                <label onSubmit={handleOnSubmit}>
                     <input type="text"
-                           id="company"
+                           name="company"
+                           value={setData.password}
+                           onChange={handleChange}
                            placeholder="Repeat password: "/>
                 </label>
             </form>
-            <button id="addCustomer">Create Account</button>
+            <button onClick={createCustomer} id="addCustomer">Create Account</button>
         </main>
 
 
