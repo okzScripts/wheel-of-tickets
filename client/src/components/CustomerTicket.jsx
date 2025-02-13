@@ -23,9 +23,19 @@ export default function CustomerTicket()
                         <option value="1">Tech solution</option>
                     </select>
 
-
                 </form>
+            </div>
+
+            <div id="messageContainer" >
+
+                <p>Message</p>
+                <textarea name="postTicket">
+
+                </textarea>
+
                 <button id="addCustomer">Create Ticket</button>
+               
+
             </div>
            
         </main>

@@ -50,4 +50,27 @@ button{
     align-self: center;
 
 }
+
+#messageContainer{
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    p{
+        align-self: flex-start;
+        margin: 0.5rem;
+        margin-left: 0;
+
+    }
+    Button{
+        margin-top: 0.5rem;
+        align-self: flex-start;
+       
+     
+    }
+}
+
+textarea{
+    resize: none;
+    background-color: rgb(225, 225, 223);
+}
     
