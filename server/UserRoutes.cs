@@ -16,7 +16,7 @@ public class UserRoutes
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM users WHERE role = 3");
+            using var cmd = db.CreateCommand("SELECT * FROM users WHERE role = 3 ORDER BY id ASC");
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
