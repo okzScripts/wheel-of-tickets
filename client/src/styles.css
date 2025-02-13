@@ -1,9 +1,18 @@
+body {
+  margin: 0;
+}
+main {
+  height: 100vh;
+}
 .super-admin-button {
   height: 100px;
   width: 200px;
 }
-
-.company-list-container {
+.super-admin-header {
+  font-size: 100%;
+  margin: 0;
+}
+.super-admin-list-container {
   border: 1px solid black;
   width: 50%;
   display: flex;
@@ -11,12 +20,12 @@
   align-items: center;
   padding: 10px;
 }
-.company-list {
+.super-admin-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.company-list-item {
+.super-admin-list-item {
   display: flex;
   gap: 20px;
   flex-direction: row;
@@ -27,4 +36,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.add-admin-button {
+  width: 100px;
+  height: 40px;
 }
