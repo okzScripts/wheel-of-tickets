@@ -124,7 +124,7 @@ public class UserRoutes
     }
 
 
-    public record PostUserDTO(int Id, string Name, string Email, string Password, int Company, int Role);
+    public record PostUserDTO(string Name, string Email, string Password, int Company, int Role);
 
 
     public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db)
