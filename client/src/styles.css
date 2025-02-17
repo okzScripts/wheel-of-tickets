@@ -2,6 +2,8 @@
     margin: 0;
     box-sizing: border-box;
     
+body {
+  margin: 0;
 }
 
 header{
@@ -30,6 +32,29 @@ form{
     text-align: center;
     margin: 1rem;
    
+main {
+  height: 100vh;
+}
+.super-admin-button {
+  height: 100px;
+  width: 200px;
+}
+.super-admin-header {
+  font-size: 100%;
+  margin: 0;
+}
+.super-admin-list-container {
+  border: 1px solid black;
+  width: 50%;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  padding: 10px;
+}
+.super-admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 select{
@@ -43,6 +68,12 @@ select{
 }
 input{
     margin: 4px;
+.super-admin-list-item {
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  border: 1px solid black;
+  padding: 10px;
 }
 
 button{
@@ -67,6 +98,14 @@ button{
        
      
     }
+.delete-button-div-li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.add-admin-button {
+  width: 100px;
+  height: 40px;
 }
 
 textarea{

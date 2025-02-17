@@ -1,4 +1,4 @@
-namespace server;
+﻿namespace server;
 
 using Npgsql;
 
