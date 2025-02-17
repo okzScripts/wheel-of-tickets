@@ -43,6 +43,43 @@ public class UserRoutes
         }
     }
 
+    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(int company, NpgsqlDataSource db)
+    {
+        int role=2; 
+        List<User> users = new List<User>();
+
+        try
+        {
+            using var cmd = db.CreateCommand("SELECT * FROM users WHERE role = $1 AND company=$2  ORDER BY id ASC");
+            cmd.Parameters.AddWithValue(role);
+            cmd.Parameters.AddWithValue(company); 
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                users.Add(new User(
+                    reader.GetInt32(0), // Assuming the first column is the ID
+                    reader.GetString(1), // Assuming the second column is a string
+                    reader.GetString(2), // Assuming the third column is a string
+                    reader.GetString(3), // Assuming the fourth column is a string
+                    reader.GetInt32(4),
+                    reader.GetInt32(5),
+                    reader.GetBoolean(6)
+                ));
+            }
+
+            // Return the list of companies with a 200 OK response
+            return TypedResults.Ok(users);
+        }
+        catch (Exception ex)
+        {
+            // Return a 400 BadRequest response with the error message
+            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+        }
+    }
+
+
+
     public static async Task<Results<Ok<string>, BadRequest<string>>> BlockUser(string email, bool active, NpgsqlDataSource db)
     {
 
