@@ -10,4 +10,6 @@ Database database = new();
 
 var db = database.Connection();
 
+var serverActions  = new ServerActions(app);
+
 app.Run();

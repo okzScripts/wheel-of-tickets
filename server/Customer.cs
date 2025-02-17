@@ -6,6 +6,11 @@ public class Customer
 {
     private readonly NpgsqlDataSource db;
     
+    public Customer(NpgsqlDataSource db)
+    {
+        this.db = db;
+    }
+    
     public async Task AddCustomerAsync(string name, string email,string password )
     {
         var role = Roles.customer;

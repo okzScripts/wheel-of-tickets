@@ -21,7 +21,7 @@ public class ServerActions
                 return Results.BadRequest("Ogiltig inmatning");
             }
 
-            var customer = new Customer();
+            var customer = new Customer(db);
             
             await customer.AddCustomerAsync(user.name, user.email, user.password);
 

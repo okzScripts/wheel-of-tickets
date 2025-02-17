@@ -19,69 +19,72 @@ const CreateCustomer = () =>
 
     const handleOnSubmit = async (e) => {
         e.preventDefault();
-        console.log("Formuläret skickas med följande data:", formData);
-        try{
+        
+        if (formData.password !== formData.rePassword) {
+            setMessage("Passwords do not match");
+            return;
+        }
+        
+        try {
+
             const response = await fetch("/api/create-user", {
                 method: "POST",
-                headers:{
-                    "Content-Type":"application/json"
-            },
-            body: JSON.stringify(formData)});
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
             
             if (!response.ok){
-                throw new Error("Användare inte skapad")
+                throw new Error("User not created");
             }
             
-            setMessage("Användare har skapats(eller något annat)")
-        }catch (error) {
-            setMessage("Du har gjort feeeeeeel"+ error.message)
+            setMessage("User created successfully");
+        } catch (error){
+            setMessage(error.message)
         }
-    }    
+    };    
     
-    return <>
-        <header>Logga</header>
-        <main>
-            <form onSubmit={handleOnSubmit}>
-                <label>
-                    <input type="text"
-                           name="name"
-                           value={formData.name}
-                           onChange={handleChange}
-                           placeholder="Enter name:"/>
-                </label>
+    return (<>
+            <header>Logga</header>
+            <main>
+                <form onSubmit={handleOnSubmit}>
+                    <label>
+                        <input type="text"
+                               name="name"
+                               value={formData.name}
+                               onChange={handleChange}
+                               placeholder="Enter name:"/>
+                    </label>
 
-                <label>
-                    <input type="text"
-                           name="email"
-                           value={formData.email}
-                           onChange={handleChange}
-                           placeholder="Enter email:"/>
-                </label>
+                    <label>
+                        <input type="text"
+                               name="email"
+                               value={formData.email}
+                               onChange={handleChange}
+                               placeholder="Enter email:"/>
+                    </label>
 
-                <label>
-                    <input type="text"
-                           name="password"
-                           value={formData.password}
-                           onChange={handleChange}
-                           placeholder="Enter password"/>
-                </label>
-
-
-                <label>
-                    <input type="text"
-                           name="rePassword"
-                           value={formData.rePassword}
-                           onChange={handleChange}
-                           placeholder="Repeat password: "/>
-                </label>
-                <button type="submit" id="addCustomer">Create Account</button>
-            </form>
+                    <label>
+                        <input type="text" //ändra senare till type password.
+                               name="password"
+                               value={formData.password}
+                               onChange={handleChange}
+                               placeholder="Enter password"/>
+                    </label>
 
 
-        </main>
-
-
-    </>
+                    <label>
+                        <input type="text" //ändra senare till type password.
+                               name="rePassword"
+                               value={formData.rePassword}
+                               onChange={handleChange}
+                               placeholder="Repeat password: "/>
+                    </label>
+                    <button type="submit" id="addCustomer">Create Account</button>
+                </form>
+                {message && <p>{message}</p>}
+            </main>
+        </>
+    ); 
 
 }
 export default CreateCustomer;
