@@ -8,20 +8,21 @@ public class UserRoutes
 {
 
 
-    public record Admin(int id, string name, string email, string Password, int company, int role, bool active);
+    public record User(int id, string name, string email, string Password, int company, int role, bool active);
 
-    public static async Task<Results<Ok<List<Admin>>, BadRequest<string>>> GetAdmins(NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsers(int role, NpgsqlDataSource db)
     {
-        List<Admin> admins = new List<Admin>();
+        List<User> users = new List<User>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM users WHERE role = 3 ORDER BY id ASC");
+            using var cmd = db.CreateCommand("SELECT * FROM users WHERE role = $1  ORDER BY id ASC");
+            cmd.Parameters.AddWithValue(role);
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
-                admins.Add(new Admin(
+                users.Add(new User(
                     reader.GetInt32(0), // Assuming the first column is the ID
                     reader.GetString(1), // Assuming the second column is a string
                     reader.GetString(2), // Assuming the third column is a string
@@ -33,7 +34,7 @@ public class UserRoutes
             }
 
             // Return the list of companies with a 200 OK response
-            return TypedResults.Ok(admins);
+            return TypedResults.Ok(users);
         }
         catch (Exception ex)
         {
@@ -42,7 +43,7 @@ public class UserRoutes
         }
     }
 
-    public static async Task<Results<Ok<string>, BadRequest<string>>> BlockAdmin(string email, bool active, NpgsqlDataSource db)
+    public static async Task<Results<Ok<string>, BadRequest<string>>> BlockUser(string email, bool active, NpgsqlDataSource db)
     {
 
         try
@@ -51,6 +52,7 @@ public class UserRoutes
             using var cmd = db.CreateCommand("UPDATE users SET active = $1 WHERE email = $2");
             cmd.Parameters.AddWithValue(active ? false : true);
             cmd.Parameters.AddWithValue(email);
+
 
 
             int rowsAffected = await cmd.ExecuteNonQueryAsync();
@@ -73,20 +75,21 @@ public class UserRoutes
     }
 
 
-    public static async Task<Results<Ok<Admin>, BadRequest<string>>> GetAdmin(string email, NpgsqlDataSource db)
+    public static async Task<Results<Ok<User>, BadRequest<string>>> GetUser(int role, string email, NpgsqlDataSource db)
     {
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM users WHERE email = $1");
+            using var cmd = db.CreateCommand("SELECT * FROM users WHERE email = $1 AND role = $2");
             cmd.Parameters.AddWithValue(email);
+            cmd.Parameters.AddWithValue(role);
             using var reader = await cmd.ExecuteReaderAsync();
 
             // Deklarera admin innan if-satsen
-            Admin? admin = null;
+            User? user = null;
 
             if (await reader.ReadAsync())
             {
-                admin = new Admin(
+                user = new User(
                     reader.GetInt32(0),
                     reader.GetString(1),
                     reader.GetString(2),
@@ -96,7 +99,7 @@ public class UserRoutes
                     reader.GetBoolean(6)
                 );
 
-                return TypedResults.Ok(admin);
+                return TypedResults.Ok(user);
             }
 
             return TypedResults.BadRequest("No admin found with the given email.");
@@ -106,6 +109,7 @@ public class UserRoutes
             return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
     }
+
     public class AdminRequest
     {
         public string Name { get; set; }
@@ -114,7 +118,7 @@ public class UserRoutes
         public int Company { get; set; }
     }
 
-    public static async Task<IResult> AddAdmin(AdminRequest request, NpgsqlDataSource db)
+    public static async Task<IResult> AddUser(AdminRequest request, NpgsqlDataSource db)
     {
         try
         {
