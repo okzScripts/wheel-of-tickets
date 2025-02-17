@@ -10,6 +10,11 @@ public class UserRoutes
 
     public record User(int id, string name, string email, string Password, int company, int role, bool active);
 
+
+
+
+
+
     public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsers(int role, NpgsqlDataSource db)
     {
         List<User> users = new List<User>();
@@ -118,18 +123,22 @@ public class UserRoutes
         public int Company { get; set; }
     }
 
-    public static async Task<IResult> AddUser(AdminRequest request, NpgsqlDataSource db)
+
+    public record PostUserDTO(string Name, string Email, string Password, int Company, int Role);
+
+
+    public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db)
     {
         try
         {
             using var cmd = db.CreateCommand(
                 "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
 
-            cmd.Parameters.AddWithValue(request.Name);
-            cmd.Parameters.AddWithValue(request.Email);
-            cmd.Parameters.AddWithValue(request.Password);
-            cmd.Parameters.AddWithValue(request.Company);
-            cmd.Parameters.AddWithValue(3); // Role för admin
+            cmd.Parameters.AddWithValue(user.Name);
+            cmd.Parameters.AddWithValue(user.Email);
+            cmd.Parameters.AddWithValue(user.Password);
+            cmd.Parameters.AddWithValue(user.Company);
+            cmd.Parameters.AddWithValue(user.Role); // Role för admin
             cmd.Parameters.AddWithValue(true);
 
             var result = await cmd.ExecuteScalarAsync();
