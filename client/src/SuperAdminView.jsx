@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate, useLocation } from "react-router";
 import "./styles.css"
 import { useEffect, useState } from "react";
 
@@ -24,11 +24,11 @@ export function SuperAdminCompanyView() {
 
     return <main>
         <h1>All Registered Companies</h1>
-        <div className="company-list-container">
-            <ul className="company-list">
+        <div className="super-admin-list-container">
+            <ul className="super-admin-list">
 
                 {companies.map(company =>
-                    <li className="company-list-item" key={company.id}><div><p>{company.name}</p> <p>Email: {company.email}</p></div><div className="delete-button-div-li"><button>Delete</button></div></li>
+                    <li className="super-admin-list-item" key={company.id}><div><p>{company.name}</p> <p>Email: {company.email}</p></div><div className="delete-button-div-li"><button>Delete</button></div></li>
                 )}
 
             </ul>
@@ -38,9 +38,9 @@ export function SuperAdminCompanyView() {
 
 
 export function SuperAdminAdminView() {
-
     const [admins, setAdmins] = useState([]);
     const [admin, setAdmin] = useState([]);
+    const navigate = useNavigate();
 
     function GetAdmins() {
         fetch("/api/users/3").then(response =>
@@ -48,14 +48,16 @@ export function SuperAdminAdminView() {
             .then(data => setAdmins(data));
     }
 
-    function GetAdmin(email) {
-        fetch(`/api/users/3/${email}`).then(response =>
-            response.json())
-            .then(data => setAdmin(data));
+    function handleEditAdmin(email) {
+        fetch(`/api/users/3/${email}`)
+            .then(response => response.json())
+            .then(data => {
+                navigate("/super-admin-edit-admin", { state: { admin: data } }); 
+            });
     }
 
     function BlockAdminById(email, active) {
-        fetch(`/api/users/${email}/${active}`, {
+        fetch(`/api/users/block/${email}/${active}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
             body: JSON.stringify(email, active),
@@ -73,7 +75,17 @@ export function SuperAdminAdminView() {
             <ul className="super-admin-list">
 
                 {admins.map(admin =>
-                    <li className="super-admin-list-item" key={admin.id}><div><p>{admin.name}</p> <p>Email: {admin.email}</p><p>Company: {admin.company}</p></div><div className="delete-button-div-li"><button onClick={() => GetAdmin(admin.email)}>Edit</button><div className="block-button-div-li"><button className="block-button" onClick={() => BlockAdminById(admin.email, admin.active)}>{admin.active ? "block" : "un-block"}</button></div>
+                    <li className="super-admin-list-item" key={admin.id}>
+                        <div>
+                            <p>{admin.name}</p>
+                            <p>Email: {admin.email}</p>
+                            <p>Company: {admin.company}</p>
+                        </div>
+                        <div className="delete-button-div-li">
+                            <button onClick={() => handleEditAdmin(admin.email)}>Edit</button>
+                            <div className="block-button-div-li">
+                                <button className="block-button" onClick={() => BlockAdminById(admin.email, admin.active)}>{admin.active ? "block" : "un-block"}</button>
+                            </div>
                     </div></li>
                 )}
 
@@ -93,22 +105,28 @@ export function SuperAdminAddAdminView() {
             .catch(error => console.error("Error fetching companies:", error));
     }, []);
 
-    function postUser(e)
-    {
-        e.preventDefault();
-        const form = e.target;
+    function postUser(e) {
+    e.preventDefault();
+    const form = e.target;
 
-        let data = new FormData(form);
-        data = Object.fromEntries(data);
-        data.role = 3;
-        data = JSON.stringify(data);
-        console.log(data)
-        fetch(form.action, {
-            headers: { "Content-Type": "application/json" },
-            method: form.method,
-            body: data
-        }) 
-    }
+    let formData = new FormData(form);
+    let dataObject = Object.fromEntries(formData);
+    dataObject.role = 3;
+
+    let dataJson = JSON.stringify(dataObject);
+
+    fetch(form.action, {
+        headers: { "Content-Type": "application/json" },
+        method: form.method,
+        body: dataJson
+    }).then(response => {
+        if (response.ok) {
+            alert(`Du lade till ${dataObject.name} i databasen 🎉`);
+        } else {
+            alert("Något gick fel ❌");
+        }
+    });
+}
 
     return (
         <main>
@@ -156,6 +174,118 @@ export function SuperAdminAddAdminView() {
                 <button type="submit">Save</button>
             </form>
             <NavLink to={"/super-admin-admin"}><button className="add-admin-button">Back</button></NavLink>
+        </main>
+    );
+}
+export function SuperAdminEditAdminView() {
+    const location = useLocation();
+    const admin = location.state?.admin;
+    const [companies, setCompanies] = useState([]);
+
+    //admin info
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [previousEmail, setPreviousEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [company, setCompany] = useState("");
+
+    useEffect(() => {
+        fetch("/api/companies")
+            .then(response => response.json())
+            .then(data => setCompanies(data))
+            .catch(error => console.error("Error fetching companies:", error));
+    }, []);
+
+    useEffect(() => {
+        if (admin) {
+            setName(admin.name || null);
+            setEmail(admin.email || null);
+            setPreviousEmail(admin.email || null);
+            setPassword(admin.password || null);
+            setCompany(admin.company || null);
+        }
+    }, [admin]);
+
+    function updateUser(e)
+    {
+        e.preventDefault();
+        const form = e.target;
+
+        let formData = new FormData(form);
+        let dataObject = Object.fromEntries(formData);
+        dataObject.role = 3;
+        let dataJson = JSON.stringify(dataObject);
+        fetch(form.action, {
+            headers: { "Content-Type": "application/json" },
+            method: "PUT",
+            body: dataJson
+        }).then(response => {
+        if (response.ok) {
+            alert(`Du updaterade ${dataObject.name}'s information 🎉`);
+        } else {
+            alert("Något gick fel ❌");
+        }
+    })
+    }
+
+    return (
+        <main>
+            <form className="adminform" onSubmit={updateUser} action={`/api/users/3/${previousEmail}`} method="PUT">
+                <label>
+                    Name:
+                    <input 
+                        name="name"
+                        value={name} 
+                        onChange={(e) => setName(e.target.value)}
+                        type="text"
+                        required 
+                    />
+                </label>
+                
+                <label>
+                    Email:
+                    <input 
+                        name="email" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        type="email" 
+                        required 
+                    />
+                </label>
+
+                <label>
+                    Password:
+                    <input 
+                        name="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        type="password" 
+                        required 
+                    />
+                </label>
+
+                <label>
+                    Company:
+                    <select 
+                        name="company"
+                        value={company} // Set value to admin's company
+                        onChange={(e) => setCompany(e.target.value)}
+                        required
+                    >
+                        <option value="" disabled hidden>Välj ett företag</option>
+                        {companies.map(c => (
+                            <option key={c.id} value={c.id}>
+                                {c.name}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+
+                <button type="submit">Save</button>
+            </form>
+            <NavLink to="/super-admin-admin">
+                <button className="add-admin-button">Back</button>
+            </NavLink>
         </main>
     );
 }
