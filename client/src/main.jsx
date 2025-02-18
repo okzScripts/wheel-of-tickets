@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from 'react-router'
 import { SuperAdminView, SuperAdminCompanyView, SuperAdminAdminView, SuperAdminAddAdminView, SuperAdminEditAdminView, SuperAdminAddCompanyView, SuperAdminEditCompanyView } from "./SuperAdminView.jsx"
 import { AdminView,AdminAddProductView,AdminEditProductView } from "./AdminView.jsx"
 import LoginPage from './components/LoginPage.jsx'
+import CustomerService from './CustomerService.jsx'
 
 
 createRoot(document.getElementById('root')).render(
