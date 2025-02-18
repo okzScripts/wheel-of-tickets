@@ -32,15 +32,16 @@ function ProductList(){
     const [products,setProducts]=useState([]); 
     const companyId = use(adminInfoContext);
     const navigate= use(navigateContext); 
+
     function handleAddProduct() {
         navigate("/admin-add-product", { state: { company: companyId } }); 
     }
     
-    function handelEditProduct(name,company){
-        fetch(`api/products/${company}/${name}`)
+    function handelEditProduct(productId){
+        fetch(`api/product/${productId}`)
         .then(response => response.json())
             .then(data => {
-                navigate("/admin-edit-Product", { state: { product: data } }); 
+                navigate("/admin-edit-Product", { state: { product: data ,id:productId} }); 
             });
 
     }
@@ -61,7 +62,7 @@ function ProductList(){
         <div className="product-list-container">
             <ul className="product-list"> 
                 {products.map( product =>
-                      <li className="product-list-item" key={product.id}><div><p>{product.name}</p></div><div className="edit-product" ><button onClick={()=>handelEditProduct(product.name,product.company) }>edit</button> </div><div className="delete-button-div-li"><button>Delete</button></div></li>
+                      <li className="product-list-item" key={product.id}><div><p>{product.name}</p></div><div className="edit-product" ><button onClick={()=>handelEditProduct(product.id) }>edit</button> </div><div className="delete-button-div-li"><button>Delete</button></div></li>
                 )}
             </ul>
             <button className="add-product" onClick={handleAddProduct}>Add product</button>
@@ -78,15 +79,19 @@ function SupportList(){
     const companyId = use(adminInfoContext);
     const navigate=use(navigateContext); 
  
+    function handleAddProduct() {
+        navigate("/admin-add-support", { state: { company: companyId } }); 
+    }
+    
     function handleEditSupport(email) {
         fetch(`/api/users/2/${email}`)
             .then(response => response.json())
             .then(data => {
-                navigate("/admin-edit-Support", { state: { admin: data } }); 
+                navigate("/admin-edit-Support", { state: { user: data } }); 
             });
     }
     function BlockSupportById(email, active) {
-        fetch(`/api/users/${email}/${active}`, {
+        fetch(`/api/users/block/${email}/${active}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
             body: JSON.stringify(email, active),
@@ -113,93 +118,90 @@ return <>
                 )}
 
             </ul>
+            <button className="add-support" onClick={handleAddProduct}>Add Support Agent</button>
         </div>
 </>
 }
 
+
 export function AdminAddProductView() {
      const location = useLocation();
-    const company = location.state?.product;
-
-    function postProduct(e) {
+    const company = location.state?.company;
+   
+   
+   
+    function PostProduct(e)
+    {
         e.preventDefault();
         const form = e.target;
 
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        dataObject.company = company.companyId;
+        dataObject.company = company; 
         let dataJson = JSON.stringify(dataObject);
-
         fetch(form.action, {
             headers: { "Content-Type": "application/json" },
-            method: form.method,
+            method: "POST",
             body: dataJson
         }).then(response => {
-            if (response.ok) {
-                alert(`Du lade till ${dataObject.name} i databasen 🎉`);
-            } else {
-                alert("Något gick fel ❌");
-            }
-        });
+        if (response.ok) {
+            alert(`Du lade till ${dataObject.name}'s information 🎉`);
+        } else {
+            alert("Något gick fel ❌");
+        }
+    })
     }
 
     return (
         <main>
-            <form className="adminform" onSubmit={postCompany} action="/api/companies" method="POST">
-                <label>
+            <form className="productform" onSubmit={PostProduct} action={`/api/products`} method="POST">
+            <label>
                     Name:
-                    <input
+                    <input 
                         name="name"
                         type="text"
-                        required
+                        required 
                     />
                 </label>
                 
                 <label>
-                    Email:
-                    <input
-                        name="email"
-                        type="email"
-                        required
-                    />
-                </label>
-
-                <label>
-                    Phone:
-                    <input
-                        name="phone"
-                        type="phone"
-                        required
-                    />
-                </label>
-                <label>
                     Description:
-                    <input
-                        name="description"
-                        type="description"
-                        required
-                    />
-                </label>
-                <label>
-                    Domain:
-                    <input
-                        name="domain"
-                        type="domain"
-                        required
+                    <input 
+                        name="description" 
+                        type="text" 
+                        required 
                     />
                 </label>
 
+                <label>
+                   Price:
+                    <input 
+                        name="price"
+                        type="integer" 
+                        required 
+                    />
+                </label>
+                <label>
+                   Category:
+                    <input 
+                        name="category"
+                        type="text" 
+                        required 
+                    />
+                </label>
                 <button type="submit">Save</button>
             </form>
-            <NavLink to={"/super-admin-company"}><button className="add-admin-button">Back</button></NavLink>
+            <NavLink to={"/admin"}><button className="add-admin-button">Back</button></NavLink>
         </main>
     );
 }
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////
 export function AdminEditProductView() {
     const location = useLocation();
     const product = location.state?.product;
+    const productId=location.state?.id; 
+
   
 
     //admin info
@@ -230,6 +232,7 @@ export function AdminEditProductView() {
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
         dataObject.company = company;
+        dataObject.id=productId;  
         let dataJson = JSON.stringify(dataObject);
         fetch(form.action, {
             headers: { "Content-Type": "application/json" },
@@ -246,7 +249,7 @@ export function AdminEditProductView() {
 
     return (
         <main>
-            <form className="productform" onSubmit={updateProduct} action={`/api/Products/${previousName}`} method="PUT">
+            <form className="productform" onSubmit={updateProduct} action={`/api/products`} method="PUT">
                 <label>
                     Name:
                     <input 
@@ -296,4 +299,161 @@ export function AdminEditProductView() {
             </NavLink>
         </main>
     );
+
 }
+export function AdminEditSupportView(){
+  const location = useLocation();
+    const user = location.state?.user;
+   
+
+    //user info
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [previousEmail, setPreviousEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [company, setCompany] = useState("");
+
+  
+
+    useEffect(() => {
+        if (user) {
+            setName(user.name || null);
+            setEmail(user.email || null);
+            setPreviousEmail(user.email || null);
+            setPassword(user.password || null);
+            setCompany(user.company || null);
+        }
+    }, [user]);
+
+    function updateUser(e)
+    {
+        e.preventDefault();
+        const form = e.target;
+
+        let formData = new FormData(form);
+        let dataObject = Object.fromEntries(formData);
+        dataObject.company=company
+        dataObject.role = 2;
+        let dataJson = JSON.stringify(dataObject);
+        fetch(form.action, {
+            headers: { "Content-Type": "application/json" },
+            method: "PUT",
+            body: dataJson
+        }).then(response => {
+        if (response.ok) {
+            alert(`Du updaterade ${dataObject.name}'s information 🎉`);
+        } else {
+            alert("Något gick fel ❌");
+        }
+    })
+    }
+
+    return (
+        <main>
+            <form className="supportform" onSubmit={updateUser} action={`/api/users/2/${previousEmail}`} method="PUT">
+                <label>
+                    Name:
+                    <input 
+                        name="name"
+                        value={name} 
+                        onChange={(e) => setName(e.target.value)}
+                        type="text"
+                        required 
+                    />
+                </label>
+                
+                <label>
+                    Email:
+                    <input 
+                        name="email" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        type="email" 
+                        required 
+                    />
+                </label>
+
+                <label>
+                    Password:
+                    <input 
+                        name="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        type="password" 
+                        required 
+                    />
+                </label>
+                <button type="submit">Save</button>
+            </form>
+            <NavLink to="/admin">
+                <button className="add-admin-button">Back</button>
+            </NavLink>
+        </main>
+    );
+}
+
+export function AdminAddSupportView(){
+    const location = useLocation();
+    const company = location.state?.company;
+    function postUser(e) {
+        e.preventDefault();
+        const form = e.target;
+    
+        let formData = new FormData(form);
+        let dataObject = Object.fromEntries(formData);
+        dataObject.company=company; 
+        dataObject.role = 2;
+       
+    
+        let dataJson = JSON.stringify(dataObject);
+    
+        fetch(form.action, {
+            headers: { "Content-Type": "application/json" },
+            method: form.method,
+            body: dataJson
+        }).then(response => {
+            if (response.ok) {
+                alert(`Du lade till ${dataObject.name} i databasen 🎉`);
+            } else {
+                alert("Något gick fel ❌");
+            }
+        });
+    }
+    
+        return (
+            <main>
+                <form className="adminform" onSubmit={postUser} action="/api/users/3" method="POST">
+                    <label>
+                        Name:
+                        <input 
+                            name="name" 
+                            type="text"
+                            required 
+                        />
+                    </label>
+                    
+                    <label>
+                        Email:
+                        <input 
+                            name="email" 
+                            type="email" 
+                            required 
+                        />
+                    </label>
+    
+                    <label>
+                        Password:
+                        <input 
+                            name="password" 
+                            type="password" 
+                            required 
+                        />
+                    </label>
+    
+                    
+                    <button type="submit">Save</button>
+                </form>
+                <NavLink to={"/admin"}><button className="add-admin-button">Back</button></NavLink>
+            </main>
+        );
+    }
