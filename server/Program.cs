@@ -22,6 +22,9 @@ app.MapPut("/api/users/block/{email}/{active}", UserRoutes.BlockUser);
 app.MapPost("/api/users/{role}", UserRoutes.AddUser);
 app.MapGet("/api/products/{company}", ProductRoutes.GetProducts);
 app.MapPost("/api/products", ProductRoutes.AddProduct);
+app.MapGet("/api/tickets/unassigned", TicketRoutes.GetUnassignedTickets);
+app.MapPut("/api/tickets/{customer_agent}/{id}", TicketRoutes.AssignTicket);
+app.MapGet("/api/tickets/{customer_agent}", TicketRoutes.GetAssignedTickets);
 app.MapPut("/api/users/{role}/{previousEmail}", UserRoutes.EditUser);
 //app.MapPost("/api/create-user", UserRoutes.AddUser);
 

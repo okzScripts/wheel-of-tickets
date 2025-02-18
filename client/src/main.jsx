@@ -21,6 +21,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='/super-admin-edit-company' element={<SuperAdminEditCompanyView />} />
         <Route path='/super-admin-admin' element={<SuperAdminAdminView />} />
         <Route path='/super-admin-add-admin' element={<SuperAdminAddAdminView />} />
+        <Route path='/customer-service' element={<CustomerService/>}/>
         <Route path='/super-admin-edit-admin' element={<SuperAdminEditAdminView />} />
         <Route path='/admin-add-product' element={<AdminAddProductView />} />
         <Route path='/admin' element={<AdminView/>}/> 
