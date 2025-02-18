@@ -25,12 +25,19 @@ const CreateCustomer = () =>
             return;
         }
         
+        const requestBody ={
+            Name: formData.name,
+            Email: formData.email,
+            Password: formData.password,            
+            Role: 1        
+        }
+        
         try {
 
-            const response = await fetch("/api/create-user", {
+            const response = await fetch("/api/users/1", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(requestBody)
             });
             
             if (!response.ok){
@@ -48,7 +55,7 @@ const CreateCustomer = () =>
             <main>
                 <form onSubmit={handleOnSubmit}>
                     <label>
-                        <input type="text"
+                        <input type="name"
                                name="name"
                                value={formData.name}
                                onChange={handleChange}
@@ -56,7 +63,7 @@ const CreateCustomer = () =>
                     </label>
 
                     <label>
-                        <input type="text"
+                        <input type="email"
                                name="email"
                                value={formData.email}
                                onChange={handleChange}
@@ -64,7 +71,7 @@ const CreateCustomer = () =>
                     </label>
 
                     <label>
-                        <input type="text" //ändra senare till type password.
+                        <input type="password" //ändra senare till type password.
                                name="password"
                                value={formData.password}
                                onChange={handleChange}
@@ -73,7 +80,7 @@ const CreateCustomer = () =>
 
 
                     <label>
-                        <input type="text" //ändra senare till type password.
+                        <input type="password" //ändra senare till type password.
                                name="rePassword"
                                value={formData.rePassword}
                                onChange={handleChange}

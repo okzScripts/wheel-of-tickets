@@ -124,20 +124,20 @@ public class UserRoutes
     }
 
 
-    public record PostUserDTO(string Name, string Email, string Password, int Company, int Role);
-
-
+    public record PostUserDTO(string Name, string Email, string Password, int? Company, int Role);
+    
     public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db)
     {
         try
         {
+            
             using var cmd = db.CreateCommand(
                 "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
 
             cmd.Parameters.AddWithValue(user.Name);
             cmd.Parameters.AddWithValue(user.Email);
             cmd.Parameters.AddWithValue(user.Password);
-            cmd.Parameters.AddWithValue(user.Company);
+            cmd.Parameters.AddWithValue(user.Company.HasValue ? user.Company.Value : DBNull.Value);
             cmd.Parameters.AddWithValue(user.Role); // Role för admin
             cmd.Parameters.AddWithValue(true);
 

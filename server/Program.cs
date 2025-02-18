@@ -15,8 +15,9 @@ app.MapGet("/api/users/{role}", UserRoutes.GetUsers);
 app.MapGet("/api/users/{role}/{email}", UserRoutes.GetUser);
 app.MapPut("/api/users/{email}/{active}", UserRoutes.BlockUser);
 app.MapPost("/api/users/{role}", UserRoutes.AddUser);
+//app.MapPost("/api/create-user", UserRoutes.AddUser);
 
 
-var serverActions  = new ServerActions(app);
+//var serverActions  = new ServerActions(app);
 
 app.Run();
