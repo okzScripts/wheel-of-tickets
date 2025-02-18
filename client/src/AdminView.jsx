@@ -1,4 +1,4 @@
-import { BrowserRouter, NavLink, useFetcher, useNavigate } from "react-router";
+import { BrowserRouter, NavLink, useFetcher, useNavigate,useLocation } from "react-router";
 import "./adminViewStyle.css";
 import { createContext, useEffect, useState ,use} from "react";
 
@@ -31,11 +31,22 @@ function ProductList(){
 
     const [products,setProducts]=useState([]); 
     const companyId = use(adminInfoContext);
-
+    const navigate= use(navigateContext); 
     function handleAddProduct() {
         navigate("/admin-add-product", { state: { company: companyId } }); 
     }
     
+    function handelEditProduct(name,company){
+        fetch(`api/products/${company}/${name}`)
+        .then(response => response.json())
+            .then(data => {
+                navigate("/admin-edit-Product", { state: { product: data } }); 
+            });
+
+    }
+
+
+
     useEffect(() => {
         
         fetch(`/api/products/${companyId}`).then(response =>
@@ -50,7 +61,7 @@ function ProductList(){
         <div className="product-list-container">
             <ul className="product-list"> 
                 {products.map( product =>
-                      <li className="product-list-item" key={product.id}><div><p>{product.productName}</p></div><div className="delete-button-div-li"><button>Delete</button></div></li>
+                      <li className="product-list-item" key={product.id}><div><p>{product.name}</p></div><div className="edit-product" ><button onClick={()=>handelEditProduct(product.name,product.company) }>edit</button> </div><div className="delete-button-div-li"><button>Delete</button></div></li>
                 )}
             </ul>
             <button className="add-product" onClick={handleAddProduct}>Add product</button>
@@ -185,3 +196,104 @@ export function AdminAddProductView() {
     );
 }
 
+
+export function AdminEditProductView() {
+    const location = useLocation();
+    const product = location.state?.product;
+  
+
+    //admin info
+    const [name, setName] = useState("");
+    const [previousName, setPreviousName] = useState("");
+    const [description, setDescription] = useState("");
+    const [price,setPrice] = useState(0);
+    const [category, setCategory] = useState("");
+    const [company,setCompany]= useState(0); 
+
+    
+
+    useEffect(() => {
+        if (product) {
+            setName(product.name || null);
+            setDescription(product.description || null);
+            setPreviousName(product.name || null);
+            setCategory(product.category || null);
+            setCompany(product.company || null);
+        }
+    }, [product]);
+
+    function updateProduct(e)
+    {
+        e.preventDefault();
+        const form = e.target;
+
+        let formData = new FormData(form);
+        let dataObject = Object.fromEntries(formData);
+        dataObject.company = company;
+        let dataJson = JSON.stringify(dataObject);
+        fetch(form.action, {
+            headers: { "Content-Type": "application/json" },
+            method: "PUT",
+            body: dataJson
+        }).then(response => {
+        if (response.ok) {
+            alert(`Du updaterade ${dataObject.name}'s information 🎉`);
+        } else {
+            alert("Något gick fel ❌");
+        }
+    })
+    }
+
+    return (
+        <main>
+            <form className="productform" onSubmit={updateProduct} action={`/api/Products/${previousName}`} method="PUT">
+                <label>
+                    Name:
+                    <input 
+                        name="name"
+                        value={name} 
+                        onChange={(e) => setName(e.target.value)}
+                        type="text"
+                        required 
+                    />
+                </label>
+                
+                <label>
+                    Description:
+                    <input 
+                        name="description" 
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        type="text" 
+                        required 
+                    />
+                </label>
+
+                <label>
+                   Price:
+                    <input 
+                        name="price"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        type="integer" 
+                        required 
+                    />
+                </label>
+                <label>
+                   Category:
+                    <input 
+                        name="category"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        type="text" 
+                        required 
+                    />
+                </label>
+                <button type="submit">Save</button>
+            </form>
+            <NavLink to="/admin">
+                <button className="add-admin-button">Back</button>
+            </NavLink>
+        </main>
+    );
+}

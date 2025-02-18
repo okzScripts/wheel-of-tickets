@@ -10,7 +10,7 @@ public class ProductRoutes()
 
 
 
-    public record Product(int id, string ProductName, string Description, int Price, string ProductCathegory);
+    public record Product(int id, string Name, string Description, int Price, string Category, int Company);
 
     public static async Task<Results<Ok<List<Product>>, BadRequest<string>>> GetProducts(int company, NpgsqlDataSource db)
     {
@@ -29,7 +29,8 @@ public class ProductRoutes()
                     reader.GetString(1),
                     reader.GetString(2),
                     reader.GetInt32(3),
-                    reader.GetString(4)
+                    reader.GetString(4),
+                    reader.GetInt32(5)
                 ));
             }
 

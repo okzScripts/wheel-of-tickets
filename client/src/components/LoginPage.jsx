@@ -7,6 +7,7 @@ export default function LoginPage()
         <NavLink to="/super-admin"><button >SuperAdmin</button> </NavLink>
         <NavLink to="/"><button>CustomerSupport</button></NavLink> 
         <NavLink to="/customer"><button>Customer</button></NavLink> 
+        <NavLink to="/admin"><button>Admin</button></NavLink>
         </main>
 
 }
