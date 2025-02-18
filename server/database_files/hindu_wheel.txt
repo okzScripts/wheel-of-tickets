@@ -20,11 +20,20 @@ create table companies
     email       varchar not null,
     phone       varchar,
     description varchar,
-    domain      varchar
+    domain      varchar, 
+    active   boolean not null
 );
 
 alter table companies
     owner to postgres;
+
+alter table companies
+    alter column active set default true;
+    
+alter table companies
+    add constraint companies_unique_email unique (email),
+    add constraint companies_unique_phone unique (phone),
+    add constraint companies_unique_domain unique (domain); 
 
 create table products
 (
@@ -42,6 +51,11 @@ create table products
 
 alter table products
     owner to postgres;
+
+alter table products
+    add constraint products_unique_product_x_company   unique (product_name,company);
+
+
 
 create table ticket_status
 (
@@ -84,6 +98,10 @@ create table users
 
 alter table users
     alter column active set default true;
+
+alter table public.users
+    add constraint users_unique_email unique (email);
+
 
 alter table users
     owner to postgres;
