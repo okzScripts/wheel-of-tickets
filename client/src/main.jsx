@@ -4,19 +4,23 @@ import CreateCustomer from './components/CreateCustomer.jsx'
 //import CustomerTicket from './components/CustomerTicket.jsx'
 import "./styles.css"
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router'
-import { SuperAdminView, SuperAdminCompanyView, SuperAdminAdminView, SuperAdminAddAdminView } from "./SuperAdminView.jsx"
+import { SuperAdminView, SuperAdminCompanyView, SuperAdminAdminView, SuperAdminAddAdminView, SuperAdminEditAdminView, SuperAdminAddCompanyView, SuperAdminEditCompanyView } from "./SuperAdminView.jsx"
+import LoginPage from './components/LoginPage.jsx'
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-
-      <CreateCustomer/>
     <BrowserRouter>
       <Routes>
-        <Route index element={<SuperAdminView />} />
+        <Route index element={<LoginPage/>} />
+        <Route path='/customer' element={<CreateCustomer/>} />
+        <Route path='/super-admin' element={<SuperAdminView />} />
         <Route path='/super-admin-company' element={<SuperAdminCompanyView />} />
+        <Route path='/super-admin-add-company' element={<SuperAdminAddCompanyView />} />
+        <Route path='/super-admin-edit-company' element={<SuperAdminEditCompanyView />} />
         <Route path='/super-admin-admin' element={<SuperAdminAdminView />} />
         <Route path='/super-admin-add-admin' element={<SuperAdminAddAdminView />} />
+        <Route path='/super-admin-edit-admin' element={<SuperAdminEditAdminView />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
