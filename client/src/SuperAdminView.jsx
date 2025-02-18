@@ -84,10 +84,6 @@ export function SuperAdminAdminView() {
 }
 
 export function SuperAdminAddAdminView() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [company, setCompany] = useState("");
     const [companies, setCompanies] = useState([]);
 
     useEffect(() => {
@@ -97,43 +93,31 @@ export function SuperAdminAddAdminView() {
             .catch(error => console.error("Error fetching companies:", error));
     }, []);
 
-    function HandleSubmit(event) {
-        event.preventDefault(); // Förhindra sidladdning
+    function postUser(e)
+    {
+        e.preventDefault();
+        const form = e.target;
 
-        fetch("/api/users/3", {
+        let data = new FormData(form);
+        data = Object.fromEntries(data);
+        data.role = 3;
+        data = JSON.stringify(data);
+        console.log(data)
+        fetch(form.action, {
             headers: { "Content-Type": "application/json" },
-            method: "POST",
-            body: JSON.stringify({ name, email, password, company }),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => { throw new Error(text) });
-                }
-                console.log("Det Funkade Igen");
-                alert("Admin added to DB");
-
-                // Rensa formuläret efter lyckad inmatning
-                setName("");
-                setEmail("");
-                setPassword("");
-                setCompany("");
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert("Fel vid skapandet av admin: " + error.message);
-            });
+            method: form.method,
+            body: data
+        }) 
     }
 
     return (
         <main>
-            <form className="adminform" onSubmit={HandleSubmit}>
+            <form className="adminform" onSubmit={postUser} action="/api/users/3" method="POST">
                 <label>
                     Name:
                     <input 
                         name="name" 
-                        type="text" 
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)} 
+                        type="text"
                         required 
                     />
                 </label>
@@ -143,8 +127,6 @@ export function SuperAdminAddAdminView() {
                     <input 
                         name="email" 
                         type="email" 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
                         required 
                     />
                 </label>
@@ -154,8 +136,6 @@ export function SuperAdminAddAdminView() {
                     <input 
                         name="password" 
                         type="password" 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
                         required 
                     />
                 </label>
@@ -163,9 +143,7 @@ export function SuperAdminAddAdminView() {
                 <label>
                     Company:
                     <select 
-                        name="company" 
-                        value={company} 
-                        onChange={(e) => setCompany(e.target.value)} 
+                        name="company"
                         required
                     >
                         <option value="" disabled hidden>Välj ett företag</option>
