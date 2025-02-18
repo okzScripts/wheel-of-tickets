@@ -43,9 +43,9 @@ public class UserRoutes
         }
     }
 
-    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(int company, NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(int role, int company, NpgsqlDataSource db)
     {
-        int role=2; 
+       
         List<User> users = new List<User>();
 
         try
