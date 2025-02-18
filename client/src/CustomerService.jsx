@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 export default function CustomerService() {
     const [ticket, setTicket] = useState(null);
     const [unassignedTickets, setUnassignedTickets] = useState([]);
+    const [assignedTickets, setAssignedTickets] = useState([])
     const CustomerServiceAgent = 2
 
     function getUnassignedTickets() {
@@ -17,15 +18,6 @@ export default function CustomerService() {
         getUnassignedTickets();
     }, []);
 
-
-    // function getRandomTicket() {
-    //     fetch("/api/tickets/random")
-    //         .then((response) => response.json())
-    //         .then((data) => {
-    //             setTicket(data);
-    //         });
-
-    // }
 
     function randomiser() {
 
@@ -42,8 +34,14 @@ export default function CustomerService() {
             method: "PUT",
             body: JSON.stringify({ customer_agent: CustomerServiceAgent, id: newTicket.id })
         })
+        
         getUnassignedTickets();
 
+    }
+
+    function getAssignedTickets()
+    {
+        fetch(`/api/tickets/${CustomerServiceAgent}`)
     }
 
     return (
@@ -56,7 +54,7 @@ export default function CustomerService() {
             <section className="tickets">
                 <div className="yourTickets">
 
-                    <div>
+                    <div className="ticketBox">
                         {ticket ? (
                             <>
                                 <h2>{ticket.message}</h2>

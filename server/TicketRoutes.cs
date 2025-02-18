@@ -38,6 +38,39 @@ public class TicketRoutes
         }
     }
 
+    public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetAssignedTickets(int customer_agent, NpgsqlDataSource db)
+    {
+        List<Ticket> tickets = new List<Ticket>();
+
+        try
+        {
+            using var cmd = db.CreateCommand("SELECT FROM tickets WHERE customer_agent = $1");
+            cmd.Parameters.AddWithValue(customer_agent);
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            {
+                while (await reader.ReadAsync())
+                {
+                    tickets.Add(new Ticket(
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetInt32(2),
+                        reader.GetInt32(3),
+                        reader.GetInt32(4),
+                        reader.GetInt32(5),
+                        reader.GetInt32(6)
+                    ));
+                }
+                return TypedResults.Ok(tickets);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"Ett fel inträffade 2: {ex.Message}");
+        }
+    }
+
     public static async Task<Results<Ok<string>, BadRequest<string>>> AssignTicket(int customer_agent, int id, NpgsqlDataSource db)
     {
 
@@ -65,7 +98,6 @@ public class TicketRoutes
             return TypedResults.BadRequest($"Nej det funkade inte att göra så {ex.Message}");
         }
     }
-
 
     public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetUnassignedTickets(NpgsqlDataSource db)
     {
