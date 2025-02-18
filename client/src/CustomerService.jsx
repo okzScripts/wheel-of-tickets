@@ -4,32 +4,46 @@ export default function CustomerService() {
     const [ticket, setTicket] = useState(null);
     const [unassignedTickets, setUnassignedTickets] = useState([]);
     const CustomerServiceAgent = 2
- 
-    function getUnassignedTickets()
-    {
+
+    function getUnassignedTickets() {
         fetch("/api/tickets/unassigned")
             .then((response) => response.json())
             .then((data) => setUnassignedTickets(data));
+
+
     }
 
     useEffect(() => {
         getUnassignedTickets();
     }, []);
-    
-    
+
+
     // function getRandomTicket() {
     //     fetch("/api/tickets/random")
     //         .then((response) => response.json())
     //         .then((data) => {
     //             setTicket(data);
     //         });
-        
+
     // }
-    
-    function randomiser(unassignedTickets)
-    {
-        const ticket = unassignedTickets[Math.floor(Math.random() * unassignedTickets.length)]
-        console.log(ticket.id)
+
+    function randomiser() {
+
+        if (unassignedTickets.length === 0) {
+            console.warn("No unassigned tickets available");
+            return;
+        }
+
+        const newTicket = unassignedTickets[Math.floor(Math.random() * unassignedTickets.length)]
+        setTicket(newTicket);
+        console.log("Ticket: ", newTicket);
+        fetch(`/api/tickets/${CustomerServiceAgent}/${newTicket.id}`, {
+            headers: { "Content-Type": "application/json" },
+            method: "PUT",
+            body: JSON.stringify({ customer_agent: CustomerServiceAgent, id: newTicket.id })
+        })
+        getUnassignedTickets();
+
     }
 
     return (
@@ -41,18 +55,18 @@ export default function CustomerService() {
             </section>
             <section className="tickets">
                 <div className="yourTickets">
-                    
+
                     <div>
                         {ticket ? (
                             <>
-                            <h2>{ticket.message}</h2>
-                            <p>ID: {ticket.id}</p>
-                            <p>customer agent: {ticket.customer_agent }</p>
+                                <h2>{ticket.message}</h2>
+                                <p>ID: {ticket.id}</p>
+                                <p>customer agent: {ticket.customer_agent}</p>
                             </>
                         ) : (
                             <h2>Här var det tomt 😁</h2>
                         )}
-                        </div>
+                    </div>
                 </div>
                 <div className="notAssignedTickets">
                     {unassignedTickets.length > 0 ? (
@@ -63,9 +77,9 @@ export default function CustomerService() {
                                     <p>ID: {ticket.id}</p>
                                 </li>
                             ))}
-                    </ul>
+                        </ul>
                     ) : (
-                            <p> Inga tickets</p>
+                        <p> Inga tickets</p>
                     )}
                 </div>
             </section>

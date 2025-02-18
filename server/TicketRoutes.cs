@@ -38,6 +38,35 @@ public class TicketRoutes
         }
     }
 
+    public static async Task<Results<Ok<string>, BadRequest<string>>> AssignTicket(int customer_agent, int id, NpgsqlDataSource db)
+    {
+
+        try
+        {
+            using var cmd = db.CreateCommand("UPDATE tickets SET customer_agent = $1 WHERE id = $2");
+
+            cmd.Parameters.AddWithValue(customer_agent);
+            cmd.Parameters.AddWithValue(id);
+
+
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+            if (rowsAffected > 0)
+            {
+
+                return TypedResults.Ok("Det funkade");
+            }
+            else
+            {
+                return TypedResults.BadRequest("Det funkade inte. Finns nog ingen ticket med den ID eller user för den delen");
+            }
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"Nej det funkade inte att göra så {ex.Message}");
+        }
+    }
+
+
     public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetUnassignedTickets(NpgsqlDataSource db)
     {
         List<Ticket> tickets = new List<Ticket>();
