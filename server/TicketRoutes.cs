@@ -44,7 +44,7 @@ public class TicketRoutes
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT FROM tickets WHERE customer_agent = $1");
+            using var cmd = db.CreateCommand("SELECT * FROM tickets WHERE customer_agent = $1");
             cmd.Parameters.AddWithValue(customer_agent);
             using var reader = await cmd.ExecuteReaderAsync();
 
@@ -57,7 +57,7 @@ public class TicketRoutes
                         reader.GetInt32(2),
                         reader.GetInt32(3),
                         reader.GetInt32(4),
-                        reader.GetInt32(5),
+                        reader.IsDBNull(5) ? null : reader.GetInt32(5),
                         reader.GetInt32(6)
                     ));
                 }

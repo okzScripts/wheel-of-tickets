@@ -34,15 +34,21 @@ export default function CustomerService() {
             method: "PUT",
             body: JSON.stringify({ customer_agent: CustomerServiceAgent, id: newTicket.id })
         })
-        
+
         getUnassignedTickets();
+        getAssignedTickets();
 
     }
 
-    function getAssignedTickets()
-    {
-        fetch(`/api/tickets/${CustomerServiceAgent}`)
+    async function getAssignedTickets() {
+        const response = await fetch(`/api/tickets/${CustomerServiceAgent}`);
+        const data = await response.json();
+        setAssignedTickets(data);
     }
+
+    useEffect(() => {
+        getAssignedTickets();
+    }, []);
 
     return (
         <main>
@@ -55,12 +61,16 @@ export default function CustomerService() {
                 <div className="yourTickets">
 
                     <div className="ticketBox">
-                        {ticket ? (
-                            <>
-                                <h2>{ticket.message}</h2>
-                                <p>ID: {ticket.id}</p>
-                                <p>customer agent: {ticket.customer_agent}</p>
-                            </>
+                        {assignedTickets.length > 0 ? (
+                            <ul>
+                                {assignedTickets.map((Aticket) => (
+                                    <li key={Aticket.id}>
+                                        <h2>{Aticket.message}</h2>
+                                        <p>ID: {Aticket.id}</p>
+                                    </li>
+                                ))}
+                            </ul>
+
                         ) : (
                             <h2>Här var det tomt 😁</h2>
                         )}
