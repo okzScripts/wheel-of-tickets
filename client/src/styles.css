@@ -18,6 +18,15 @@ main {
      }
     }
 
+    .yourTickets{
+      display: flex;
+      justify-content: center;
+    }
+
+    .ticketBox{
+      width: 70%;
+    }
+
 
 
 .super-admin-button {

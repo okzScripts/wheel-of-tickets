@@ -20,9 +20,10 @@ app.MapGet("/api/users/{role}", UserRoutes.GetUsers);
 app.MapGet("/api/users/{role}/{email}", UserRoutes.GetUser);
 app.MapPut("/api/users/{email}/{active}", UserRoutes.BlockUser);
 app.MapPost("/api/users/{role}", UserRoutes.AddUser);
-app.MapGet("/api/tickets/random", TicketRoutes.GetRandomTicket);
+
 app.MapGet("/api/tickets/unassigned", TicketRoutes.GetUnassignedTickets);
 app.MapPut("/api/tickets/{customer_agent}/{id}", TicketRoutes.AssignTicket);
+app.MapGet("/api/tickets/{customer_agent}", TicketRoutes.GetAssignedTickets);
 
 
 
