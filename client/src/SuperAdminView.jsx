@@ -68,7 +68,7 @@ export function SuperAdminCompanyView() {
 
             </ul>
         </div>
-        <NavLink to="/"><button className="add-admin-button">Back</button></NavLink>
+        <NavLink to="/super-admin"><button className="add-admin-button">Back</button></NavLink>
         <NavLink to="/super-admin-add-company"><button className="add-admin-button">Add Company</button></NavLink>
     </main>;
 }
@@ -311,7 +311,7 @@ export function SuperAdminAdminView() {
 
             </ul>
         </div>
-        <NavLink to="/"><button className="add-admin-button">Back</button></NavLink>
+        <NavLink to="/super-admin"><button className="add-admin-button">Back</button></NavLink>
         <NavLink to="/super-admin-add-admin"><button className="add-admin-button">Add Admin</button></NavLink>
     </main>;
 }

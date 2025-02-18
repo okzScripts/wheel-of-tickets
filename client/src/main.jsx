@@ -5,15 +5,16 @@ import CreateCustomer from './components/CreateCustomer.jsx'
 import "./styles.css"
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router'
 import { SuperAdminView, SuperAdminCompanyView, SuperAdminAdminView, SuperAdminAddAdminView, SuperAdminEditAdminView, SuperAdminAddCompanyView, SuperAdminEditCompanyView } from "./SuperAdminView.jsx"
+import LoginPage from './components/LoginPage.jsx'
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-
-      <CreateCustomer/>
     <BrowserRouter>
       <Routes>
-        <Route index element={<SuperAdminView />} />
+        <Route index element={<LoginPage/>} />
+        <Route path='/customer' element={<CreateCustomer/>} />
+        <Route path='/super-admin' element={<SuperAdminView />} />
         <Route path='/super-admin-company' element={<SuperAdminCompanyView />} />
         <Route path='/super-admin-add-company' element={<SuperAdminAddCompanyView />} />
         <Route path='/super-admin-edit-company' element={<SuperAdminEditCompanyView />} />

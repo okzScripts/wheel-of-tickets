@@ -11,10 +11,6 @@ public class UserRoutes
     public record User(int id, string name, string email, string Password, int company, int role, bool active);
 
 
-
-
-
-
     public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsers(int role, NpgsqlDataSource db)
     {
         List<User> users = new List<User>();
