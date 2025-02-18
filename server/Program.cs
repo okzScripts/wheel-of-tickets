@@ -20,7 +20,8 @@ app.MapGet("/api/users/company/{role}/{company}", UserRoutes.GetUsersFromCompany
 app.MapGet("/api/users/{role}/{email}", UserRoutes.GetUser);
 app.MapPut("/api/users/block/{email}/{active}", UserRoutes.BlockUser);
 app.MapPost("/api/users/{role}", UserRoutes.AddUser);
-app.MapGet("/api/products/{company}",ProductRoutes.GetProducts); 
+app.MapGet("/api/products/{company}", ProductRoutes.GetProducts);
+app.MapPost("/api/products", ProductRoutes.AddProduct);
 app.MapPut("/api/users/{role}/{previousEmail}", UserRoutes.EditUser);
 //app.MapPost("/api/create-user", UserRoutes.AddUser);
 

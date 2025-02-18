@@ -32,7 +32,9 @@ function ProductList(){
     const [products,setProducts]=useState([]); 
     const companyId = use(adminInfoContext);
 
-
+    function handleAddProduct() {
+        navigate("/admin-add-product", { state: { company: companyId } }); 
+    }
     
     useEffect(() => {
         
@@ -51,7 +53,7 @@ function ProductList(){
                       <li className="product-list-item" key={product.id}><div><p>{product.productName}</p></div><div className="delete-button-div-li"><button>Delete</button></div></li>
                 )}
             </ul>
-            <NavLink to="/admin-add-product"><button className="add-product">Add product</button></NavLink>
+            <button className="add-product" onClick={handleAddProduct}>Add product</button>
         </div>
     </> 
 }
@@ -104,95 +106,82 @@ return <>
 </>
 }
 
+export function AdminAddProductView() {
+     const location = useLocation();
+    const company = location.state?.product;
 
-
-
-export function AddSupport(){
-   
-    
-
-
-
-    return < > 
-    <h1>Add support member</h1>
-    <UserForm 
-    props={{ name:"",
-        email:"", 
-        password:"",
-        method:"POST",
-    }}/>
-    
-    </>
-
-}
-
-
-
-
-
-
-function UserForm(props){ 
-    
-    let name=props.name; 
-    let email=props.email; 
-    let password=props.password;
-    let method=props.method; 
-    let company=use(adminInfoContext); 
-    
-    function onSubmit(e){
+    function postProduct(e) {
         e.preventDefault();
         const form = e.target;
 
-        let data = new FormData(form);
-        data = Object.fromEntries(data);
-        data = JSON.stringify(data);
+        let formData = new FormData(form);
+        let dataObject = Object.fromEntries(formData);
+        dataObject.company = company.companyId;
+        let dataJson = JSON.stringify(dataObject);
 
         fetch(form.action, {
             headers: { "Content-Type": "application/json" },
             method: form.method,
-            body: data
-        })
-        
+            body: dataJson
+        }).then(response => {
+            if (response.ok) {
+                alert(`Du lade till ${dataObject.name} i databasen 🎉`);
+            } else {
+                alert("Något gick fel ❌");
+            }
+        });
     }
-    return <>
-    <form className="userform" onSubmit={onSubmit} action={`/api/users/3/${email}`} method={`${method}`}  >
+
+    return (
+        <main>
+            <form className="adminform" onSubmit={postCompany} action="/api/companies" method="POST">
                 <label>
                     Name:
-                    <input 
+                    <input
                         name="name"
-                        value={name} 
                         type="text"
-                        required 
+                        required
                     />
                 </label>
                 
                 <label>
                     Email:
-                    <input 
-                        name="email" 
-                        value={email}
-                        type="email" 
-                        required 
+                    <input
+                        name="email"
+                        type="email"
+                        required
                     />
                 </label>
 
                 <label>
-                    Password:
-                    <input 
-                        name="password"
-                        value={password}
-                        type="password" 
-                        required 
+                    Phone:
+                    <input
+                        name="phone"
+                        type="phone"
+                        required
+                    />
+                </label>
+                <label>
+                    Description:
+                    <input
+                        name="description"
+                        type="description"
+                        required
+                    />
+                </label>
+                <label>
+                    Domain:
+                    <input
+                        name="domain"
+                        type="domain"
+                        required
                     />
                 </label>
 
-
                 <button type="submit">Save</button>
             </form>
-            <NavLink to="/admin-start-vue">
-                <button className="add-admin-button">Back</button>
-            </NavLink>
-    </>
-
+            <NavLink to={"/super-admin-company"}><button className="add-admin-button">Back</button></NavLink>
+        </main>
+    );
 }
 
