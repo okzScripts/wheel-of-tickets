@@ -11,10 +11,6 @@ public class UserRoutes
     public record User(int id, string name, string email, string Password, int company, int role, bool active);
 
 
-
-
-
-
     public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsers(int role, NpgsqlDataSource db)
     {
         List<User> users = new List<User>();
@@ -161,20 +157,20 @@ public class UserRoutes
     }
 
 
-    public record PostUserDTO(string Name, string Email, string Password, int Company, int Role);
-
+    public record PostUserDTO(string Name, string Email, string Password, int? Company, int Role);
 
     public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db)
     {
         try
         {
+
             using var cmd = db.CreateCommand(
                 "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
 
             cmd.Parameters.AddWithValue(user.Name);
             cmd.Parameters.AddWithValue(user.Email);
             cmd.Parameters.AddWithValue(user.Password);
-            cmd.Parameters.AddWithValue(user.Company);
+            cmd.Parameters.AddWithValue(user.Company.HasValue ? user.Company.Value : DBNull.Value);
             cmd.Parameters.AddWithValue(user.Role); // Role för admin
             cmd.Parameters.AddWithValue(true);
 
@@ -196,6 +192,36 @@ public class UserRoutes
         catch (Exception ex)
         {
             return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
+        }
+    }
+
+    public static async Task<IResult> EditUser(string previousEmail, PostUserDTO user, NpgsqlDataSource db)
+    {
+        try
+        {
+            using var cmd = db.CreateCommand(
+                "UPDATE users SET name = $1, email = $2, password = $3, company = $4, role = $5, active = $6 WHERE email = $7");
+
+            cmd.Parameters.AddWithValue(user.Name);
+            cmd.Parameters.AddWithValue(user.Email);
+            cmd.Parameters.AddWithValue(user.Password);
+            cmd.Parameters.AddWithValue(user.Company.HasValue ? user.Company.Value : DBNull.Value);
+            cmd.Parameters.AddWithValue(user.Role);
+            cmd.Parameters.AddWithValue(true);
+            cmd.Parameters.AddWithValue(previousEmail);
+
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+            if (rowsAffected == 0)
+            {
+                return TypedResults.NotFound("User not found.");
+            }
+
+            return TypedResults.Ok("User updated successfully!");
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
     }
 }

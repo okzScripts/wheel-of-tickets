@@ -1,6 +1,37 @@
+*{
+    margin: 0;
+    box-sizing: border-box;
+    
 body {
   margin: 0;
 }
+
+header{
+    background-color: bisque;
+    height: 100%;
+    font-size: 130%;
+}
+
+main{
+    display: flex;
+    flex-direction: column;
+    div{
+        max-width: 100%;
+        align-self: center;
+        text-align: center;
+        option{
+            overflow: hidden;
+        }
+    }
+}
+
+
+form{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin: 1rem;
+   
 main {
   height: 100vh;
 }
@@ -25,6 +56,18 @@ main {
   flex-direction: column;
   gap: 10px;
 }
+
+select{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin: 1rem;
+    
+    
+
+}
+input{
+    margin: 4px;
 .super-admin-list-item {
   display: flex;
   gap: 20px;
@@ -32,6 +75,29 @@ main {
   border: 1px solid black;
   padding: 10px;
 }
+
+button{
+    max-width: 10rem;
+    align-self: center;
+
+}
+
+#messageContainer{
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    p{
+        align-self: flex-start;
+        margin: 0.5rem;
+        margin-left: 0;
+
+    }
+    Button{
+        margin-top: 0.5rem;
+        align-self: flex-start;
+       
+     
+    }
 .delete-button-div-li {
   display: flex;
   justify-content: center;
@@ -41,3 +107,9 @@ main {
   width: 100px;
   height: 40px;
 }
+
+textarea{
+    resize: none;
+    background-color: rgb(225, 225, 223);
+}
+    
