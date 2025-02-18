@@ -63,10 +63,11 @@ export default function CustomerService() {
                     <div className="ticketBox">
                         {assignedTickets.length > 0 ? (
                             <ul>
-                                {assignedTickets.map((Aticket) => (
-                                    <li key={Aticket.id}>
-                                        <h2>{Aticket.message}</h2>
-                                        <p>ID: {Aticket.id}</p>
+                                {assignedTickets.map((ticket) => (
+                                    <li key={ticket.id}>
+                                        <h2>{ticket.message}</h2>
+                                        <p>Ticket id: {ticket.id}</p>
+                                        <p>Agent id:{ticket.customer_agent}</p>
                                     </li>
                                 ))}
                             </ul>
