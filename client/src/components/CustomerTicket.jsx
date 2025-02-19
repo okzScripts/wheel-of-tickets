@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
 export default function CustomerTicket() {
-    // Data från API:er
+    
     const [companies, setCompanies] = useState([]);
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
 
-    // Hämta companies
+  
     useEffect(() => {
         fetch("/api/companies")
             .then((response) => response.json())
@@ -14,7 +14,7 @@ export default function CustomerTicket() {
             .catch((error) => console.error("Error fetching companies:", error));
     }, []);
 
-    // Hämta products
+
     useEffect(() => {
         fetch("/api/products")
             .then((response) => response.json())
@@ -22,7 +22,7 @@ export default function CustomerTicket() {
             .catch((error) => console.error("Error fetching products:", error));
     }, []);
 
-    // Hämta categories
+    
     useEffect(() => {
         fetch("/api/categories")
             .then((response) => response.json())
@@ -30,13 +30,13 @@ export default function CustomerTicket() {
             .catch((error) => console.error("Error fetching categories:", error));
     }, []);
 
-    // State för användarens val
+   
     const [companyPick, setCompanyPick] = useState("");
     const [productPick, setProductPick] = useState("");
     const [categoryPick, setCategoryPick] = useState("");
     const [message, setMessage] = useState("");
 
-    // Hantera formulärsändning
+   
     const handleOnSubmit = async (e) => {
         e.preventDefault();
         const formData = {
@@ -73,13 +73,9 @@ export default function CustomerTicket() {
                             value={companyPick}
                             onChange={(e) => setCompanyPick(e.target.value)}
                         >
-                            <option value=""> Select Company </option>
+                            <option value=""> Select Company </option> 
                             {companies.map((company) => (
-                                <option
-                                    className="companies"
-                                    key={company.id}
-                                    value={company.id}
-                                >
+                                <option className="companies" key={company.id} value={company.id}>
                                     {company.name}
                                 </option>
                             ))}
@@ -93,11 +89,7 @@ export default function CustomerTicket() {
                         >
                             <option value=""> Select Product </option>
                             {products.map((product) => (
-                                <option
-                                    className="products"
-                                    key={product.id}
-                                    value={product.id}
-                                >
+                                <option className="products" key={product.id} value={product.id}>
                                     {product.product_name}
                                 </option>
                             ))}
@@ -109,13 +101,9 @@ export default function CustomerTicket() {
                             value={categoryPick}
                             onChange={(e) => setCategoryPick(Number(e.target.value))}
                         >
-                            <option value="" disabled> Select Category </option>
+                            <option value=""> Select Category </option>
                             {categories.map((category) => (
-                                <option
-                                    className="categories"
-                                    key={category.id}
-                                    value={category.id}
-                                >
+                                <option className="categories" key={category.id} value={category.id}>
                                     {category.category_name}
                                 </option>
                             ))}
