@@ -24,7 +24,7 @@ app.MapPost("/api/users/{role}", UserRoutes.AddUser);
 app.MapPut("/api/users/{role}/{previousEmail}", UserRoutes.EditUser);
 
 app.MapGet("/api/products/{company}", ProductRoutes.GetProducts);
-app.MapGet("/api/product/{ProductId}",ProductRoutes.GetProduct );
+app.MapGet("/api/products/{company}/{ProductId}",ProductRoutes.GetProduct );
 app.MapPost("/api/products", ProductRoutes.AddProduct);
 app.MapPut("/api/products",ProductRoutes.EditProduct );
 

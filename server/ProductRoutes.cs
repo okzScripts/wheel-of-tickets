@@ -34,25 +34,25 @@ public class ProductRoutes()
                 ));
             }
 
-            // Return the list of companies with a 200 OK response
             return TypedResults.Ok(products);
         }
         catch (Exception ex)
         {
-            // Return a 400 BadRequest response with the error message
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+         
+            return TypedResults.BadRequest($"Ett fel uppstod: {ex.Message}");
         }
     }
 
 
 
 
- public static async Task<Results<Ok<Product>, BadRequest<string>>> GetProduct(int ProductId,NpgsqlDataSource db)
+ public static async Task<Results<Ok<Product>, BadRequest<string>>> GetProduct(int Company, int ProductId,NpgsqlDataSource db)
  {
      try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM products WHERE id=$1");
+            using var cmd = db.CreateCommand("SELECT * FROM products WHERE id=$1 AND company=$2" );
             cmd.Parameters.AddWithValue(ProductId);
+            cmd.Parameters.AddWithValue(Company);
            
             using var reader = await cmd.ExecuteReaderAsync();
 
@@ -73,11 +73,11 @@ public class ProductRoutes()
                 return TypedResults.Ok(product);
             }
 
-            return TypedResults.BadRequest("No product found with the given product name.");
+            return TypedResults.BadRequest("Ingen produkt med det givna namnet kunde hittas");
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+            return TypedResults.BadRequest($"Ett fel uppstod: {ex.Message}");
         }
     }
  
@@ -144,14 +144,14 @@ public record PutProductDTO(string Name, string Description, int Price, string C
 
             if (rowsAffected == 0)
             {
-                return TypedResults.NotFound("Product not found.");
+                return TypedResults.NotFound("Product kunde inte hittas");
             }
 
-            return TypedResults.Ok("User updated successfully!");
+            return TypedResults.Ok("Produkt har uppdateras");
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+            return TypedResults.BadRequest($"ett fel har inträffat: {ex.Message}");
         }
     }
 

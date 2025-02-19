@@ -38,7 +38,7 @@ function ProductList(){
     }
     
     function handelEditProduct(productId){
-        fetch(`api/product/${productId}`)
+        fetch(`api/products/${companyId}/${productId}`)
         .then(response => response.json())
             .then(data => {
                 navigate("/admin-edit-Product", { state: { product: data ,id:productId} }); 
@@ -145,9 +145,9 @@ export function AdminAddProductView() {
             body: dataJson
         }).then(response => {
         if (response.ok) {
-            alert(`Du lade till ${dataObject.name}'s information 🎉`);
+            alert(`Du lade till ${dataObject.name} `);
         } else {
-            alert("Något gick fel ❌");
+            alert("Något gick fel ");
         }
     })
     }
@@ -240,9 +240,9 @@ export function AdminEditProductView() {
             body: dataJson
         }).then(response => {
         if (response.ok) {
-            alert(`Du updaterade ${dataObject.name}'s information 🎉`);
+            alert(`Du updaterade ${dataObject.name} `);
         } else {
-            alert("Något gick fel ❌");
+            alert("Något gick fel ");
         }
     })
     }
@@ -341,9 +341,9 @@ export function AdminEditSupportView(){
             body: dataJson
         }).then(response => {
         if (response.ok) {
-            alert(`Du updaterade ${dataObject.name}'s information 🎉`);
+            alert(`Du updaterade ${dataObject.name} `);
         } else {
-            alert("Något gick fel ❌");
+            alert("Något gick fel ");
         }
     })
     }
@@ -413,9 +413,9 @@ export function AdminAddSupportView(){
             body: dataJson
         }).then(response => {
             if (response.ok) {
-                alert(`Du lade till ${dataObject.name} i databasen 🎉`);
+                alert(`Du lade till ${dataObject.name}  `);
             } else {
-                alert("Något gick fel ❌");
+                alert("Något gick fel ");
             }
         });
     }
