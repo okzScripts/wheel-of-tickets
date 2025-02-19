@@ -46,7 +46,8 @@ create table products
     product_category    varchar,
     company             integer not null
         constraint products_companies_id_fk
-            references companies
+            references companies,
+    active bool default true not null
 );
 
 alter table products
@@ -87,9 +88,6 @@ create table users
     name     varchar not null,
     email    varchar not null,
     password varchar not null,
-    company  integer
-        constraint users_companies_id_fk
-            references companies,
     role     integer
         constraint users_roles_id_fk
             references roles,
@@ -105,6 +103,20 @@ alter table public.users
 
 alter table users
     owner to postgres;
+
+
+create table public.users_x_companies
+(
+    user_id integer
+        constraint users_x_companies_users_id_fk
+            references public.users,
+    company integer
+        constraint users_x_companies_companies_id_fk
+            references public.companies,
+    constraint users_x_companies_pk
+        primary key (user_id, company)
+);
+
 
 create table tickets
 (
