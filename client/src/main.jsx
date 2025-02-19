@@ -18,10 +18,10 @@ createRoot(document.getElementById('root')).render(
         <Route path='/customer' element={<CreateCustomer />} />
         <Route path='/super-admin' element={<SuperAdminView />} />
         <Route path='/companies' element={<SuperAdminCompanyView />} />
-        <Route path='/super-admin-add-company' element={<SuperAdminAddCompanyView />} />
+        <Route path='/companies/add' element={<SuperAdminAddCompanyView />} />
         <Route path='/companies/:id/edit' element={<SuperAdminEditCompanyView />} />
         <Route path='/admins' element={<SuperAdminAdminView />} />
-        <Route path='/super-admin-add-admin' element={<SuperAdminAddAdminView />} />
+        <Route path='/admins/add' element={<SuperAdminAddAdminView />} />
         <Route path='/customer-service' element={<CustomerService />} />
         <Route path='/users/:id/edit' element={<SuperAdminEditAdminView />} />
         <Route path='/admin-add-product' element={<AdminAddProductView />} />

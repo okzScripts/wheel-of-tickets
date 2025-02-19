@@ -23,11 +23,11 @@ export function SuperAdminCompanyView() {
 
 
 
-    function BlockCompanyById(email, active) {
-        fetch(`/api/companies/block/${email}/${active}`, {
+    function BlockCompanyById(id, active) {
+        fetch(`/api/companies/block/${id}/${active}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify(email, active),
+            body: JSON.stringify(id, active),
         })
             .then(response => {
                 if (response.ok) { console.log("Det Funkade Igen"), GetCompanies() }
@@ -44,7 +44,7 @@ export function SuperAdminCompanyView() {
             </ul>
         </div>
         <NavLink to="/super-admin"><button className="add-admin-button">Back</button></NavLink>
-        <NavLink to="/super-admin-add-company"><button className="add-admin-button">Add Company</button></NavLink>
+        <NavLink to="/companies/add"><button className="add-admin-button">Add Company</button></NavLink>
     </main>;
 
     function CompanyCard(company) {
@@ -57,7 +57,7 @@ export function SuperAdminCompanyView() {
                 <div className="delete-button-div-li">
                     <NavLink to={"/companies/" + company.id + "/edit"}><button>Edit</button></NavLink>
                     <div className="block-button-div-li">
-                        <button className="block-button" onClick={() => BlockCompanyById(company.email, company.active)}>{company.active ? "block" : "un-block"}</button>
+                        <button className="block-button" onClick={() => BlockCompanyById(company.id, company.active)}>{company.active ? "block" : "un-block"}</button>
                     </div>
                 </div>
             </div>
@@ -111,7 +111,7 @@ export function SuperAdminAddCompanyView() {
                     Phone:
                     <input
                         name="phone"
-                        type="phone"
+                        type="tel"
                         required
                     />
                 </label>
@@ -119,7 +119,7 @@ export function SuperAdminAddCompanyView() {
                     Description:
                     <input
                         name="description"
-                        type="description"
+                        type="text"
                         required
                     />
                 </label>
@@ -127,7 +127,7 @@ export function SuperAdminAddCompanyView() {
                     Domain:
                     <input
                         name="domain"
-                        type="domain"
+                        type="url"
                         required
                     />
                 </label>
@@ -243,11 +243,11 @@ export function SuperAdminAdminView() {
 
 
 
-    function BlockAdminById(email, active) {
-        fetch(`/api/users/block/${email}/${active}`, {
+    function BlockAdminById(id, active) {
+        fetch(`/api/users/block/${id}/${active}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify(email, active),
+            body: JSON.stringify(id, active),
         })
             .then(response => {
                 if (response.ok) { console.log("Det Funkade Igen"), GetAdmins() }
@@ -268,7 +268,7 @@ export function SuperAdminAdminView() {
             </ul>
         </div>
         <NavLink to="/super-admin"><button className="add-admin-button">Back</button></NavLink>
-        <NavLink to="/super-admin-add-admin"><button className="add-admin-button">Add Admin</button></NavLink>
+        <NavLink to="/admins/add"><button className="add-admin-button">Add Admin</button></NavLink>
     </main>;
 
 
@@ -283,7 +283,7 @@ export function SuperAdminAdminView() {
             <div className="delete-button-div-li">
                 <NavLink to={"/users/" + admin.id + "/edit"}><button>Edit</button></NavLink>
                 <div className="block-button-div-li">
-                    <button className="block-button" onClick={() => BlockAdminById(admin.email, admin.active)}>{admin.active ? "block" : "un-block"}</button>
+                    <button className="block-button" onClick={() => BlockAdminById(admin.id, admin.active)}>{admin.active ? "block" : "un-block"}</button>
                 </div>
             </div></li>
 
@@ -323,7 +323,7 @@ export function SuperAdminAddAdminView() {
 
     return (
         <main>
-            <form className="adminform" onSubmit={postUser} action="/api/users/3" method="POST">
+            <form className="adminform" onSubmit={postUser} action="/api/users" method="POST">
                 <label>
                     Name:
                     <input
@@ -364,9 +364,9 @@ export function SuperAdminAddAdminView() {
                     </select>
                 </label>
 
-                <button type="submit">Save</button>
+                <input type="submit" value="Save"></input>
             </form>
-            <NavLink to={"/super-admin-admin"}><button className="add-admin-button">Back</button></NavLink>
+            <NavLink to={"/admins"}><button className="add-admin-button">Back</button></NavLink>
         </main>
     );
 }
@@ -462,9 +462,9 @@ export function SuperAdminEditAdminView() {
                     </select>
                 </label>
 
-                <button type="submit">Save</button>
+                <input type="submit">Save</input>
             </form>
-            <NavLink to="/super-admin-admin">
+            <NavLink to="/admins">
                 <button className="add-admin-button">Back</button>
             </NavLink>
         </main>

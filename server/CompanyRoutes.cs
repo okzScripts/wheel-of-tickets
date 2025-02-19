@@ -114,12 +114,12 @@ public class CompanyRoutes
         }
     }
 
-    public static async Task<IResult> EditCompany(string previousEmail, PostCompanyDTO company, NpgsqlDataSource db)
+    public static async Task<IResult> EditCompany(int id, PostCompanyDTO company, NpgsqlDataSource db)
     {
         try
         {
             using var cmd = db.CreateCommand(
-                "UPDATE companies SET name = $1, email = $2, phone = $3, description = $4, domain = $5, active = $6 WHERE email = $7");
+                "UPDATE companies SET name = $1, email = $2, phone = $3, description = $4, domain = $5, active = $6 WHERE id = $7");
 
             cmd.Parameters.AddWithValue(company.Name);
             cmd.Parameters.AddWithValue(company.Email);
@@ -127,7 +127,7 @@ public class CompanyRoutes
             cmd.Parameters.AddWithValue(company.Description);
             cmd.Parameters.AddWithValue(company.Domain);
             cmd.Parameters.AddWithValue(true);
-            cmd.Parameters.AddWithValue(previousEmail);
+            cmd.Parameters.AddWithValue(id);
 
             int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
@@ -144,13 +144,13 @@ public class CompanyRoutes
         }
     }
 
-    public static async Task<Results<Ok<string>, BadRequest<string>>> BlockCompany(string email, bool active, NpgsqlDataSource db)
+    public static async Task<Results<Ok<string>, BadRequest<string>>> BlockCompany(int id, bool active, NpgsqlDataSource db)
     {
         try
         {
-            using var cmd = db.CreateCommand("UPDATE companies SET active = $1 WHERE email = $2");
+            using var cmd = db.CreateCommand("UPDATE companies SET active = $1 WHERE id = $2");
             cmd.Parameters.AddWithValue(active ? false : true);
-            cmd.Parameters.AddWithValue(email);
+            cmd.Parameters.AddWithValue(id);
 
             int rowsAffected = await cmd.ExecuteNonQueryAsync();
 

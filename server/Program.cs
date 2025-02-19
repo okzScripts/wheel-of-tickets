@@ -13,19 +13,16 @@ var app = builder.Build();
 app.MapGet("/api/companies", CompanyRoutes.GetCompanies);
 app.MapGet("/api/companies/{id}", CompanyRoutes.GetCompany);
 app.MapPost("/api/companies", CompanyRoutes.AddCompany);
-app.MapPut("/api/companies/{previousEmail}", CompanyRoutes.EditCompany);
-app.MapPut("/api/companies/block/{email}/{active}", CompanyRoutes.BlockCompany);
+app.MapPut("/api/companies/{id}", CompanyRoutes.EditCompany);
+app.MapPut("/api/companies/block/{id}/{active}", CompanyRoutes.BlockCompany);
 
 app.MapGet("/api/roles/users/{role}", UserRoutes.GetUsers);
 
 app.MapGet("/api/users/company/{role}/{company}", UserRoutes.GetUsersFromCompany);
 app.MapGet("/api/users/{id}", UserRoutes.GetUser);
 app.MapPut("/api/users/{id}", UserRoutes.EditUser);
-
-
-
-app.MapPut("/api/users/block/{email}/{active}", UserRoutes.BlockUser);
-app.MapPost("/api/users/{role}", UserRoutes.AddUser);
+app.MapPut("/api/users/block/{id}/{active}", UserRoutes.BlockUser);
+app.MapPost("/api/users", UserRoutes.AddUser);
 
 app.MapGet("/api/products/{company}", ProductRoutes.GetProducts);
 app.MapPost("/api/products", ProductRoutes.AddProduct);

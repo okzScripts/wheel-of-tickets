@@ -77,15 +77,15 @@ public class UserRoutes
 
 
 
-    public static async Task<Results<Ok<string>, BadRequest<string>>> BlockUser(string email, bool active, NpgsqlDataSource db)
+    public static async Task<Results<Ok<string>, BadRequest<string>>> BlockUser(int id, bool active, NpgsqlDataSource db)
     {
 
         try
         {
 
-            using var cmd = db.CreateCommand("UPDATE users SET active = $1 WHERE email = $2");
+            using var cmd = db.CreateCommand("UPDATE users SET active = $1 WHERE id = $2");
             cmd.Parameters.AddWithValue(active ? false : true);
-            cmd.Parameters.AddWithValue(email);
+            cmd.Parameters.AddWithValue(id);
 
 
 
