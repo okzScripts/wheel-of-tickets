@@ -24,23 +24,21 @@ public class CompanyRoutes
             while (await reader.ReadAsync())
             {
                 companies.Add(new Company(
-                    reader.GetInt32(0), // Assuming the first column is the ID
-                    reader.GetString(1), // Assuming the second column is a string
-                    reader.GetString(2), // Assuming the third column is a string
-                    reader.GetString(3), // Assuming the fourth column is a string
-                    reader.GetString(4), // Assuming the fifth column is a string
-                    reader.GetString(5),  // Assuming the sixth column is a string
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.GetString(3),
+                    reader.GetString(4),
+                    reader.GetString(5),
                     reader.GetBoolean(6)
                 ));
             }
 
-            // Return the list of companies with a 200 OK response
             return TypedResults.Ok(companies);
         }
         catch (Exception ex)
         {
-            // Return a 400 BadRequest response with the error message
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+            return TypedResults.BadRequest($"Error: {ex.Message}");
         }
     }
 
@@ -52,7 +50,6 @@ public class CompanyRoutes
             cmd.Parameters.AddWithValue(email);
             using var reader = await cmd.ExecuteReaderAsync();
 
-            // Deklarera admin innan if-satsen
             Company? company = null;
 
             if (await reader.ReadAsync())
@@ -70,11 +67,11 @@ public class CompanyRoutes
                 return TypedResults.Ok(company);
             }
 
-            return TypedResults.BadRequest("No admin found with the given email.");
+            return TypedResults.BadRequest("Inget företag hittades");
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+            return TypedResults.BadRequest($"Error {ex.Message}");
         }
     }
 
@@ -99,20 +96,20 @@ public class CompanyRoutes
 
             if (result != null)
             {
-                return TypedResults.Ok("Det funkade! Du la till en admin!");
+                return TypedResults.Ok("Det funkade! Du la till ett företag!");
             }
             else
             {
-                return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
+                return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till företaget");
             }
         }
-        catch (PostgresException ex) when (ex.SqlState == "23505") // Hanterar unikhetsfel
+        catch (PostgresException ex) when (ex.SqlState == "23505")
         {
-            return TypedResults.BadRequest("Email-adressen är redan registrerad!");
+            return TypedResults.BadRequest("");
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
+            return TypedResults.BadRequest($"Error: {ex.Message}");
         }
     }
 
@@ -135,28 +132,24 @@ public class CompanyRoutes
 
             if (rowsAffected == 0)
             {
-                return TypedResults.NotFound("User not found.");
+                return TypedResults.NotFound("Företaget hittades inte");
             }
 
-            return TypedResults.Ok("User updated successfully!");
+            return TypedResults.Ok("Företaget updaterades!");
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+            return TypedResults.BadRequest($"Error: {ex.Message}");
         }
     }
 
     public static async Task<Results<Ok<string>, BadRequest<string>>> BlockCompany(string email, bool active, NpgsqlDataSource db)
     {
-
         try
         {
-
             using var cmd = db.CreateCommand("UPDATE companies SET active = $1 WHERE email = $2");
             cmd.Parameters.AddWithValue(active ? false : true);
             cmd.Parameters.AddWithValue(email);
-
-
 
             int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
@@ -168,7 +161,6 @@ public class CompanyRoutes
             {
                 return TypedResults.BadRequest("Ajsing bajsing, det funkade ej");
             }
-
         }
         catch (Exception ex)
         {
