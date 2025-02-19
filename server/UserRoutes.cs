@@ -8,20 +8,22 @@ public class UserRoutes
 {
 
 
-    public record Admin(int id, string name, string email, string Password, int company, int role, bool active);
+    public record User(int id, string name, string email, string Password, int company, int role, bool active);
 
-    public static async Task<Results<Ok<List<Admin>>, BadRequest<string>>> GetAdmins(NpgsqlDataSource db)
+
+    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsers(int role, NpgsqlDataSource db)
     {
-        List<Admin> admins = new List<Admin>();
+        List<User> users = new List<User>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM users WHERE role = 3 ORDER BY id ASC");
+            using var cmd = db.CreateCommand("SELECT * FROM users WHERE role = $1  ORDER BY id ASC");
+            cmd.Parameters.AddWithValue(role);
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
-                admins.Add(new Admin(
+                users.Add(new User(
                     reader.GetInt32(0), // Assuming the first column is the ID
                     reader.GetString(1), // Assuming the second column is a string
                     reader.GetString(2), // Assuming the third column is a string
@@ -33,7 +35,7 @@ public class UserRoutes
             }
 
             // Return the list of companies with a 200 OK response
-            return TypedResults.Ok(admins);
+            return TypedResults.Ok(users);
         }
         catch (Exception ex)
         {
@@ -42,7 +44,44 @@ public class UserRoutes
         }
     }
 
-    public static async Task<Results<Ok<string>, BadRequest<string>>> BlockAdmin(string email, bool active, NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(int role, int company, NpgsqlDataSource db)
+    {
+       
+        List<User> users = new List<User>();
+
+        try
+        {
+            using var cmd = db.CreateCommand("SELECT * FROM users WHERE role = $1 AND company=$2  ORDER BY id ASC");
+            cmd.Parameters.AddWithValue(role);
+            cmd.Parameters.AddWithValue(company); 
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                users.Add(new User(
+                    reader.GetInt32(0), // Assuming the first column is the ID
+                    reader.GetString(1), // Assuming the second column is a string
+                    reader.GetString(2), // Assuming the third column is a string
+                    reader.GetString(3), // Assuming the fourth column is a string
+                    reader.GetInt32(4),
+                    reader.GetInt32(5),
+                    reader.GetBoolean(6)
+                ));
+            }
+
+            // Return the list of companies with a 200 OK response
+            return TypedResults.Ok(users);
+        }
+        catch (Exception ex)
+        {
+            // Return a 400 BadRequest response with the error message
+            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+        }
+    }
+
+
+
+    public static async Task<Results<Ok<string>, BadRequest<string>>> BlockUser(string email, bool active, NpgsqlDataSource db)
     {
 
         try
@@ -51,6 +90,7 @@ public class UserRoutes
             using var cmd = db.CreateCommand("UPDATE users SET active = $1 WHERE email = $2");
             cmd.Parameters.AddWithValue(active ? false : true);
             cmd.Parameters.AddWithValue(email);
+
 
 
             int rowsAffected = await cmd.ExecuteNonQueryAsync();
@@ -73,20 +113,21 @@ public class UserRoutes
     }
 
 
-    public static async Task<Results<Ok<Admin>, BadRequest<string>>> GetAdmin(string email, NpgsqlDataSource db)
+    public static async Task<Results<Ok<User>, BadRequest<string>>> GetUser(int role, string email, NpgsqlDataSource db)
     {
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM users WHERE email = $1");
+            using var cmd = db.CreateCommand("SELECT * FROM users WHERE email = $1 AND role = $2");
             cmd.Parameters.AddWithValue(email);
+            cmd.Parameters.AddWithValue(role);
             using var reader = await cmd.ExecuteReaderAsync();
 
             // Deklarera admin innan if-satsen
-            Admin? admin = null;
+            User? user = null;
 
             if (await reader.ReadAsync())
             {
-                admin = new Admin(
+                user = new User(
                     reader.GetInt32(0),
                     reader.GetString(1),
                     reader.GetString(2),
@@ -96,7 +137,7 @@ public class UserRoutes
                     reader.GetBoolean(6)
                 );
 
-                return TypedResults.Ok(admin);
+                return TypedResults.Ok(user);
             }
 
             return TypedResults.BadRequest("No admin found with the given email.");
@@ -106,6 +147,7 @@ public class UserRoutes
             return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
     }
+
     public class AdminRequest
     {
         public string Name { get; set; }
@@ -114,18 +156,22 @@ public class UserRoutes
         public int Company { get; set; }
     }
 
-    public static async Task<IResult> AddAdmin(AdminRequest request, NpgsqlDataSource db)
+
+    public record PostUserDTO(string Name, string Email, string Password, int? Company, int Role);
+
+    public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db)
     {
         try
         {
+
             using var cmd = db.CreateCommand(
                 "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
 
-            cmd.Parameters.AddWithValue(request.Name);
-            cmd.Parameters.AddWithValue(request.Email);
-            cmd.Parameters.AddWithValue(request.Password);
-            cmd.Parameters.AddWithValue(request.Company);
-            cmd.Parameters.AddWithValue(3); // Role för admin
+            cmd.Parameters.AddWithValue(user.Name);
+            cmd.Parameters.AddWithValue(user.Email);
+            cmd.Parameters.AddWithValue(user.Password);
+            cmd.Parameters.AddWithValue(user.Company.HasValue ? user.Company.Value : DBNull.Value);
+            cmd.Parameters.AddWithValue(user.Role); // Role för admin
             cmd.Parameters.AddWithValue(true);
 
             var result = await cmd.ExecuteScalarAsync();
@@ -146,6 +192,36 @@ public class UserRoutes
         catch (Exception ex)
         {
             return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
+        }
+    }
+
+    public static async Task<IResult> EditUser(string previousEmail, PostUserDTO user, NpgsqlDataSource db)
+    {
+        try
+        {
+            using var cmd = db.CreateCommand(
+                "UPDATE users SET name = $1, email = $2, password = $3, company = $4, role = $5, active = $6 WHERE email = $7");
+
+            cmd.Parameters.AddWithValue(user.Name);
+            cmd.Parameters.AddWithValue(user.Email);
+            cmd.Parameters.AddWithValue(user.Password);
+            cmd.Parameters.AddWithValue(user.Company.HasValue ? user.Company.Value : DBNull.Value);
+            cmd.Parameters.AddWithValue(user.Role);
+            cmd.Parameters.AddWithValue(true);
+            cmd.Parameters.AddWithValue(previousEmail);
+
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+            if (rowsAffected == 0)
+            {
+                return TypedResults.NotFound("User not found.");
+            }
+
+            return TypedResults.Ok("User updated successfully!");
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
     }
 }
