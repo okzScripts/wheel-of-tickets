@@ -1,4 +1,4 @@
-import { NavLink, useNavigate, useLocation } from "react-router";
+import { NavLink, useNavigate, useLocation, useParams } from "react-router";
 import "./styles.css"
 import { useEffect, useState } from "react";
 
@@ -14,22 +14,14 @@ export function SuperAdminView() {
 
 export function SuperAdminCompanyView() {
     const [companies, setCompanies] = useState([]);
-    const [company, setCompany] = useState([])
-    const navigate = useNavigate();
-
+    
     function GetCompanies() {
         fetch("/api/companies").then(response =>
             response.json())
             .then(data => setCompanies(data));
     }
 
-    function handleEditCompany(email) {
-        fetch(`/api/companies/${email}`)
-            .then(response => response.json())
-            .then(data => {
-                navigate("/super-admin-edit-company", { state: { company: data } }); 
-            });
-    }
+   
 
     function BlockCompanyById(email, active) {
         fetch(`/api/companies/block/${email}/${active}`, {
@@ -42,35 +34,35 @@ export function SuperAdminCompanyView() {
             })
     }
 
-    GetCompanies();
+    useEffect(GetCompanies);
 
     return <main>
         <h1>All Registered Companies</h1>
         <div className="super-admin-list-container">
             <ul className="super-admin-list">
+                {companies.map(CompanyCard)}
+            </ul>
+        </div>
+        <NavLink to="/super-admin"><button className="add-admin-button">Back</button></NavLink>
+        <NavLink to="/super-admin-add-company"><button className="add-admin-button">Add Company</button></NavLink>
+    </main>;
 
-                {companies.map(company =>
-                    <li className="super-admin-list-item" key={company.id}>
+    function CompanyCard(company) {
+        return <li className="super-admin-list-item" key={company.id}>
                         <div>
                             <p>{company.name}</p>
                             <p>Email: {company.email}</p>
                         </div>
                         <div className="delete-button-div-li">
                             <div className="delete-button-div-li">
-                            <button onClick={() => handleEditCompany(company.email)}>Edit</button>
-                            <div className="block-button-div-li">
-                                <button className="block-button" onClick={() => BlockCompanyById(company.email, company.active)}>{company.active ? "block" : "un-block"}</button>
+                                <NavLink to={"/companies/" + company.email + "/edit"}><button>Edit</button></NavLink>
+                                <div className="block-button-div-li">
+                                    <button className="block-button" onClick={() => BlockCompanyById(company.email, company.active)}>{company.active ? "block" : "un-block"}</button>
+                                </div>
                             </div>
-                    </div>
                         </div>
                     </li>
-                )}
-
-            </ul>
-        </div>
-        <NavLink to="/super-admin"><button className="add-admin-button">Back</button></NavLink>
-        <NavLink to="/super-admin-add-company"><button className="add-admin-button">Add Company</button></NavLink>
-    </main>;
+    }
 }
 export function SuperAdminAddCompanyView() {
 
@@ -147,26 +139,12 @@ export function SuperAdminAddCompanyView() {
     );
 }
 export function SuperAdminEditCompanyView() {
-    const location = useLocation();
-    const company = location.state?.company;
-
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [previousEmail, setPreviousEmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [description, setDescription] = useState("");
-    const [domain, setDomain] = useState("");
+    const [company, setCompany] = useState(null);
+    const { id } = useParams();
 
     useEffect(() => {
-        if (company) {
-            setName(company.name || null);
-            setEmail(company.email || null);
-            setPreviousEmail(company.email || null);
-            setPhone(company.phone || null);
-            setDescription(company.description || null);
-            setDomain(company.domain || null);
-        }
-    }, [company]);
+        fetch("/api/companies/" + id).then(response => response.json()).then(data => {setCompany(data)})
+    })
 
     function updateCompany(e) {
         e.preventDefault();
@@ -187,15 +165,15 @@ export function SuperAdminEditCompanyView() {
             }
         })
     }
+
     return (
         <main>
-            <form className="adminform" onSubmit={updateCompany} action={`/api/companies/${previousEmail}`} method="PUT">
+            <form className="adminform" onSubmit={updateCompany} action={`/api/companies/${id}`} method="PUT">
                 <label>
                     Name:
                     <input 
                         name="name"
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)}
+                        defaultValue={company?.name} 
                         type="text"
                         required 
                     />
@@ -205,8 +183,7 @@ export function SuperAdminEditCompanyView() {
                     Email:
                     <input 
                         name="email" 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        defaultValue={company?.email}
                         type="email" 
                         required 
                     />
@@ -216,9 +193,8 @@ export function SuperAdminEditCompanyView() {
                     Phone:
                     <input 
                         name="phone"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        type="phone" 
+                        defaultValue={company?.phone}
+                        type="tel" 
                         required 
                     />
                 </label>
@@ -227,9 +203,8 @@ export function SuperAdminEditCompanyView() {
                     Description:
                     <input 
                         name="description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        type="description" 
+                        defaultValue={company?.description}
+                        type="text" 
                         required 
                     />
                 </label>
@@ -237,16 +212,15 @@ export function SuperAdminEditCompanyView() {
                     Domain:
                     <input 
                         name="domain"
-                        value={domain}
-                        onChange={(e) => setDomain(e.target.value)}
-                        type="domain" 
+                        defaultValue={company?.domain}
+                        type="url"
                         required 
                     />
                 </label>
 
-                <button type="submit">Save</button>
+                <input type="submit" value="Save"/>
             </form>
-            <NavLink to="/super-admin-company">
+            <NavLink to="/companies">
                 <button className="add-admin-button">Back</button>
             </NavLink>
         </main>
