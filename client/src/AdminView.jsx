@@ -278,7 +278,7 @@ export function AdminEditProductView() {
                         name="price"
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
-                        type="integer" 
+                        type="number" 
                         required 
                     />
                 </label>
