@@ -38,16 +38,17 @@ public class CompanyRoutes
         }
         catch (Exception ex)
         {
+            Console.WriteLine();
             return TypedResults.BadRequest($"Error: {ex.Message}");
         }
     }
 
-    public static async Task<Results<Ok<Company>, BadRequest<string>>> GetCompany(string email, NpgsqlDataSource db)
+    public static async Task<Results<Ok<Company>, BadRequest<string>>> GetCompany(int id, NpgsqlDataSource db)
     {
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM companies WHERE email = $1");
-            cmd.Parameters.AddWithValue(email);
+            using var cmd = db.CreateCommand("SELECT id,name,email,phone,description,domain,active FROM companies WHERE id = $1");
+            cmd.Parameters.AddWithValue(id);
             using var reader = await cmd.ExecuteReaderAsync();
 
             Company? company = null;

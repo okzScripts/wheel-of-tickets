@@ -109,13 +109,14 @@ public class UserRoutes
     }
 
 
-    public static async Task<Results<Ok<User>, BadRequest<string>>> GetUser(int role, string email, NpgsqlDataSource db)
+    public static async Task<Results<Ok<User>, BadRequest<string>>> GetUser(int id, NpgsqlDataSource db)
     {
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM users WHERE email = $1 AND role = $2");
-            cmd.Parameters.AddWithValue(email);
-            cmd.Parameters.AddWithValue(role);
+            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,role,active FROM users WHERE id = $1 ");
+
+            cmd.Parameters.AddWithValue(id);
+
             using var reader = await cmd.ExecuteReaderAsync();
 
             User? user = null;
@@ -181,12 +182,12 @@ public class UserRoutes
         }
     }
 
-    public static async Task<IResult> EditUser(string previousEmail, PostUserDTO user, NpgsqlDataSource db)
+    public static async Task<IResult> EditUser(int id, PostUserDTO user, NpgsqlDataSource db)
     {
         try
         {
             using var cmd = db.CreateCommand(
-                "UPDATE users SET name = $1, email = $2, password = $3, company = $4, role = $5, active = $6 WHERE email = $7");
+                "UPDATE users SET name = $1, email = $2, password = $3, company = $4, role = $5, active = $6 WHERE id = $7");
 
             cmd.Parameters.AddWithValue(user.Name);
             cmd.Parameters.AddWithValue(user.Email);
@@ -194,7 +195,7 @@ public class UserRoutes
             cmd.Parameters.AddWithValue(user.Company.HasValue ? user.Company.Value : DBNull.Value);
             cmd.Parameters.AddWithValue(user.Role);
             cmd.Parameters.AddWithValue(true);
-            cmd.Parameters.AddWithValue(previousEmail);
+            cmd.Parameters.AddWithValue(id);
 
             int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
