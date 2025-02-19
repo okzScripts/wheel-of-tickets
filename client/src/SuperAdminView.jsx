@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export function SuperAdminView() {
     return <main>
-        <NavLink to="/super-admin-company"><button className="super-admin-button">Companys</button></NavLink>
+        <NavLink to="/super-admin-company"><button className="super-admin-button">Companies</button></NavLink>
         <NavLink to="/super-admin-admin"><button className="super-admin-button">Admins</button></NavLink>
     </main>;
 }
@@ -77,10 +77,8 @@ export function SuperAdminAddCompanyView() {
     function postCompany(e) {
         e.preventDefault();
         const form = e.target;
-
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-
         let dataJson = JSON.stringify(dataObject);
 
         fetch(form.action, {
@@ -152,7 +150,6 @@ export function SuperAdminEditCompanyView() {
     const location = useLocation();
     const company = location.state?.company;
 
-    //admin info
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [previousEmail, setPreviousEmail] = useState("");
@@ -329,7 +326,6 @@ export function SuperAdminAddAdminView() {
     function postUser(e) {
     e.preventDefault();
     const form = e.target;
-
     let formData = new FormData(form);
     let dataObject = Object.fromEntries(formData);
     dataObject.role = 3;
@@ -403,7 +399,6 @@ export function SuperAdminEditAdminView() {
     const admin = location.state?.admin;
     const [companies, setCompanies] = useState([]);
 
-    //admin info
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [previousEmail, setPreviousEmail] = useState("");
@@ -489,7 +484,7 @@ export function SuperAdminEditAdminView() {
                     Company:
                     <select 
                         name="company"
-                        value={company} // Set value to admin's company
+                        value={company}
                         onChange={(e) => setCompany(e.target.value)}
                         required
                     >

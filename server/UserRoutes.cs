@@ -24,58 +24,54 @@ public class UserRoutes
             while (await reader.ReadAsync())
             {
                 users.Add(new User(
-                    reader.GetInt32(0), // Assuming the first column is the ID
-                    reader.GetString(1), // Assuming the second column is a string
-                    reader.GetString(2), // Assuming the third column is a string
-                    reader.GetString(3), // Assuming the fourth column is a string
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.GetString(3),
                     reader.GetInt32(4),
                     reader.GetInt32(5),
                     reader.GetBoolean(6)
                 ));
             }
 
-            // Return the list of companies with a 200 OK response
             return TypedResults.Ok(users);
         }
         catch (Exception ex)
         {
-            // Return a 400 BadRequest response with the error message
             return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
     }
 
     public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(int role, int company, NpgsqlDataSource db)
     {
-       
+
         List<User> users = new List<User>();
 
         try
         {
             using var cmd = db.CreateCommand("SELECT * FROM users WHERE role = $1 AND company=$2  ORDER BY id ASC");
             cmd.Parameters.AddWithValue(role);
-            cmd.Parameters.AddWithValue(company); 
+            cmd.Parameters.AddWithValue(company);
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
                 users.Add(new User(
-                    reader.GetInt32(0), // Assuming the first column is the ID
-                    reader.GetString(1), // Assuming the second column is a string
-                    reader.GetString(2), // Assuming the third column is a string
-                    reader.GetString(3), // Assuming the fourth column is a string
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.GetString(3),
                     reader.GetInt32(4),
                     reader.GetInt32(5),
                     reader.GetBoolean(6)
                 ));
             }
 
-            // Return the list of companies with a 200 OK response
             return TypedResults.Ok(users);
         }
         catch (Exception ex)
         {
-            // Return a 400 BadRequest response with the error message
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+            return TypedResults.BadRequest($"Error {ex.Message}");
         }
     }
 
@@ -122,7 +118,6 @@ public class UserRoutes
             cmd.Parameters.AddWithValue(role);
             using var reader = await cmd.ExecuteReaderAsync();
 
-            // Deklarera admin innan if-satsen
             User? user = null;
 
             if (await reader.ReadAsync())
@@ -140,22 +135,13 @@ public class UserRoutes
                 return TypedResults.Ok(user);
             }
 
-            return TypedResults.BadRequest("No admin found with the given email.");
+            return TypedResults.BadRequest("Ingen admin hittades");
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+            return TypedResults.BadRequest($"Error {ex.Message}");
         }
     }
-
-    public class AdminRequest
-    {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public int Company { get; set; }
-    }
-
 
     public record PostUserDTO(string Name, string Email, string Password, int? Company, int Role);
 
@@ -171,7 +157,7 @@ public class UserRoutes
             cmd.Parameters.AddWithValue(user.Email);
             cmd.Parameters.AddWithValue(user.Password);
             cmd.Parameters.AddWithValue(user.Company.HasValue ? user.Company.Value : DBNull.Value);
-            cmd.Parameters.AddWithValue(user.Role); // Role för admin
+            cmd.Parameters.AddWithValue(user.Role);
             cmd.Parameters.AddWithValue(true);
 
             var result = await cmd.ExecuteScalarAsync();
@@ -185,7 +171,7 @@ public class UserRoutes
                 return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
             }
         }
-        catch (PostgresException ex) when (ex.SqlState == "23505") // Hanterar unikhetsfel
+        catch (PostgresException ex) when (ex.SqlState == "23505")
         {
             return TypedResults.BadRequest("Email-adressen är redan registrerad!");
         }
@@ -214,14 +200,14 @@ public class UserRoutes
 
             if (rowsAffected == 0)
             {
-                return TypedResults.NotFound("User not found.");
+                return TypedResults.NotFound("Ingen User hittades");
             }
 
-            return TypedResults.Ok("User updated successfully!");
+            return TypedResults.Ok("User updaterades");
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+            return TypedResults.BadRequest($"Error {ex.Message}");
         }
     }
 }
