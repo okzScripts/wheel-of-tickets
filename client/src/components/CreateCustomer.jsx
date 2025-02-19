@@ -71,7 +71,7 @@ const CreateCustomer = () =>
                     </label>
 
                     <label>
-                        <input type="password" //ändra senare till type password.
+                        <input type="password"
                                name="password"
                                value={formData.password}
                                onChange={handleChange}
@@ -80,7 +80,7 @@ const CreateCustomer = () =>
 
 
                     <label>
-                        <input type="password" //ändra senare till type password.
+                        <input type="password"
                                name="rePassword"
                                value={formData.rePassword}
                                onChange={handleChange}
