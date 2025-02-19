@@ -61,13 +61,13 @@ select{
     display: flex;
     flex-direction: column;
     text-align: center;
-    margin: 1rem;
-    
-    
-
+    margin: 1rem;      
 }
+    
 input{
     margin: 4px;
+}
+    
 .super-admin-list-item {
   display: flex;
   gap: 20px;
@@ -94,10 +94,9 @@ button{
     }
     Button{
         margin-top: 0.5rem;
-        align-self: flex-start;
-       
+        align-self: flex-start;       
      
-    }
+    }}
 .delete-button-div-li {
   display: flex;
   justify-content: center;
