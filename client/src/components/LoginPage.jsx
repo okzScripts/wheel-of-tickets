@@ -9,5 +9,4 @@ export default function LoginPage()
         <NavLink to="/customer"><button>Customer</button></NavLink> 
         <NavLink to="/admin"><button>Admin</button></NavLink>
         </main>
-
 }
