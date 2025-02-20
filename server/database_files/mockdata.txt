@@ -42,12 +42,17 @@ INSERT INTO public.ticket_status ( status)
 
 
 
-INSERT INTO public.users(name, email, password, company, role, active)
+INSERT INTO public.users(name, email, password,company, role, active)
 VALUES
-( 'Alice Johnson', 'alice.johnson@example.com', 'password123', null, 1, true),
-( 'Bob Smith', 'bob.smith@example.com', 'password123', 1, 2, true),
-( 'Charlie Brown', 'charlie.brown@example.com', 'password123', 1, 3, true),
-( 'Diana Green', 'diana.green@example.com', 'password123', 1, 4, true);
+( 'Alice Johnson', 'alice.johnson@example.com','password123', NULL, 1, true),
+( 'Bob Smith', 'bob.smith@example.com', 'password123',1, 2, true),
+( 'Charlie Brown', 'charlie.brown@example.com', 'password123',1, 3, true),
+( 'Diana Green', 'diana.green@example.com', 'password123',1, 4, true);
+
+
+INSERT INTO public.users_x_companies(user_id,company)
+VALUES(2,1),(3,1),(4,1);
+
 
 
 INSERT INTO public.tickets (message, status, customer, product_id, customer_agent, ticket_category)
