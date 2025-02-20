@@ -10,7 +10,7 @@ public class ProductRoutes()
 
 
 
-    public record Product(int id, string Name, string Description, int Price, string Category, int Company);
+    public record Product(int id, string Name, string Description, int Price, string Category, int Company, bool active);
 
     public static async Task<Results<Ok<List<Product>>, BadRequest<string>>> GetProducts(int company, NpgsqlDataSource db)
     {
@@ -30,7 +30,8 @@ public class ProductRoutes()
                     reader.GetString(2),
                     reader.GetInt32(3),
                     reader.GetString(4),
-                    reader.GetInt32(5)
+                    reader.GetInt32(5),
+                    reader.GetBoolean(6)
                 ));
             }
 
@@ -43,7 +44,30 @@ public class ProductRoutes()
         }
     }
 
+    public static async Task<Results<Ok<string>, BadRequest<string>>> BlockProductById(int id, bool active, NpgsqlDataSource db)
+    {
+        try
+        {
 
+            using var cmd = db.CreateCommand("UPDATE products SET active = $1 WHERE id = $2");
+            cmd.Parameters.AddWithValue(!active);
+            cmd.Parameters.AddWithValue(id);
+
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+            if (rowsAffected > 0)
+            {
+                return TypedResults.Ok("Du har blockat eller unblockat en produkt");
+            }
+            else
+            {
+                return TypedResults.BadRequest("Det funkade inte att blocka..");
+            }
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"Det blev fel. {ex.Message}");
+        }
+    }
 
 
     public static async Task<Results<Ok<Product>, BadRequest<string>>> GetProduct(int ProductId, NpgsqlDataSource db)
@@ -67,7 +91,9 @@ public class ProductRoutes()
                     reader.GetString(2),
                     reader.GetInt32(3),
                     reader.GetString(4),
-                    reader.GetInt32(5)
+                    reader.GetInt32(5),
+                    reader.GetBoolean(6)
+
                 );
 
                 return TypedResults.Ok(product);

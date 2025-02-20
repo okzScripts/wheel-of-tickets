@@ -34,7 +34,17 @@ function ProductList() {
     const navigate = use(navigateContext);
 
 
+    function BlockProductById(id, active) {
+        fetch(`/api/products/block/${id}/${active}`, {
+            headers: { "Content-Type": "application/json" },
+            method: "PUT",
+            body: JSON.stringify(id, active),
+        })
+            .then(response => {
+                if (response.ok) { console.log("Det Funkade Igen") }
+            })
 
+    }
 
 
     useEffect(() => {
@@ -42,7 +52,7 @@ function ProductList() {
         fetch(`/api/products/company/${companyId}`).then(response =>
             response.json())
             .then(data => setProducts(data));
-    }, []);
+    }, [BlockProductById]);
 
 
 
@@ -67,8 +77,8 @@ function ProductList() {
                     <button >edit</button>
                 </NavLink>
             </div>
-            <div className="delete-button-div-li">
-                <button>Delete</button>
+            <div className="block-button-div-li">
+                <button onClick={() => BlockProductById(product.id, product.active)}>{product.active ? "block" : "un-block"}</button>
             </div>
         </li>
 
