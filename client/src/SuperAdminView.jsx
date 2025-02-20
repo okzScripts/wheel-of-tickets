@@ -2,6 +2,7 @@ import { NavLink, useNavigate, useLocation, useParams } from "react-router";
 import "./styles.css"
 import { useEffect, useState } from "react";
 import logo from './assets/logo.png';
+import {NavigationBar} from './components/Navigation.jsx'
 
 
 
@@ -40,7 +41,7 @@ export function SuperAdminCompanyView() {
     useEffect(GetCompanies);
 
     return <main className="role-specific-main">
-        <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+        <NavigationBar backUrl={"/super-admin"}/> 
         <section className="header-section"><h1>All Companies</h1></section>
             <ul className="list">
                 {companies.map(CompanyCard)}
