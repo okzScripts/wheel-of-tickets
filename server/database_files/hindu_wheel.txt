@@ -88,6 +88,9 @@ create table users
     name     varchar not null,
     email    varchar not null,
     password varchar not null,
+    company integer 
+        constraint users_company_fk 
+        references companies, 
     role     integer
         constraint users_roles_id_fk
             references roles,
