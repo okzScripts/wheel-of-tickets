@@ -36,6 +36,7 @@ export default function CustomerTicket() {
     const [categoryPick, setCategoryPick] = useState("");
     const [message, setMessage] = useState("");
 
+    const [inputmessage, setInputMessage] = useState("");
    
     const handleOnSubmit = async (e) => {
         e.preventDefault();
@@ -55,9 +56,9 @@ export default function CustomerTicket() {
             if (!response.ok) {
                 throw new Error("Failed to create ticket");
             }
-            alert("Ticket created successfully!");
+            setInputMessage("Ticket created successfully!");
         } catch (error) {
-            alert("Error creating ticket: " + error.message);
+            setInputMessage("Error creating ticket: " + error.inputMessage);
         }
     };
 
@@ -85,8 +86,7 @@ export default function CustomerTicket() {
                         <select
                             name="product"
                             value={productPick}
-                            onChange={(e) => setProductPick(e.target.value)}
-                        >
+                            onChange={(e) => setProductPick(e.target.value)}>
                             <option value=""> Select Product </option>
                             {products.map((product) => (
                                 <option className="products" key={product.id} value={product.id}>
@@ -99,8 +99,7 @@ export default function CustomerTicket() {
                         <select
                             name="category"
                             value={categoryPick}
-                            onChange={(e) => setCategoryPick(Number(e.target.value))}
-                        >
+                            onChange={(e) => setCategoryPick(Number(e.target.value))}>
                             <option value=""> Select Category </option>
                             {categories.map((category) => (
                                 <option className="categories" key={category.id} value={category.id}>
@@ -123,8 +122,9 @@ export default function CustomerTicket() {
                         <button type="submit" id="addTicket">
                             Create Ticket
                         </button>
-                    </form>
+                    </form>                    
                 </div>
+                {inputmessage && <p>{inputmessage}</p>}
             </main>
         </>
     );

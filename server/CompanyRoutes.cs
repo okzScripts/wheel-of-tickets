@@ -12,7 +12,7 @@ public class CompanyRoutes
 
     public record Company(int id, string name, string email, string phone, string description, string domain);
     public record Category(int id, string category_name);
-    public record Ticket(int companyId, int productId, int ticket_category, string message);
+    public record Ticket(int companyId, int productId, int categoryId, string message);
     public record Product(int id, string product_name);
     
     public static async Task<Results<Ok<List<Company>>, BadRequest<string>>> GetCompanies(NpgsqlDataSource db)
@@ -116,7 +116,7 @@ public class CompanyRoutes
             cmd.Parameters.AddWithValue(status);
             cmd.Parameters.AddWithValue(ticket.companyId); // ska vara customer id efter att vi lagt till login 
             cmd.Parameters.AddWithValue(ticket.productId);
-            cmd.Parameters.AddWithValue(ticket.ticket_category);
+            cmd.Parameters.AddWithValue(ticket.categoryId);
 
             var newId = await cmd.ExecuteScalarAsync();
 

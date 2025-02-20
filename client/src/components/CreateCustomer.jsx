@@ -8,7 +8,7 @@ const CreateCustomer = () =>
         password:"",
         rePassword:""
     });
-    const [message, setMessage] = useState("");
+    const [inputMessage, setInputMessage] = useState("");
 
     const handleChange = (e) => {
         const {name, value} = e.target;
@@ -21,7 +21,7 @@ const CreateCustomer = () =>
         e.preventDefault();
         
         if (formData.password !== formData.rePassword) {
-            setMessage("Passwords do not match");
+            setInputMessage("Passwords do not match");
             return;
         }
         
@@ -43,10 +43,10 @@ const CreateCustomer = () =>
             if (!response.ok){
                 throw new Error("User not created");
             }
-            
-            setMessage("User created successfully");
+
+            setInputMessage("User created successfully");
         } catch (error){
-            setMessage(error.message)
+            setInputMessage(error.inputMessage)
         }
     };    
     
@@ -55,7 +55,7 @@ const CreateCustomer = () =>
             <main>
                 <form onSubmit={handleOnSubmit}>
                     <label>
-                        <input type="name"
+                        <input type="text"
                                name="name"
                                value={formData.name}
                                onChange={handleChange}
@@ -88,7 +88,7 @@ const CreateCustomer = () =>
                     </label>
                     <button type="submit" id="addCustomer">Create Account</button>
                 </form>
-                {message && <p>{message}</p>}
+                {inputMessage && <p>{inputMessage}</p>}
             </main>
         </>
     ); 
