@@ -1,4 +1,4 @@
-import { StrictMode,useState,use,createContext,useEffect } from 'react'
+import { StrictMode, useState, use, createContext, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import CreateCustomer from './components/CreateCustomer.jsx'
 //import CustomerTicket from './components/CustomerTicket.jsx'
@@ -14,16 +14,16 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route index element={<LoginPage/>} />
-        <Route path='/customer' element={<CreateCustomer/>} />
+        <Route index element={<LoginPage />} />
+        <Route path='/customer' element={<CreateCustomer />} />
         <Route path='/super-admin' element={<SuperAdminView />} />
-        <Route path='/super-admin-company' element={<SuperAdminCompanyView />} />
-        <Route path='/super-admin-add-company' element={<SuperAdminAddCompanyView />} />
-        <Route path='/super-admin-edit-company' element={<SuperAdminEditCompanyView />} />
-        <Route path='/super-admin-admin' element={<SuperAdminAdminView />} />
-        <Route path='/super-admin-add-admin' element={<SuperAdminAddAdminView />} />
-        <Route path='/customer-service' element={<CustomerService/>}/>
-        <Route path='/super-admin-edit-admin' element={<SuperAdminEditAdminView />} />
+        <Route path='/companies' element={<SuperAdminCompanyView />} />
+        <Route path='/companies/add' element={<SuperAdminAddCompanyView />} />
+        <Route path='/companies/:id/edit' element={<SuperAdminEditCompanyView />} />
+        <Route path='/admins' element={<SuperAdminAdminView />} />
+        <Route path='/admins/add' element={<SuperAdminAddAdminView />} />
+        <Route path='/customer-service' element={<CustomerService />} />
+        <Route path='/users/:id/edit' element={<SuperAdminEditAdminView />} />
         <Route path='/admin-add-product' element={<AdminAddProductView />} />
         <Route path='/admin' element={<AdminView/>}/> 
         <Route path='/admin-edit-product' element={<AdminEditProductView/>}/> 
