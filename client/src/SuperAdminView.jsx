@@ -1,13 +1,16 @@
 import { NavLink, useNavigate, useLocation, useParams } from "react-router";
 import "./styles.css"
 import { useEffect, useState } from "react";
+import logo from './assets/logo.png';
 
 
 
 export function SuperAdminView() {
-    return <main>
-        <NavLink to="/companies"><button className="super-admin-button">Companies</button></NavLink>
-        <NavLink to="/admins"><button className="super-admin-button">Admins</button></NavLink>
+    return <main className="option-main">
+        <div className="big-button-container">
+            <NavLink to="/companies"><button className="big-button">Companies</button></NavLink>
+            <NavLink to="/admins"><button className="big-button">Admins</button></NavLink>
+        </div>
     </main>;
 }
 
@@ -36,31 +39,27 @@ export function SuperAdminCompanyView() {
 
     useEffect(GetCompanies);
 
-    return <main>
-        <h1>All Registered Companies</h1>
-        <div className="super-admin-list-container">
-            <ul className="super-admin-list">
+    return <main className="role-specific-main">
+        <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+        <section className="header-section"><h1>All Companies</h1></section>
+            <ul className="list">
                 {companies.map(CompanyCard)}
             </ul>
-        </div>
-        <NavLink to="/super-admin"><button className="add-admin-button">Back</button></NavLink>
-        <NavLink to="/companies/add"><button className="add-admin-button">Add Company</button></NavLink>
+        <section className="content-box">
+        <NavLink to="/companies/add"><button className="middle-button">Add Company</button></NavLink></section>
     </main>;
 
     function CompanyCard(company) {
-        return <li className="super-admin-list-item" key={company.id}>
-            <div>
-                <p>{company.name}</p>
-                <p>Email: {company.email}</p>
-            </div>
-            <div className="delete-button-div-li">
-                <div className="delete-button-div-li">
-                    <NavLink to={"/companies/" + company.id + "/edit"}><button>Edit</button></NavLink>
-                    <div className="block-button-div-li">
-                        <button className="block-button" onClick={() => BlockCompanyById(company.id, company.active)}>{company.active ? "block" : "un-block"}</button>
+        return <li className="list-item" key={company.id}>
+                    <div className="card-info">
+                        <p><strong>Name:</strong><br/>{company.name}</p><br/>
+                        <p><strong>Email:</strong><br/>{company.email}</p><br/>
+                        <p><strong>Domain:</strong><br/>{company.domain}</p><br/>
                     </div>
-                </div>
-            </div>
+                    <div className="card-buttons">
+                        <NavLink to={"/companies/" + company.id + "/edit"}><button>Edit</button></NavLink>
+                        <button className="small-button" onClick={() => BlockCompanyById(company.id, company.active)}>{company.active ? "block" : "un-block"}</button>
+                    </div>
         </li>
     }
 }
@@ -87,8 +86,10 @@ export function SuperAdminAddCompanyView() {
     }
 
     return (
-        <main>
-            <form className="adminform" onSubmit={postCompany} action="/api/companies" method="POST">
+        <main className="form-main">
+            <nav className="navbar"><img src={logo}></img> <NavLink to="/companies"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <form className="data-form" onSubmit={postCompany} action="/api/companies" method="POST">
+                <div className="form-box">
                 <label>
                     Name:
                     <input
@@ -131,10 +132,11 @@ export function SuperAdminAddCompanyView() {
                         required
                     />
                 </label>
-
-                <button type="submit">Save</button>
+                </div>
+                <button className="middle-button" type="submit">Save</button>
             </form>
-            <NavLink to={"/companies"}><button className="add-admin-button">Back</button></NavLink>
+            <section className="content-box">
+            </section>
         </main>
     );
 }
@@ -168,7 +170,9 @@ export function SuperAdminEditCompanyView() {
 
     return (
         <main>
-            <form className="adminform" onSubmit={updateCompany} action={`/api/companies/${id}`} method="PUT">
+            <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <form className="data-form" onSubmit={updateCompany} action={`/api/companies/${id}`} method="PUT">
+                <div className="form-box">
                 <label>
                     Name:
                     <input
@@ -217,12 +221,9 @@ export function SuperAdminEditCompanyView() {
                         required
                     />
                 </label>
-
-                <input type="submit" value="Save" />
+                </div>
+                <input type="submit" value="Save" className="middle-button" />
             </form>
-            <NavLink to="/companies">
-                <button className="add-admin-button">Back</button>
-            </NavLink>
         </main>
     );
 }
@@ -256,35 +257,29 @@ export function SuperAdminAdminView() {
 
     GetAdmins();
 
-    return <main>
-        <h1 className="super-admin-header">All Registered Admins</h1>
-        <div className="super-admin-list-container">
-            <ul className="super-admin-list">
-
-                {admins.map(AdminCard
-
-                )}
-
+    return <main className="role-specific-main">
+        <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+        <section className="header-section"><h1>All Admins</h1></section>
+            <ul className="list">
+                {admins.map(AdminCard)}
             </ul>
-        </div>
-        <NavLink to="/super-admin"><button className="add-admin-button">Back</button></NavLink>
-        <NavLink to="/admins/add"><button className="add-admin-button">Add Admin</button></NavLink>
+        <section className="content-box"> 
+            <NavLink to="/admins/add"><button className="middle-button">Add Admin</button></NavLink>
+        </section>
     </main>;
 
 
     function AdminCard(admin) {
 
-        return <li className="super-admin-list-item" key={admin.id}>
-            <div>
-                <p>{admin.name}</p>
-                <p>Email: {admin.email}</p>
-                <p>Company: {admin.company}</p>
+        return <li className="list-item" key={admin.id}>
+            <div className="card-info">
+                <p><strong>Name:</strong><br/>{admin.name}</p><br/>
+                <p><strong>Email:</strong><br/>{admin.email}</p><br/>
+                <p><strong>Company:</strong><br/>{admin.company}</p><br/>
             </div>
-            <div className="delete-button-div-li">
+            <div className="card-buttons">
                 <NavLink to={"/users/" + admin.id + "/edit"}><button>Edit</button></NavLink>
-                <div className="block-button-div-li">
-                    <button className="block-button" onClick={() => BlockAdminById(admin.id, admin.active)}>{admin.active ? "block" : "un-block"}</button>
-                </div>
+                <button className="small-button" onClick={() => BlockAdminById(admin.id, admin.active)}>{admin.active ? "block" : "un-block"}</button>
             </div></li>
 
     }
@@ -323,7 +318,9 @@ export function SuperAdminAddAdminView() {
 
     return (
         <main>
-            <form className="adminform" onSubmit={postUser} action="/api/users" method="POST">
+            <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <form className="data-form" onSubmit={postUser} action="/api/users" method="POST">
+                <div className="form-box">
                 <label>
                     Name:
                     <input
@@ -362,11 +359,10 @@ export function SuperAdminAddAdminView() {
                             <option key={company.id} value={company.id}>{company.name}</option>
                         ))}
                     </select>
-                </label>
-
-                <input type="submit" value="Save"></input>
+                </label>    
+                </div>
+                <input type="submit" className="middle-button" value="Save"></input>
             </form>
-            <NavLink to={"/admins"}><button className="add-admin-button">Back</button></NavLink>
         </main>
     );
 }
@@ -415,7 +411,9 @@ export function SuperAdminEditAdminView() {
 
     return (
         <main>
-            <form className="adminform" onSubmit={updateUser} action={`/api/users/${id}`} method="PUT">
+            <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <form className="data-form" onSubmit={updateUser} action={`/api/users/${id}`} method="PUT">
+                <div className="form-box">
                 <label>
                     Name:
                     <input
@@ -461,12 +459,9 @@ export function SuperAdminEditAdminView() {
                         ))}
                     </select>
                 </label>
-
-                <input type="submit">Save</input>
+                </div>
+                <input type="submit" value="Save" className="middle-button"></input>
             </form>
-            <NavLink to="/admins">
-                <button className="add-admin-button">Back</button>
-            </NavLink>
         </main>
     );
 }
