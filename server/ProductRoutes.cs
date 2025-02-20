@@ -38,7 +38,7 @@ public class ProductRoutes()
         }
         catch (Exception ex)
         {
-         
+
             return TypedResults.BadRequest($"Ett fel uppstod: {ex.Message}");
         }
     }
@@ -46,14 +46,14 @@ public class ProductRoutes()
 
 
 
- public static async Task<Results<Ok<Product>, BadRequest<string>>> GetProduct(int Company, int ProductId,NpgsqlDataSource db)
- {
-     try
+    public static async Task<Results<Ok<Product>, BadRequest<string>>> GetProduct(int ProductId, NpgsqlDataSource db)
+    {
+        try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM products WHERE id=$1 AND company=$2" );
+            using var cmd = db.CreateCommand("SELECT * FROM products WHERE id=$1");
             cmd.Parameters.AddWithValue(ProductId);
-            cmd.Parameters.AddWithValue(Company);
-           
+
+
             using var reader = await cmd.ExecuteReaderAsync();
 
             // Deklarera admin innan if-satsen
@@ -80,7 +80,7 @@ public class ProductRoutes()
             return TypedResults.BadRequest($"Ett fel uppstod: {ex.Message}");
         }
     }
- 
+
 
 
 
@@ -125,21 +125,21 @@ public class ProductRoutes()
 
 
 
-public record PutProductDTO(string Name, string Description, int Price, string Category, int Company,int id);
- public static async Task<IResult> EditProduct(PutProductDTO product, NpgsqlDataSource db)
-{
+    public record PutProductDTO(string Name, string Description, int Price, string Category, int Company, int id);
+    public static async Task<IResult> EditProduct(PutProductDTO product, NpgsqlDataSource db)
+    {
         try
         {
             using var cmd = db.CreateCommand(
                 "UPDATE products SET product_name=$1, product_description=$2, price=$3, product_category=$4 WHERE company=$5 AND id=$6");
 
-                
-             cmd.Parameters.AddWithValue(product.Name);
+
+            cmd.Parameters.AddWithValue(product.Name);
             cmd.Parameters.AddWithValue(product.Description);
             cmd.Parameters.AddWithValue(product.Price);
             cmd.Parameters.AddWithValue(product.Category);
             cmd.Parameters.AddWithValue(product.Company);
-            cmd.Parameters.AddWithValue(product.id); 
+            cmd.Parameters.AddWithValue(product.id);
             int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
             if (rowsAffected == 0)
