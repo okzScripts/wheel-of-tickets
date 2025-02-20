@@ -1,25 +1,181 @@
 body {
   margin: 0;
+  padding: 0;
+  font-size: 16px;
+  background-color: rgb(48, 48, 48);
+  font-family: Arial, Helvetica, sans-serif;
 }
-main {
+button {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.navbar {
+  display: flex;
+  height: 6%;
+  justify-content: left;
+  align-items: center;
+  background-color: rgb(36, 36, 36);
+  gap: 2%;
+  border-bottom: 2px solid rgb(255, 189, 114);
+  > img {
+    padding-left: 5%;
+    height: 90%;
+  }
+  .back-button {
+    height: 90%;
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+  }
+}
+.header-section {
+  height: 7%;
+  align-items: center;
+  > h1 {
+    margin: 0;
+    color: white;
+  }
+}
+.option-main {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+.form-main {
+  width: 100%;
+  height: 100vh;
+}
+.content-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10%;
+  width: 100%;
+  height: 11%;
+  border-top: 2px solid rgb(255, 189, 114);
+}
+.big-button-container {
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+
+  width: 50%;
+  height: 50%;
+}
+.big-button {
+  width: 200px;
+  height: 100px;
+  color: white;
+  font-size: 200%;
+  background-color: rgb(83, 83, 83);
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+}
+.middle-button {
+  width: 150px;
+  height: 60px;
+  background-color: rgb(46, 177, 52);
+  border-radius: 20px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 100%;
+}
+.small-button {
+  height: 60%;
+  width: 70px;
+  border-radius: 10px;
+  border: none;
+  background-color: rgb(204, 239, 255);
+  cursor: pointer;
+}
+.role-specific-main {
   height: 100vh;
-    section{
-      justify-content: center;
-      display: flex;
-      height: 100vh; 
-      div{
-        background-color: rgb(225, 226, 227);
-        width: 50vw;
-        margin:.5rem;
-        text-align: center;
-        
-      }
-     }
+  width: 100%;
+}
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%;
+  height: 76%;
+  padding-left: 10%;
+  padding-right: 10%;
+  max-width: 100%;
+  gap: 5%;
+  margin: 0;
+  overflow: auto;
+  list-style: none;
+  background-color: rgb(44, 44, 44);
+}
+.list-item {
+  width: 25%;
+  border: 2px solid white;
+  color: white;
+  border-radius: 20px;
+  height: 45%;
+}
+.card-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 70%;
+  padding-top: 5%;
+  padding-left: 5%;
+  padding-right: 5%;
+
+  > p {
+    margin: 0;
+    > strong {
+      color: rgb(253, 188, 126);
     }
-
-
+  }
+}
+.card-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 20%;
+  a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-decoration: none;
+    > button {
+      height: 60%;
+      width: 70px;
+      border-radius: 10px;
+      border: none;
+      background-color: rgb(204, 239, 255);
+      cursor: pointer;
+    }
+  }
+}
+.data-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  height: 76%;
+}
+.form-box {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  gap: 10px;
+  > label {
+    display: flex;
+    justify-content: space-between;
+    color: white;
+  }
+}
 
 .super-admin-button {
   height: 100px;
@@ -28,14 +184,6 @@ main {
 .super-admin-header {
   font-size: 100%;
   margin: 0;
-}
-.super-admin-list-container {
-  border: 1px solid black;
-  width: 50%;
-  display: flex;
-  justify-content: left;
-  align-items: center;
-  padding: 10px;
 }
 .super-admin-list {
   display: flex;
