@@ -24,9 +24,10 @@ createRoot(document.getElementById('root')).render(
         <Route path='/admins/add' element={<SuperAdminAddAdminView />} />
         <Route path='/customer-service' element={<CustomerService />} />
         <Route path='/users/:id/edit' element={<SuperAdminEditAdminView />} />
-        <Route path='/admin-add-product' element={<AdminAddProductView />} />
+
         <Route path='/admin' element={<AdminView/>}/> 
-        <Route path='/admin-edit-product' element={<AdminEditProductView/>}/> 
+        <Route path='/product/:id/add' element={<AdminAddProductView />} />
+        <Route path='/product/:id/edit' element={<AdminEditProductView/>}/> 
         <Route path='/admin-edit-support' element={<AdminEditSupportView/>}/> 
         <Route path='/admin-add-support' element={<AdminAddSupportView/>}/> 
       </Routes>

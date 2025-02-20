@@ -1,4 +1,4 @@
-import { BrowserRouter, NavLink, useFetcher, useNavigate,useLocation } from "react-router";
+import { BrowserRouter, NavLink, useFetcher, useNavigate,useLocation, useParams } from "react-router";
 import "./adminViewStyle.css";
 import { createContext, useEffect, useState ,use} from "react";
 
@@ -33,18 +33,7 @@ function ProductList(){
     const companyId = use(adminInfoContext);
     const navigate= use(navigateContext); 
 
-    function handleAddProduct() {
-        navigate("/admin-add-product", { state: { company: companyId } }); 
-    }
-    
-    function handelEditProduct(productId){
-        fetch(`api/products/${companyId}/${productId}`)
-        .then(response => response.json())
-            .then(data => {
-                navigate("/admin-edit-Product", { state: { product: data ,id:productId} }); 
-            });
 
-    }
 
 
 
@@ -61,13 +50,30 @@ function ProductList(){
     <h1 className="admin-section-header">Products</h1>
         <div className="product-list-container">
             <ul className="product-list"> 
-                {products.map( product =>
-                      <li className="product-list-item" key={product.id}><div><p>{product.name}</p></div><div className="edit-product" ><button onClick={()=>handelEditProduct(product.id) }>edit</button> </div><div className="delete-button-div-li"><button>Delete</button></div></li>
-                )}
+                {products.map(ProductCard)}
             </ul>
-            <button className="add-product" onClick={handleAddProduct}>Add product</button>
+            <NavLink to={"/product/"+companyId+"/add"}><button className="add-product">Add product</button> </NavLink>
         </div>
     </> 
+
+
+function ProductCard(product){
+    return<li className="product-list-item" key={product.id}>
+        <div>
+            <p>{product.name}</p>
+        </div>
+        <div className="edit-product" >
+            <NavLink to={"/product/"+product.id+"/edit"}>
+                <button >edit</button> 
+            </NavLink>
+        </div>
+        <div className="delete-button-div-li">
+            <button>Delete</button>
+        </div>
+    </li>
+
+}
+
 }
 
 
@@ -125,9 +131,9 @@ return <>
 
 
 export function AdminAddProductView() {
-     const location = useLocation();
-    const company = location.state?.company;
-   
+    
+    const {id} = useParams(); 
+  
    
    
     function PostProduct(e)
@@ -137,11 +143,11 @@ export function AdminAddProductView() {
 
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        dataObject.company = company; 
+        dataObject.company = id; 
         let dataJson = JSON.stringify(dataObject);
         fetch(form.action, {
             headers: { "Content-Type": "application/json" },
-            method: "POST",
+            method: form.method,
             body: dataJson
         }).then(response => {
         if (response.ok) {
@@ -189,7 +195,7 @@ export function AdminAddProductView() {
                         required 
                     />
                 </label>
-                <button type="submit">Save</button>
+                <input  type="submit" value="Save"></input>
             </form>
             <NavLink to={"/admin"}><button className="add-admin-button">Back</button></NavLink>
         </main>

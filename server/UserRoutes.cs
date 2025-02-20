@@ -49,7 +49,7 @@ public class UserRoutes
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM users WHERE role = $1 AND company=$2  ORDER BY id ASC");
+            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,role,active FROM users WHERE role = $1 AND company=$2  ORDER BY id ASC");
             cmd.Parameters.AddWithValue(role);
             cmd.Parameters.AddWithValue(company);
             using var reader = await cmd.ExecuteReaderAsync();
