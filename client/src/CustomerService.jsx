@@ -5,7 +5,19 @@ export default function CustomerService() {
     const [ticket, setTicket] = useState(null);
     const [unassignedTickets, setUnassignedTickets] = useState([]);
     const [assignedTickets, setAssignedTickets] = useState([])
+    const [tickets, setTickets] = useState([])
     const CustomerServiceAgent = 2
+
+    function GetTickets()
+    {
+        fetch("/api/tickets")
+            .then((response) => response.json())
+            .then((data) => setTickets(data))
+    }
+
+    useEffect(() => {
+        GetTickets()
+    })
 
     function getUnassignedTickets() {
         fetch("/api/tickets/unassigned")
@@ -35,9 +47,9 @@ export default function CustomerService() {
             method: "PUT",
             body: JSON.stringify({ customer_agent: CustomerServiceAgent, id: newTicket.id })
         })
-
-        getUnassignedTickets();
-        getAssignedTickets();
+            .then(response => {
+                if (response.ok) { console.log("Det Funkade Igen"), getUnassignedTickets(), getAssignedTickets() }
+            })
 
     }
 
@@ -53,15 +65,14 @@ export default function CustomerService() {
 
     return (
         <main>
-            <section className="rollToGetATicket">
-                <div>
+            <section className="upper">
+                <div className="rollToGetATicket">
                     <button onClick={randomiser}>Roll to get a ticket</button>
                 </div>
             </section>
-            <section className="tickets">
+            <section className="lower">
                 <div className="yourTickets">
-
-                    <div className="ticketBox">
+                    <h2>ASSIGNED TICKETS:</h2>
                         {assignedTickets.length > 0 ? (
                             <ul>
                                 {assignedTickets.map((ticket) => (
@@ -76,20 +87,24 @@ export default function CustomerService() {
                         ) : (
                             <h2>Här var det tomt 😁</h2>
                         )}
-                    </div>
+                 
                 </div>
-                <div className="notAssignedTickets">
-                    {unassignedTickets.length > 0 ? (
+                <div className="allTickets">
+                    <h2>ALL TICKETS:</h2>
+                    {tickets.length > 0 ? (
                         <ul>
-                            {unassignedTickets.map((ticket) => (
+                            {tickets.map((ticket) => (
                                 <li key={ticket.id}>
                                     <h2>{ticket.message}</h2>
-                                    <p>ID: {ticket.id}</p>
+                                    <p>Ticket id {ticket.id}</p>
+                                    {ticket.customer_agent ?
+                                        <p><b>Assigned to: Customer agent</b> {ticket.customer_agent}</p>
+                                    : ""}
                                 </li>
                             ))}
                         </ul>
                     ) : (
-                        <p> Inga tickets</p>
+                        <p>Inga tickets</p>
                     )}
                 </div>
             </section>

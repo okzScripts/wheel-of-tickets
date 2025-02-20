@@ -10,7 +10,7 @@ main {
     section {
         justify-content: center;
         display: flex;
-        height: 100vh;
+        height:100%;
 
         div {
             background-color: rgb(225, 226, 227);
@@ -20,17 +20,6 @@ main {
         }
     }
 }
-
-.yourTickets {
-    display: flex;
-    justify-content: center;
-}
-
-.ticketBox {
-    width: 70%;
-}
-
-
 
 .super-admin-button {
     height: 100px;

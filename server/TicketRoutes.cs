@@ -7,14 +7,16 @@ public class TicketRoutes
 {
     public record Ticket(int id, string message, int status, int customer, int product_id, int? customer_agent, int ticket_category);
 
-    public static async Task<Results<Ok<Ticket>, BadRequest<string>>> GetRandomTicket(NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetTickets(NpgsqlDataSource db)
     {
+        List<Ticket> tickets = new List<Ticket>();
+
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM tickets ORDER BY RANDOM() LIMIT 1");
+            using var cmd = db.CreateCommand("SELECT id, message, status, customer, product_id, customer_agent, ticket_category FROM tickets");
             using var reader = await cmd.ExecuteReaderAsync();
 
-            if (await reader.ReadAsync())
+            while (await reader.ReadAsync())
             {
                 var ticket = new Ticket(
                     reader.GetInt32(0),
@@ -22,52 +24,48 @@ public class TicketRoutes
                     reader.GetInt32(2),
                     reader.GetInt32(3),
                     reader.GetInt32(4),
-                    reader.GetInt32(5),
+                    reader.IsDBNull(5) ? null : reader.GetInt32(5),
                     reader.GetInt32(6)
                 );
-                return TypedResults.Ok(ticket);
+                tickets.Add(ticket);
             }
-            else
-            {
-                return TypedResults.BadRequest("Ingen ticket hittades.");
-            }
+            return TypedResults.Ok(tickets);
         }
+
         catch (Exception ex)
         {
             return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
         }
     }
 
-    public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetAssignedTickets(int customer_agent, NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetUnassignedTickets(NpgsqlDataSource db)
     {
         List<Ticket> tickets = new List<Ticket>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM tickets WHERE customer_agent = $1");
-            cmd.Parameters.AddWithValue(customer_agent);
+            using var cmd = db.CreateCommand("SELECT id, message, status, customer, product_id, customer_agent, ticket_category FROM tickets WHERE customer_agent IS NULL ORDER BY ID ASC");
             using var reader = await cmd.ExecuteReaderAsync();
 
+            while (await reader.ReadAsync())
             {
-                while (await reader.ReadAsync())
-                {
-                    tickets.Add(new Ticket(
-                        reader.GetInt32(0),
-                        reader.GetString(1),
-                        reader.GetInt32(2),
-                        reader.GetInt32(3),
-                        reader.GetInt32(4),
-                        reader.IsDBNull(5) ? null : reader.GetInt32(5),
-                        reader.GetInt32(6)
-                    ));
-                }
-                return TypedResults.Ok(tickets);
+                var ticket = new Ticket(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetInt32(2),
+                    reader.GetInt32(3),
+                    reader.GetInt32(4),
+                    reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                    reader.GetInt32(6)
+                );
+                tickets.Add(ticket);
             }
+            return TypedResults.Ok(tickets);
 
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest($"Ett fel inträffade 2: {ex.Message}");
+            return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
         }
     }
 
@@ -99,34 +97,36 @@ public class TicketRoutes
         }
     }
 
-    public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetUnassignedTickets(NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetAssignedTickets(int customer_agent, NpgsqlDataSource db)
     {
         List<Ticket> tickets = new List<Ticket>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM tickets WHERE customer_agent IS NULL ORDER BY ID ASC");
+            using var cmd = db.CreateCommand("SELECT id, message, status, customer, product_id, customer_agent, ticket_category FROM tickets WHERE customer_agent = $1");
+            cmd.Parameters.AddWithValue(customer_agent);
             using var reader = await cmd.ExecuteReaderAsync();
 
-            while (await reader.ReadAsync())
             {
-                var ticket = new Ticket(
-                    reader.GetInt32(0),
-                    reader.GetString(1),
-                    reader.GetInt32(2),
-                    reader.GetInt32(3),
-                    reader.GetInt32(4),
-                    reader.IsDBNull(5) ? null : reader.GetInt32(5),
-                    reader.GetInt32(6)
-                );
-                tickets.Add(ticket);
+                while (await reader.ReadAsync())
+                {
+                    tickets.Add(new Ticket(
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetInt32(2),
+                        reader.GetInt32(3),
+                        reader.GetInt32(4),
+                        reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                        reader.GetInt32(6)
+                    ));
+                }
+                return TypedResults.Ok(tickets);
             }
-            return TypedResults.Ok(tickets);
 
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
+            return TypedResults.BadRequest($"Ett fel inträffade 2: {ex.Message}");
         }
     }
 }
