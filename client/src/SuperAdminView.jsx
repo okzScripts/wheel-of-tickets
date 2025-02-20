@@ -1,4 +1,4 @@
-import { NavLink, useNavigate, useLocation } from "react-router";
+import { NavLink, useNavigate, useLocation, useParams } from "react-router";
 import "./styles.css"
 import { useEffect, useState } from "react";
 
@@ -6,16 +6,14 @@ import { useEffect, useState } from "react";
 
 export function SuperAdminView() {
     return <main>
-        <NavLink to="/super-admin-company"><button className="super-admin-button">Companys</button></NavLink>
-        <NavLink to="/super-admin-admin"><button className="super-admin-button">Admins</button></NavLink>
+        <NavLink to="/companies"><button className="super-admin-button">Companies</button></NavLink>
+        <NavLink to="/admins"><button className="super-admin-button">Admins</button></NavLink>
     </main>;
 }
 
 
 export function SuperAdminCompanyView() {
     const [companies, setCompanies] = useState([]);
-    const [company, setCompany] = useState([])
-    const navigate = useNavigate();
 
     function GetCompanies() {
         fetch("/api/companies").then(response =>
@@ -23,64 +21,56 @@ export function SuperAdminCompanyView() {
             .then(data => setCompanies(data));
     }
 
-    function handleEditCompany(email) {
-        fetch(`/api/companies/${email}`)
-            .then(response => response.json())
-            .then(data => {
-                navigate("/super-admin-edit-company", { state: { company: data } }); 
-            });
-    }
 
-    function BlockCompanyById(email, active) {
-        fetch(`/api/companies/block/${email}/${active}`, {
+
+    function BlockCompanyById(id, active) {
+        fetch(`/api/companies/block/${id}/${active}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify(email, active),
+            body: JSON.stringify(id, active),
         })
             .then(response => {
                 if (response.ok) { console.log("Det Funkade Igen"), GetCompanies() }
             })
     }
 
-    GetCompanies();
+    useEffect(GetCompanies);
 
     return <main>
         <h1>All Registered Companies</h1>
         <div className="super-admin-list-container">
             <ul className="super-admin-list">
-
-                {companies.map(company =>
-                    <li className="super-admin-list-item" key={company.id}>
-                        <div>
-                            <p>{company.name}</p>
-                            <p>Email: {company.email}</p>
-                        </div>
-                        <div className="delete-button-div-li">
-                            <div className="delete-button-div-li">
-                            <button onClick={() => handleEditCompany(company.email)}>Edit</button>
-                            <div className="block-button-div-li">
-                                <button className="block-button" onClick={() => BlockCompanyById(company.email, company.active)}>{company.active ? "block" : "un-block"}</button>
-                            </div>
-                    </div>
-                        </div>
-                    </li>
-                )}
-
+                {companies.map(CompanyCard)}
             </ul>
         </div>
         <NavLink to="/super-admin"><button className="add-admin-button">Back</button></NavLink>
-        <NavLink to="/super-admin-add-company"><button className="add-admin-button">Add Company</button></NavLink>
+        <NavLink to="/companies/add"><button className="add-admin-button">Add Company</button></NavLink>
     </main>;
+
+    function CompanyCard(company) {
+        return <li className="super-admin-list-item" key={company.id}>
+            <div>
+                <p>{company.name}</p>
+                <p>Email: {company.email}</p>
+            </div>
+            <div className="delete-button-div-li">
+                <div className="delete-button-div-li">
+                    <NavLink to={"/companies/" + company.id + "/edit"}><button>Edit</button></NavLink>
+                    <div className="block-button-div-li">
+                        <button className="block-button" onClick={() => BlockCompanyById(company.id, company.active)}>{company.active ? "block" : "un-block"}</button>
+                    </div>
+                </div>
+            </div>
+        </li>
+    }
 }
 export function SuperAdminAddCompanyView() {
 
     function postCompany(e) {
         e.preventDefault();
         const form = e.target;
-
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-
         let dataJson = JSON.stringify(dataObject);
 
         fetch(form.action, {
@@ -107,7 +97,7 @@ export function SuperAdminAddCompanyView() {
                         required
                     />
                 </label>
-                
+
                 <label>
                     Email:
                     <input
@@ -121,7 +111,7 @@ export function SuperAdminAddCompanyView() {
                     Phone:
                     <input
                         name="phone"
-                        type="phone"
+                        type="tel"
                         required
                     />
                 </label>
@@ -129,7 +119,7 @@ export function SuperAdminAddCompanyView() {
                     Description:
                     <input
                         name="description"
-                        type="description"
+                        type="text"
                         required
                     />
                 </label>
@@ -137,39 +127,24 @@ export function SuperAdminAddCompanyView() {
                     Domain:
                     <input
                         name="domain"
-                        type="domain"
+                        type="url"
                         required
                     />
                 </label>
 
                 <button type="submit">Save</button>
             </form>
-            <NavLink to={"/super-admin-company"}><button className="add-admin-button">Back</button></NavLink>
+            <NavLink to={"/companies"}><button className="add-admin-button">Back</button></NavLink>
         </main>
     );
 }
 export function SuperAdminEditCompanyView() {
-    const location = useLocation();
-    const company = location.state?.company;
-
-    //admin info
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [previousEmail, setPreviousEmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [description, setDescription] = useState("");
-    const [domain, setDomain] = useState("");
+    const [company, setCompany] = useState(null);
+    const { id } = useParams();
 
     useEffect(() => {
-        if (company) {
-            setName(company.name || null);
-            setEmail(company.email || null);
-            setPreviousEmail(company.email || null);
-            setPhone(company.phone || null);
-            setDescription(company.description || null);
-            setDomain(company.domain || null);
-        }
-    }, [company]);
+        fetch("/api/companies/" + id).then(response => response.json()).then(data => { setCompany(data) })
+    })
 
     function updateCompany(e) {
         e.preventDefault();
@@ -190,66 +165,62 @@ export function SuperAdminEditCompanyView() {
             }
         })
     }
+
     return (
         <main>
-            <form className="adminform" onSubmit={updateCompany} action={`/api/companies/${previousEmail}`} method="PUT">
+            <form className="adminform" onSubmit={updateCompany} action={`/api/companies/${id}`} method="PUT">
                 <label>
                     Name:
-                    <input 
+                    <input
                         name="name"
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)}
+                        defaultValue={company?.name}
                         type="text"
-                        required 
+                        required
                     />
                 </label>
-                
+
                 <label>
                     Email:
-                    <input 
-                        name="email" 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        type="email" 
-                        required 
+                    <input
+                        name="email"
+                        defaultValue={company?.email}
+                        type="email"
+                        required
                     />
                 </label>
 
                 <label>
                     Phone:
-                    <input 
+                    <input
                         name="phone"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        type="phone" 
-                        required 
+                        defaultValue={company?.phone}
+                        type="tel"
+                        required
                     />
                 </label>
 
                 <label>
                     Description:
-                    <input 
+                    <input
                         name="description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        type="description" 
-                        required 
+                        defaultValue={company?.description}
+                        type="text"
+                        required
                     />
                 </label>
                 <label>
                     Domain:
-                    <input 
+                    <input
                         name="domain"
-                        value={domain}
-                        onChange={(e) => setDomain(e.target.value)}
-                        type="domain" 
-                        required 
+                        defaultValue={company?.domain}
+                        type="url"
+                        required
                     />
                 </label>
 
-                <button type="submit">Save</button>
+                <input type="submit" value="Save" />
             </form>
-            <NavLink to="/super-admin-company">
+            <NavLink to="/companies">
                 <button className="add-admin-button">Back</button>
             </NavLink>
         </main>
@@ -259,28 +230,24 @@ export function SuperAdminEditCompanyView() {
 
 export function SuperAdminAdminView() {
     const [admins, setAdmins] = useState([]);
-    const [admin, setAdmin] = useState([]);
-    const navigate = useNavigate();
+
+
+
+
 
     function GetAdmins() {
-        fetch("/api/users/3").then(response =>
+        fetch("/api/roles/users/3").then(response =>
             response.json())
             .then(data => setAdmins(data));
     }
 
-    function handleEditAdmin(email) {
-        fetch(`/api/users/3/${email}`)
-            .then(response => response.json())
-            .then(data => {
-                navigate("/super-admin-edit-admin", { state: { admin: data } }); 
-            });
-    }
 
-    function BlockAdminById(email, active) {
-        fetch(`/api/users/block/${email}/${active}`, {
+
+    function BlockAdminById(id, active) {
+        fetch(`/api/users/block/${id}/${active}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify(email, active),
+            body: JSON.stringify(id, active),
         })
             .then(response => {
                 if (response.ok) { console.log("Det Funkade Igen"), GetAdmins() }
@@ -294,28 +261,34 @@ export function SuperAdminAdminView() {
         <div className="super-admin-list-container">
             <ul className="super-admin-list">
 
-                {admins.map(admin =>
-                    <li className="super-admin-list-item" key={admin.id}>
-                        <div>
-                            <p>{admin.name}</p>
-                            <p>Email: {admin.email}</p>
-                            <p>Company: {admin.company}</p>
-                        </div>
-                        <div className="delete-button-div-li">
-                            <button onClick={() => handleEditAdmin(admin.email)}>Edit</button>
-                            <div className="block-button-div-li">
-                                <button className="block-button" onClick={() => BlockAdminById(admin.email, admin.active)}>{admin.active ? "block" : "un-block"}</button>
-                            </div>
-                    </div></li>
+                {admins.map(AdminCard
+
                 )}
 
             </ul>
         </div>
         <NavLink to="/super-admin"><button className="add-admin-button">Back</button></NavLink>
-        <NavLink to="/super-admin-add-admin"><button className="add-admin-button">Add Admin</button></NavLink>
+        <NavLink to="/admins/add"><button className="add-admin-button">Add Admin</button></NavLink>
     </main>;
-}
 
+
+    function AdminCard(admin) {
+
+        return <li className="super-admin-list-item" key={admin.id}>
+            <div>
+                <p>{admin.name}</p>
+                <p>Email: {admin.email}</p>
+                <p>Company: {admin.company}</p>
+            </div>
+            <div className="delete-button-div-li">
+                <NavLink to={"/users/" + admin.id + "/edit"}><button>Edit</button></NavLink>
+                <div className="block-button-div-li">
+                    <button className="block-button" onClick={() => BlockAdminById(admin.id, admin.active)}>{admin.active ? "block" : "un-block"}</button>
+                </div>
+            </div></li>
+
+    }
+}
 export function SuperAdminAddAdminView() {
     const [companies, setCompanies] = useState([]);
 
@@ -327,61 +300,60 @@ export function SuperAdminAddAdminView() {
     }, []);
 
     function postUser(e) {
-    e.preventDefault();
-    const form = e.target;
+        e.preventDefault();
+        const form = e.target;
+        let formData = new FormData(form);
+        let dataObject = Object.fromEntries(formData);
+        dataObject.role = 3;
 
-    let formData = new FormData(form);
-    let dataObject = Object.fromEntries(formData);
-    dataObject.role = 3;
+        let dataJson = JSON.stringify(dataObject);
 
-    let dataJson = JSON.stringify(dataObject);
-
-    fetch(form.action, {
-        headers: { "Content-Type": "application/json" },
-        method: form.method,
-        body: dataJson
-    }).then(response => {
-        if (response.ok) {
-            alert(`Du lade till ${dataObject.name} i databasen 🎉`);
-        } else {
-            alert("Något gick fel ❌");
-        }
-    });
-}
+        fetch(form.action, {
+            headers: { "Content-Type": "application/json" },
+            method: form.method,
+            body: dataJson
+        }).then(response => {
+            if (response.ok) {
+                alert(`Du lade till ${dataObject.name} i databasen 🎉`);
+            } else {
+                alert("Något gick fel ❌");
+            }
+        });
+    }
 
     return (
         <main>
-            <form className="adminform" onSubmit={postUser} action="/api/users/3" method="POST">
+            <form className="adminform" onSubmit={postUser} action="/api/users" method="POST">
                 <label>
                     Name:
-                    <input 
-                        name="name" 
+                    <input
+                        name="name"
                         type="text"
-                        required 
+                        required
                     />
                 </label>
-                
+
                 <label>
                     Email:
-                    <input 
-                        name="email" 
-                        type="email" 
-                        required 
+                    <input
+                        name="email"
+                        type="email"
+                        required
                     />
                 </label>
 
                 <label>
                     Password:
-                    <input 
-                        name="password" 
-                        type="password" 
-                        required 
+                    <input
+                        name="password"
+                        type="password"
+                        required
                     />
                 </label>
 
                 <label>
                     Company:
-                    <select 
+                    <select
                         name="company"
                         required
                     >
@@ -392,23 +364,17 @@ export function SuperAdminAddAdminView() {
                     </select>
                 </label>
 
-                <button type="submit">Save</button>
+                <input type="submit" value="Save"></input>
             </form>
-            <NavLink to={"/super-admin-admin"}><button className="add-admin-button">Back</button></NavLink>
+            <NavLink to={"/admins"}><button className="add-admin-button">Back</button></NavLink>
         </main>
     );
 }
 export function SuperAdminEditAdminView() {
-    const location = useLocation();
-    const admin = location.state?.admin;
+    const { id } = useParams()
     const [companies, setCompanies] = useState([]);
+    const [admin, setAdmin] = useState(null);
 
-    //admin info
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [previousEmail, setPreviousEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [company, setCompany] = useState("");
 
     useEffect(() => {
         fetch("/api/companies")
@@ -418,17 +384,15 @@ export function SuperAdminEditAdminView() {
     }, []);
 
     useEffect(() => {
-        if (admin) {
-            setName(admin.name || null);
-            setEmail(admin.email || null);
-            setPreviousEmail(admin.email || null);
-            setPassword(admin.password || null);
-            setCompany(admin.company || null);
-        }
-    }, [admin]);
+        fetch("/api/users/" + id)
+            .then(response => response.json())
+            .then(data => { setAdmin(data) })
+            .catch(error => console.error("Error fetching user:", error));
 
-    function updateUser(e)
-    {
+    })
+
+
+    function updateUser(e) {
         e.preventDefault();
         const form = e.target;
 
@@ -441,56 +405,52 @@ export function SuperAdminEditAdminView() {
             method: "PUT",
             body: dataJson
         }).then(response => {
-        if (response.ok) {
-            alert(`Du updaterade ${dataObject.name}'s information 🎉`);
-        } else {
-            alert("Något gick fel ❌");
-        }
-    })
+            if (response.ok) {
+                alert(`Du updaterade ${dataObject.name}'s information 🎉`);
+            } else {
+                alert("Något gick fel ❌");
+            }
+        })
     }
 
     return (
         <main>
-            <form className="adminform" onSubmit={updateUser} action={`/api/users/3/${previousEmail}`} method="PUT">
+            <form className="adminform" onSubmit={updateUser} action={`/api/users/${id}`} method="PUT">
                 <label>
                     Name:
-                    <input 
+                    <input
                         name="name"
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)}
+                        defaultValue={admin?.name}
                         type="text"
-                        required 
+                        required
                     />
                 </label>
-                
+
                 <label>
                     Email:
-                    <input 
-                        name="email" 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        type="email" 
-                        required 
+                    <input
+                        name="email"
+                        defaultValue={admin?.email}
+                        type="email"
+                        required
                     />
                 </label>
 
                 <label>
                     Password:
-                    <input 
+                    <input
                         name="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        type="password" 
-                        required 
+                        defaultValue={admin?.password}
+                        type="password"
+                        required
                     />
                 </label>
 
                 <label>
                     Company:
-                    <select 
+                    <select
                         name="company"
-                        value={company} // Set value to admin's company
-                        onChange={(e) => setCompany(e.target.value)}
+                        defaultValue={admin?.company}
                         required
                     >
                         <option value="" disabled hidden>Välj ett företag</option>
@@ -502,9 +462,9 @@ export function SuperAdminEditAdminView() {
                     </select>
                 </label>
 
-                <button type="submit">Save</button>
+                <input type="submit">Save</input>
             </form>
-            <NavLink to="/super-admin-admin">
+            <NavLink to="/admins">
                 <button className="add-admin-button">Back</button>
             </NavLink>
         </main>
