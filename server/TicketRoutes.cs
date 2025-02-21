@@ -13,13 +13,15 @@ public class TicketRoutes
 
         try
         {
-            using var cmd = db.CreateCommand(@" SELECT t.id, t.message, t.status, t.customer, t.product_id, t.customer_agent, t.ticket_category 
-                                                FROM tickets t
-                                                JOIN products p ON t.product_id = p.id
-                                                JOIN companies c ON p.company = c.id
-                                                WHERE c.id = $1; ");
+            using var cmd = db.CreateCommand(@"
+    SELECT t.id, t.message, t.status, t.customer, t.product_id, t.customer_agent, t.ticket_category 
+    FROM tickets t
+    JOIN products p ON t.product_id = p.id
+    JOIN companies c ON p.company = c.id
+    WHERE c.id = $1 AND t.customer_agent IS NULL");
 
-            cmd.Parameters.AddWithValue(company);
+            cmd.Parameters.AddWithValue(company); // Correct parameter assignment
+
 
             using var reader = await cmd.ExecuteReaderAsync();
 
