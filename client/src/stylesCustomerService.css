@@ -21,6 +21,10 @@ main {
     }
 }
 
+.ticket{
+    border: 1px solid black;
+}
+
 .super-admin-button {
     height: 100px;
     width: 200px;

@@ -6,31 +6,36 @@ export default function CustomerService() {
     const [unassignedTickets, setUnassignedTickets] = useState([]);
     const [assignedTickets, setAssignedTickets] = useState([])
     const [tickets, setTickets] = useState([])
-    const CustomerServiceAgent = 2
-
-    function GetTickets()
-    {
-        fetch("/api/tickets")
-            .then((response) => response.json())
-            .then((data) => setTickets(data))
-    }
+    const customerServiceAgent = 2
+    const company = 1
 
     useEffect(() => {
         GetTickets()
     })
 
+    useEffect(() => {
+        getUnassignedTickets();
+    }, []);
+    
+    useEffect(() => {
+        getAssignedTickets();
+    }, []);
+  
+    function GetTickets()
+    {
+        fetch("/api/tickets/" + company )
+            .then((response) => response.json())
+            .then((data) => setTickets(data))
+    }
+
+
     function getUnassignedTickets() {
-        fetch("/api/tickets/unassigned")
+        fetch("/api/tickets/" + company + "/unassigned")
             .then((response) => response.json())
             .then((data) => setUnassignedTickets(data));
 
 
     }
-
-    useEffect(() => {
-        getUnassignedTickets();
-    }, []);
-
 
     function randomiser() {
 
@@ -42,10 +47,10 @@ export default function CustomerService() {
         const newTicket = unassignedTickets[Math.floor(Math.random() * unassignedTickets.length)]
         setTicket(newTicket);
         console.log("Ticket: ", newTicket);
-        fetch(`/api/tickets/${CustomerServiceAgent}/${newTicket.id}`, {
+        fetch("/api/tickets/" + company , {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify({ customer_agent: CustomerServiceAgent, id: newTicket.id })
+            body: JSON.stringify({ customer_agent: customerServiceAgent, id: newTicket.id })
         })
             .then(response => {
                 if (response.ok) { console.log("Det Funkade Igen"), getUnassignedTickets(), getAssignedTickets() }
@@ -54,14 +59,11 @@ export default function CustomerService() {
     }
 
     async function getAssignedTickets() {
-        const response = await fetch(`/api/tickets/${CustomerServiceAgent}`);
+        const response = await fetch("/api/tickets/" + company + customerServiceAgent);
         const data = await response.json();
         setAssignedTickets(data);
     }
 
-    useEffect(() => {
-        getAssignedTickets();
-    }, []);
 
     return (
         <main>
@@ -72,7 +74,7 @@ export default function CustomerService() {
             </section>
             <section className="lower">
                 <div className="yourTickets">
-                    <h2>ASSIGNED TICKETS:</h2>
+                    <h2>YOUR TICKETS:</h2>
                         {assignedTickets.length > 0 ? (
                             <ul>
                                 {assignedTickets.map((ticket) => (

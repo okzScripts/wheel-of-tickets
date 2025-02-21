@@ -7,13 +7,20 @@ public class TicketRoutes
 {
     public record Ticket(int id, string message, int status, int customer, int product_id, int? customer_agent, int ticket_category);
 
-    public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetTickets(NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetTickets(int company, NpgsqlDataSource db)
     {
         List<Ticket> tickets = new List<Ticket>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT id, message, status, customer, product_id, customer_agent, ticket_category FROM tickets");
+            using var cmd = db.CreateCommand(@" SELECT t.id, t.message, t.status, t.customer, t.product_id, t.customer_agent, t.ticket_category 
+                                                FROM tickets t
+                                                JOIN products p ON t.product_id = p.id
+                                                JOIN companies c ON p.company = c.id
+                                                WHERE c.id = $1; ");
+
+            cmd.Parameters.AddWithValue(company);
+
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -38,13 +45,20 @@ public class TicketRoutes
         }
     }
 
-    public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetUnassignedTickets(NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetUnassignedTickets(int company, NpgsqlDataSource db)
     {
         List<Ticket> tickets = new List<Ticket>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT id, message, status, customer, product_id, customer_agent, ticket_category FROM tickets WHERE customer_agent IS NULL ORDER BY ID ASC");
+            using var cmd = db.CreateCommand(@"
+            SELECT t.id, t.message, t.status, t.customer, t.product_id, t.customer_agent, t.ticket_category
+            FROM tickets t
+            JOIN products p ON t.product_id = p.id
+            WHERE t.customer_agent IS NULL AND p.company = $1
+            ORDER BY t.id ASC");
+
+            cmd.Parameters.AddWithValue(company);
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
