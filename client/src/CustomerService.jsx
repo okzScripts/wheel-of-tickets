@@ -107,13 +107,13 @@ export default function CustomerService() {
                     {tickets.length > 0 ? (
                         <ul className="ticket-list">
                             {tickets.map((ticket) => (
-                                <NavLink><li key={ticket.id} className="ticket-list-item">
+                                <li key={ticket.id} className="ticket-list-item">
                                     <h2>{ticket.message}</h2>
                                     <div className="ticket-info">
                                         <p>Ticket id {ticket.id}</p>
                                         {ticket.customer_agent ? <p><b>Assigned to: Customer agent</b> {ticket.customer_agent}</p> : ""}
                                     </div>
-                                </li></NavLink>
+                                </li>
                             ))}
                         </ul>
                     ) : (
