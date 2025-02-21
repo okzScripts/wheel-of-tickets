@@ -1,10 +1,10 @@
-import "./stylesCustomerService.css"
+import "./styles.css"
 import { useState, useEffect } from "react";
 
 export default function CustomerService() {
-    const [ticket, setTicket] = useState(null);
+    //const [ticket, setTicket] = useState(null);
     const [unassignedTickets, setUnassignedTickets] = useState([]);
-    const [assignedTickets, setAssignedTickets] = useState([])
+    const [yourAssignedTickets, setYourAssignedTickets] = useState([])
     const [tickets, setTickets] = useState([])
     const customerServiceAgent = 2
     const company = 1
@@ -18,7 +18,7 @@ export default function CustomerService() {
     }, []);
     
     useEffect(() => {
-        getAssignedTickets();
+        getYourAssignedTickets();
     }, []);
   
     function GetTickets()
@@ -33,35 +33,41 @@ export default function CustomerService() {
         fetch("/api/tickets/" + company + "/unassigned")
             .then((response) => response.json())
             .then((data) => setUnassignedTickets(data));
-
-
     }
 
-    function randomiser() {
+    async function randomiser() {
+    if (unassignedTickets.length === 0) {
+        console.error("No unassigned tickets available.");
+        return;
+    }
 
-        if (unassignedTickets.length === 0) {
-            console.warn("No unassigned tickets available");
-            return;
-        }
+    const randomTicket = unassignedTickets[Math.floor(Math.random() * unassignedTickets.length)];
 
-        const newTicket = unassignedTickets[Math.floor(Math.random() * unassignedTickets.length)]
-        setTicket(newTicket);
-        console.log("Ticket: ", newTicket);
-        fetch("/api/tickets/" + company , {
+    if (!randomTicket) {
+        console.error("Failed to select a random ticket.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/tickets/${randomTicket.id}/${customerServiceAgent}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify({ customer_agent: customerServiceAgent, id: newTicket.id })
-        })
-            .then(response => {
-                if (response.ok) { console.log("Det Funkade Igen"), getUnassignedTickets(), getAssignedTickets() }
-            })
+        });
 
+        const result = await response.text();
+        console.log(result);
+    await GetTickets();
+    await getUnassignedTickets();
+    await getYourAssignedTickets();
+    } catch (error) {
+        console.error("Error assigning ticket:", error);
     }
+}
 
-    async function getAssignedTickets() {
-        const response = await fetch("/api/tickets/" + company + customerServiceAgent);
+    async function getYourAssignedTickets() {
+        const response = await fetch("/api/tickets/" + company + "/" + customerServiceAgent);
         const data = await response.json();
-        setAssignedTickets(data);
+        setYourAssignedTickets(data);
     }
 
 
@@ -75,9 +81,9 @@ export default function CustomerService() {
             <section className="lower">
                 <div className="yourTickets">
                     <h2>YOUR TICKETS:</h2>
-                        {assignedTickets.length > 0 ? (
-                            <ul>
-                                {assignedTickets.map((ticket) => (
+                        {yourAssignedTickets.length > 0 ? (
+                            <ul className="list">
+                                {yourAssignedTickets.map((ticket) => (
                                     <li key={ticket.id}>
                                         <h2>{ticket.message}</h2>
                                         <p>Ticket id: {ticket.id}</p>
