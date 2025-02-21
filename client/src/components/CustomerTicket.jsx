@@ -1,43 +1,46 @@
 import { useEffect, useState } from "react";
 
 export default function CustomerTicket() {
-    
-    const [companies, setCompanies] = useState([]);
-    const [products, setProducts] = useState([]);
-    const [categories, setCategories] = useState([]);
 
-  
-    useEffect(() => {
-        fetch("/api/companies")
-            .then((response) => response.json())
-            .then((data) => setCompanies(data))
-            .catch((error) => console.error("Error fetching companies:", error));
-    }, []);
-
-
-    useEffect(() => {
-        fetch("/api/products")
-            .then((response) => response.json())
-            .then((data) => setProducts(data))
-            .catch((error) => console.error("Error fetching products:", error));
-    }, []);
-
-    
-    useEffect(() => {
-        fetch("/api/categories")
-            .then((response) => response.json())
-            .then((data) => setCategories(data))
-            .catch((error) => console.error("Error fetching categories:", error));
-    }, []);
-
-   
     const [companyPick, setCompanyPick] = useState("");
     const [productPick, setProductPick] = useState("");
     const [categoryPick, setCategoryPick] = useState("");
     const [message, setMessage] = useState("");
 
     const [inputmessage, setInputMessage] = useState("");
-   
+    
+    const [companies, setCompanies] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+
+
+    useEffect(() => {
+        fetch("/api/CompanyName")
+            .then((response) => response.json())
+            .then((data) => setCompanies(data))
+            .catch((error) => console.error("Error fetching categories:", error));
+    }, []);
+
+    useEffect(() => {
+        if(companyPick){
+            fetch(`/api/products/${companyPick}`)
+                .then((response) => response.json())
+                .then((data) => setProducts(data))
+                .catch((error) => console.error("Error fetching products:", error));
+        }
+    }, [companyPick]);
+      
+    useEffect(() => {
+        fetch("/api/categories")
+            .then((response) => response.json())
+            .then((data) => setCategories(data))
+            .catch((error) => console.error("Error fetching categories:", error));
+    }, []);
+    
+    const handleCompanyOnChange = (e) => {
+        setCompanyPick(e.target.value);
+    }  
+       
     const handleOnSubmit = async (e) => {
         e.preventDefault();
         const formData = {
@@ -58,7 +61,7 @@ export default function CustomerTicket() {
             }
             setInputMessage("Ticket created successfully!");
         } catch (error) {
-            setInputMessage("Error creating ticket: " + error.inputMessage);
+            setInputMessage("Error creating ticket: " + error.message);
         }
     };
 
@@ -72,8 +75,7 @@ export default function CustomerTicket() {
                         <select
                             name="company"
                             value={companyPick}
-                            onChange={(e) => setCompanyPick(e.target.value)}
-                        >
+                            onChange={(e) => setCompanyPick(e.target.value)}>
                             <option value=""> Select Company </option> 
                             {companies.map((company) => (
                                 <option className="companies" key={company.id} value={company.id}>
@@ -85,12 +87,13 @@ export default function CustomerTicket() {
                         <h4>Select Product</h4>
                         <select
                             name="product"
+                            disabled={!companyPick}
                             value={productPick}
                             onChange={(e) => setProductPick(e.target.value)}>
                             <option value=""> Select Product </option>
                             {products.map((product) => (
                                 <option className="products" key={product.id} value={product.id}>
-                                    {product.product_name}
+                                    {product.name}
                                 </option>
                             ))}
                         </select>
@@ -98,6 +101,7 @@ export default function CustomerTicket() {
                         <h4>Select Ticket Category</h4>
                         <select
                             name="category"
+                            disabled={!productPick}
                             value={categoryPick}
                             onChange={(e) => setCategoryPick(Number(e.target.value))}>
                             <option value=""> Select Category </option>

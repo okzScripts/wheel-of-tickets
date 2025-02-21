@@ -6,6 +6,8 @@ namespace server;
 public class TicketRoutes
 {
     public record Ticket(int id, string message, int status, int customer, int product_id, int? customer_agent, int ticket_category);
+    
+    public record NewTicket(int companyId, int productId, int categoryId, string message);
 
     public static async Task<Results<Ok<Ticket>, BadRequest<string>>> GetRandomTicket(NpgsqlDataSource db)
     {
@@ -127,6 +129,34 @@ public class TicketRoutes
         catch (Exception ex)
         {
             return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
+        }
+    }
+    
+    public static async Task<Results<Ok<int>, BadRequest<string>>> CreateTicket(NewTicket ticket, NpgsqlDataSource db)
+    {
+        try
+        {
+           
+            int status = 1;
+
+            using var cmd = db.CreateCommand(
+                @"INSERT INTO tickets (message, status, customer, product_id, ticket_category)
+                  VALUES ($1, $2, $3, $4, $5) RETURNING id"
+            );
+            cmd.Parameters.AddWithValue(ticket.message);
+            cmd.Parameters.AddWithValue(status);
+            cmd.Parameters.AddWithValue(ticket.companyId); // ska vara customer id efter att vi lagt till login 
+            cmd.Parameters.AddWithValue(ticket.productId);
+            cmd.Parameters.AddWithValue(ticket.categoryId);
+
+            var newId = await cmd.ExecuteScalarAsync();
+
+            
+            return TypedResults.Ok(Convert.ToInt32(newId));
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
     }
 }

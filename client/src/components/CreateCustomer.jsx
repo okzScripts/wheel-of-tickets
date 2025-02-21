@@ -1,4 +1,6 @@
 import React, {useState} from "react";
+import {useNavigate, useLocation} from "react-router-dom";
+
 
 const CreateCustomer = () => 
 {
@@ -14,9 +16,8 @@ const CreateCustomer = () =>
         const {name, value} = e.target;
         setFormData((prevData) => ({ ...prevData, [name]:value}));
     };
-
-
-
+    
+    
     const handleOnSubmit = async (e) => {
         e.preventDefault();
         
@@ -34,7 +35,7 @@ const CreateCustomer = () =>
         
         try {
 
-            const response = await fetch("/api/users/1", {
+            const response = await fetch("/api/users", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestBody)
@@ -44,7 +45,9 @@ const CreateCustomer = () =>
                 throw new Error("User not created");
             }
 
-            setInputMessage("User created successfully");
+            setInputMessage("User created successfully");               
+
+                
         } catch (error){
             setInputMessage(error.inputMessage)
         }

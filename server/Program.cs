@@ -11,6 +11,7 @@ builder.Services.AddSingleton<NpgsqlDataSource>(db);
 
 var app = builder.Build();
 app.MapGet("/api/companies", CompanyRoutes.GetCompanies);
+app.MapGet("/api/CompanyName", CompanyRoutes.GetCompanies);
 app.MapGet("/api/companies/{id}", CompanyRoutes.GetCompany);
 app.MapPost("/api/companies", CompanyRoutes.AddCompany);
 app.MapPut("/api/companies/{id}", CompanyRoutes.EditCompany);
@@ -27,9 +28,12 @@ app.MapPost("/api/users", UserRoutes.AddUser);
 app.MapGet("/api/products/{company}", ProductRoutes.GetProducts);
 app.MapPost("/api/products", ProductRoutes.AddProduct);
 
+app.MapPost("/api/customerTicket", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/unassigned", TicketRoutes.GetUnassignedTickets);
 app.MapPut("/api/tickets/{customer_agent}/{id}", TicketRoutes.AssignTicket);
 app.MapGet("/api/tickets/{customer_agent}", TicketRoutes.GetAssignedTickets);
+
+app.MapGet("/api/categories", CompanyRoutes.GetCategories);
 
 //app.MapPost("/api/create-user", UserRoutes.AddUser);
 

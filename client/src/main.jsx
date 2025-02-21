@@ -16,6 +16,7 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         <Route index element={<LoginPage />} />
         <Route path='/customer' element={<CreateCustomer />} />
+        <Route path='/customer/addTicket' element={<CustomerTicket />} />
         <Route path='/super-admin' element={<SuperAdminView />} />
         <Route path='/companies' element={<SuperAdminCompanyView />} />
         <Route path='/companies/add' element={<SuperAdminAddCompanyView />} />

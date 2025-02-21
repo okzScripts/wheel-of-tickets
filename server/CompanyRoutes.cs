@@ -11,10 +11,9 @@ public class CompanyRoutes
 
 
     public record Company(int id, string name, string email, string phone, string description, string domain, bool active);
-
    
     public record Category(int id, string category_name);
-    public record Ticket(int companyId, int productId, int categoryId, string message);
+    
     public record Product(int id, string product_name);
     
     public static async Task<Results<Ok<List<Company>>, BadRequest<string>>> GetCompanies(NpgsqlDataSource db)
@@ -45,12 +44,11 @@ public class CompanyRoutes
         catch (Exception ex)
         {
             Console.WriteLine();
-            return TypedResults.BadRequest($"Error: {ex.Message}");
-           
             return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
     }
 
+   
    
     public static async Task<Results<Ok<List<Category>>, BadRequest<string>>> GetCategories(NpgsqlDataSource db)
     {
@@ -106,33 +104,7 @@ public class CompanyRoutes
         }
     }
     
-    public static async Task<Results<Ok<int>, BadRequest<string>>> CreateTicket(Ticket ticket, NpgsqlDataSource db)
-    {
-        try
-        {
-           
-            int status = 1;
-
-            using var cmd = db.CreateCommand(
-                @"INSERT INTO tickets (message, status, customer, product_id, ticket_category)
-                  VALUES ($1, $2, $3, $4, $5) RETURNING id"
-            );
-            cmd.Parameters.AddWithValue(ticket.message);
-            cmd.Parameters.AddWithValue(status);
-            cmd.Parameters.AddWithValue(ticket.companyId); // ska vara customer id efter att vi lagt till login 
-            cmd.Parameters.AddWithValue(ticket.productId);
-            cmd.Parameters.AddWithValue(ticket.categoryId);
-
-            var newId = await cmd.ExecuteScalarAsync();
-
-            
-            return TypedResults.Ok(Convert.ToInt32(newId));
-        }
-        catch (Exception ex)
-        {
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
-        }
-    }
+   
 
     public static async Task<Results<Ok<Company>, BadRequest<string>>> GetCompany(int id, NpgsqlDataSource db)
     {
