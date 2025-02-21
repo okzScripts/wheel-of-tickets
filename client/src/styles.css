@@ -4,6 +4,7 @@ body {
   font-size: 16px;
   background-color: rgb(48, 48, 48);
   font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
 }
 button {
   font-family: Arial, Helvetica, sans-serif;
@@ -173,6 +174,66 @@ button {
   > label {
     display: flex;
     justify-content: space-between;
+    color: white;
+  }
+}
+.upper-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30%;
+  width: 100%;
+}
+.lower-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 64%;
+  width: 100%;
+}
+.tickets-left {
+  width: 45%;
+  > h2 {
+    font-size: 18px;
+    color: white;
+    text-align: center;
+  }
+}
+.tickets-right {
+  width: 45%;
+  > h2 {
+    font-size: 18px;
+    color: white;
+    text-align: center;
+  }
+}
+.ticket-list {
+  display: flex;
+  flex-wrap: wrap;
+  overflow: auto;
+  width: 100%;
+  max-height: 85%;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ticket-list-item {
+  width: 80%;
+  height: auto;
+  border: 1px solid white;
+  cursor: pointer;
+  > h2 {
+    font-size: 16px;
+    color: rgb(255, 189, 114);
+    text-align: center;
+  }
+}
+.ticket-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  > p {
     color: white;
   }
 }
