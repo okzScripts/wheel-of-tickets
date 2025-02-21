@@ -1,13 +1,15 @@
 import "./styles.css"
 import { useState, useEffect } from "react";
+import { NavLink, useNavigate, useLocation, useParams } from "react-router";
+import logo from './assets/logo.png';
 
 export default function CustomerService() {
     //const [ticket, setTicket] = useState(null);
     const [unassignedTickets, setUnassignedTickets] = useState([]);
     const [yourAssignedTickets, setYourAssignedTickets] = useState([])
     const [tickets, setTickets] = useState([])
-    const customerServiceAgent = 2
-    const company = 1
+    const customerServiceAgent = 29
+    const company = 2
 
     useEffect(() => {
         GetTickets()
@@ -72,22 +74,25 @@ export default function CustomerService() {
 
 
     return (
-        <main>
-            <section className="upper">
+        <main className="form-main">
+            <nav className="navbar"><img src={logo}></img></nav>
+            <section className="upper-section">
                 <div className="rollToGetATicket">
-                    <button onClick={randomiser}>Roll to get a ticket</button>
+                    <button onClick={randomiser} className="middle-button">Roll to get a ticket</button>
                 </div>
             </section>
-            <section className="lower">
-                <div className="yourTickets">
+            <section className="lower-section">
+                <div className="tickets-left">
                     <h2>YOUR TICKETS:</h2>
                         {yourAssignedTickets.length > 0 ? (
-                            <ul className="list">
+                            <ul className="ticket-list">
                                 {yourAssignedTickets.map((ticket) => (
-                                    <li key={ticket.id}>
+                                    <li key={ticket.id} className="ticket-list-item">
                                         <h2>{ticket.message}</h2>
+                                        <div className="ticket-info">
                                         <p>Ticket id: {ticket.id}</p>
-                                        <p>Agent id:{ticket.customer_agent}</p>
+                                            <p>Agent id:{ticket.customer_agent}</p>
+                                        </div>
                                     </li>
                                 ))}
                             </ul>
@@ -97,22 +102,22 @@ export default function CustomerService() {
                         )}
                  
                 </div>
-                <div className="allTickets">
+                <div className="tickets-right">
                     <h2>ALL TICKETS:</h2>
                     {tickets.length > 0 ? (
-                        <ul>
+                        <ul className="ticket-list">
                             {tickets.map((ticket) => (
-                                <li key={ticket.id}>
+                                <NavLink><li key={ticket.id} className="ticket-list-item">
                                     <h2>{ticket.message}</h2>
-                                    <p>Ticket id {ticket.id}</p>
-                                    {ticket.customer_agent ?
-                                        <p><b>Assigned to: Customer agent</b> {ticket.customer_agent}</p>
-                                    : ""}
-                                </li>
+                                    <div className="ticket-info">
+                                        <p>Ticket id {ticket.id}</p>
+                                        {ticket.customer_agent ? <p><b>Assigned to: Customer agent</b> {ticket.customer_agent}</p> : ""}
+                                    </div>
+                                </li></NavLink>
                             ))}
                         </ul>
                     ) : (
-                        <p>Inga tickets</p>
+                        <ul className="ticket-list"><div className="ticket-list-item"><div className="ticket-info"><p>Inga tickets</p></div></div></ul>
                     )}
                 </div>
             </section>
