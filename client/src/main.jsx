@@ -5,9 +5,9 @@ import CustomerTicket from './components/CustomerTicket.jsx'
 import "./styles.css"
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router'
 import { SuperAdminView, SuperAdminCompanyView, SuperAdminAdminView, SuperAdminAddAdminView, SuperAdminEditAdminView, SuperAdminAddCompanyView, SuperAdminEditCompanyView } from "./SuperAdminView.jsx"
-import { AdminView, AdminAddProductView, AdminEditProductView } from "./AdminView.jsx"
-import LoginPage from './components/LoginPage.jsx'
+import { AdminView, AdminAddProductView, AdminEditProductView, AdminEditSupportView, AdminAddSupportView } from "./AdminView.jsx"
 import CustomerService from './CustomerService.jsx'
+import LoginPage from './components/LoginPage.jsx'
 
 
 createRoot(document.getElementById('root')).render(
@@ -25,9 +25,12 @@ createRoot(document.getElementById('root')).render(
         <Route path='/admins/add' element={<SuperAdminAddAdminView />} />
         <Route path='/customer-service' element={<CustomerService />} />
         <Route path='/users/:id/edit' element={<SuperAdminEditAdminView />} />
-        <Route path='/admin-add-product' element={<AdminAddProductView />} />
+
         <Route path='/admin' element={<AdminView />} />
-        <Route path='/admin-edit-product' element={<AdminEditProductView />} />
+        <Route path='/product/:id/add' element={<AdminAddProductView />} />
+        <Route path='/product/:id/edit' element={<AdminEditProductView />} />
+        <Route path='/agents/:id/edit' element={<AdminEditSupportView />} />
+        <Route path='/agents/:companyID/add' element={<AdminAddSupportView />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

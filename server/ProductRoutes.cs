@@ -10,7 +10,7 @@ public class ProductRoutes()
 
 
 
-    public record Product(int id, string Name, string Description, int Price, string Category, int Company);
+    public record Product(int id, string Name, string Description, int Price, string Category, int Company, bool active);
 
     public static async Task<Results<Ok<List<Product>>, BadRequest<string>>> GetProducts(int company, NpgsqlDataSource db)
     {
@@ -30,19 +30,85 @@ public class ProductRoutes()
                     reader.GetString(2),
                     reader.GetInt32(3),
                     reader.GetString(4),
-                    reader.GetInt32(5)
+                    reader.GetInt32(5),
+                    reader.GetBoolean(6)
                 ));
             }
 
-            // Return the list of companies with a 200 OK response
             return TypedResults.Ok(products);
         }
         catch (Exception ex)
         {
-            // Return a 400 BadRequest response with the error message
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+
+            return TypedResults.BadRequest($"Ett fel uppstod: {ex.Message}");
         }
     }
+
+    public static async Task<Results<Ok<string>, BadRequest<string>>> BlockProductById(int id, bool active, NpgsqlDataSource db)
+    {
+        try
+        {
+
+            using var cmd = db.CreateCommand("UPDATE products SET active = $1 WHERE id = $2");
+            cmd.Parameters.AddWithValue(!active);
+            cmd.Parameters.AddWithValue(id);
+
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+            if (rowsAffected > 0)
+            {
+                return TypedResults.Ok("Du har blockat eller unblockat en produkt");
+            }
+            else
+            {
+                return TypedResults.BadRequest("Det funkade inte att blocka..");
+            }
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"Det blev fel. {ex.Message}");
+        }
+    }
+
+
+    public static async Task<Results<Ok<Product>, BadRequest<string>>> GetProduct(int ProductId, NpgsqlDataSource db)
+    {
+        try
+        {
+            using var cmd = db.CreateCommand("SELECT * FROM products WHERE id=$1");
+            cmd.Parameters.AddWithValue(ProductId);
+
+
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            // Deklarera admin innan if-satsen
+            Product? product = null;
+
+            if (await reader.ReadAsync())
+            {
+                product = new Product(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.GetInt32(3),
+                    reader.GetString(4),
+                    reader.GetInt32(5),
+                    reader.GetBoolean(6)
+
+                );
+
+                return TypedResults.Ok(product);
+            }
+
+            return TypedResults.BadRequest("Ingen produkt med det givna namnet kunde hittas");
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"Ett fel uppstod: {ex.Message}");
+        }
+    }
+
+
+
 
 
 
@@ -70,16 +136,49 @@ public class ProductRoutes()
             }
             else
             {
-                return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
+                return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till produkten");
             }
         }
         catch (PostgresException ex) when (ex.SqlState == "23505") // Hanterar unikhetsfel
         {
-            return TypedResults.BadRequest("Email-adressen är redan registrerad!");
+            return TypedResults.BadRequest("produkten är redan registrerad!");
         }
         catch (Exception ex)
         {
             return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
         }
     }
+
+
+
+    public record PutProductDTO(string Name, string Description, int Price, string Category, int Company, int id);
+    public static async Task<IResult> EditProduct(PutProductDTO product, NpgsqlDataSource db)
+    {
+        try
+        {
+            using var cmd = db.CreateCommand(
+                "UPDATE products SET product_name=$1, product_description=$2, price=$3, product_category=$4 WHERE company=$5 AND id=$6");
+
+
+            cmd.Parameters.AddWithValue(product.Name);
+            cmd.Parameters.AddWithValue(product.Description);
+            cmd.Parameters.AddWithValue(product.Price);
+            cmd.Parameters.AddWithValue(product.Category);
+            cmd.Parameters.AddWithValue(product.Company);
+            cmd.Parameters.AddWithValue(product.id);
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+            if (rowsAffected == 0)
+            {
+                return TypedResults.NotFound("Product kunde inte hittas");
+            }
+
+            return TypedResults.Ok("Produkt har uppdateras");
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"ett fel har inträffat: {ex.Message}");
+        }
+    }
+
 }

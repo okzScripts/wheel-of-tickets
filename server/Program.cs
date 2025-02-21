@@ -25,9 +25,16 @@ app.MapPut("/api/users/{id}", UserRoutes.EditUser);
 app.MapPut("/api/users/block/{id}/{active}", UserRoutes.BlockUser);
 app.MapPost("/api/users", UserRoutes.AddUser);
 
-app.MapGet("/api/products/{company}", ProductRoutes.GetProducts);
+app.MapGet("/api/products/company/{company}", ProductRoutes.GetProducts);
+app.MapGet("/api/products/{ProductId}", ProductRoutes.GetProduct);
 app.MapPost("/api/products", ProductRoutes.AddProduct);
+app.MapPut("/api/products", ProductRoutes.EditProduct);
+app.MapPut("/api/products/block/{id}/{active}", ProductRoutes.BlockProductById);
 
+app.MapGet("/api/tickets/{company}", TicketRoutes.GetTickets);
+app.MapGet("/api/tickets/{company}/unassigned", TicketRoutes.GetUnassignedTickets);
+app.MapPut("/api/tickets/{id}/{customer_agent}", TicketRoutes.AssignTicket);
+app.MapGet("/api/tickets/{company}/{customer_agent}", TicketRoutes.GetAssignedTickets);
 app.MapPost("/api/customerTicket", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/unassigned", TicketRoutes.GetUnassignedTickets);
 app.MapPut("/api/tickets/{customer_agent}/{id}", TicketRoutes.AssignTicket);
