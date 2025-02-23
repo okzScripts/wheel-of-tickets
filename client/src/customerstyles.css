@@ -1,0 +1,73 @@
+﻿/* Ensure all select and textarea fields are the same width */
+select, textarea, input {
+    width: 100%;
+    padding: 10px;
+    margin: 0.5rem 0;
+    border-radius: 10px;
+    background-color: #333;
+    color: white;
+    font-size: 16px;
+    border: 1px solid #ccc;
+}
+
+/* Align the form centrally */
+.ticket-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 2rem;
+}
+
+/* Adjust form fields for mobile and larger screen sizes */
+.ticket-form {
+    width: 100%;
+    max-width: 500px; /* Ensure it doesn't get too wide */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Center the buttons */
+button {
+    width: 100%;
+    max-width: 200px;
+    background-color: #46b152;
+    border-radius: 20px;
+    padding: 10px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    align-self: center;
+}
+
+/* Add margin to input and select labels */
+label {
+    margin-bottom: 5px;
+}
+
+/* Adjust the header */
+.ticket-selection-tag {
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* For responsiveness - adjust for smaller screens */
+@media (max-width: 600px) {
+    .ticket-form {
+        padding: 1rem;
+    }
+
+    .ticket-selection-tag {
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+    }
+}

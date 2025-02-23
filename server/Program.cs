@@ -11,7 +11,6 @@ builder.Services.AddSingleton<NpgsqlDataSource>(db);
 
 var app = builder.Build();
 app.MapGet("/api/companies", CompanyRoutes.GetCompanies);
-app.MapGet("/api/CompanyName", CompanyRoutes.GetCompanies);
 app.MapGet("/api/companies/{id}", CompanyRoutes.GetCompany);
 app.MapPost("/api/companies", CompanyRoutes.AddCompany);
 app.MapPut("/api/companies/{id}", CompanyRoutes.EditCompany);
