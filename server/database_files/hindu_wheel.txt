@@ -20,11 +20,20 @@ create table companies
     email       varchar not null,
     phone       varchar,
     description varchar,
-    domain      varchar
+    domain      varchar, 
+    active   boolean not null
 );
 
 alter table companies
     owner to postgres;
+
+alter table companies
+    alter column active set default true;
+    
+alter table companies
+    add constraint companies_unique_email unique (email),
+    add constraint companies_unique_phone unique (phone),
+    add constraint companies_unique_domain unique (domain); 
 
 create table products
 (
@@ -37,11 +46,17 @@ create table products
     product_category    varchar,
     company             integer not null
         constraint products_companies_id_fk
-            references companies
+            references companies,
+    active bool default true not null
 );
 
 alter table products
     owner to postgres;
+
+alter table products
+    add constraint products_unique_product_x_company   unique (product_name,company);
+
+
 
 create table ticket_status
 (
@@ -73,9 +88,9 @@ create table users
     name     varchar not null,
     email    varchar not null,
     password varchar not null,
-    company  integer
-        constraint users_companies_id_fk
-            references companies,
+    company integer 
+        constraint users_company_fk 
+        references companies, 
     role     integer
         constraint users_roles_id_fk
             references roles,
@@ -85,8 +100,26 @@ create table users
 alter table users
     alter column active set default true;
 
+alter table public.users
+    add constraint users_unique_email unique (email);
+
+
 alter table users
     owner to postgres;
+
+
+create table public.users_x_companies
+(
+    user_id integer
+        constraint users_x_companies_users_id_fk
+            references public.users,
+    company integer
+        constraint users_x_companies_companies_id_fk
+            references public.companies,
+    constraint users_x_companies_pk
+        primary key (user_id, company)
+);
+
 
 create table tickets
 (
