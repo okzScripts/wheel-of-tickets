@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router";
 import logo from '../assets/logo.png';
-import "../customerstyles.css"
+import "../styles.css"
 export default function CustomerTicket() {
 
     const [companyPick, setCompanyPick] = useState("");

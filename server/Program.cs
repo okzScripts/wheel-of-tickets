@@ -35,10 +35,6 @@ app.MapGet("/api/tickets/{company}/unassigned", TicketRoutes.GetUnassignedTicket
 app.MapPut("/api/tickets/{id}/{customer_agent}", TicketRoutes.AssignTicket);
 app.MapGet("/api/tickets/{company}/{customer_agent}", TicketRoutes.GetAssignedTickets);
 app.MapPost("/api/customerTicket", TicketRoutes.CreateTicket);
-app.MapGet("/api/tickets/unassigned", TicketRoutes.GetUnassignedTickets);
-app.MapPut("/api/tickets/{customer_agent}/{id}", TicketRoutes.AssignTicket);
-app.MapGet("/api/tickets/{customer_agent}", TicketRoutes.GetAssignedTickets);
-
 app.MapGet("/api/categories", CompanyRoutes.GetCategories);
 
 //app.MapPost("/api/create-user", UserRoutes.AddUser);
