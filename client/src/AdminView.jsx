@@ -1,13 +1,13 @@
 import { BrowserRouter, NavLink, useFetcher, useNavigate, useLocation, useParams } from "react-router";
 import "./adminViewStyle.css";
 import { createContext, useEffect, useState, use } from "react";
+import logo from './assets/logo.png';
 
 const adminInfoContext = createContext({});
-const navigateContext = createContext({})
 
 export function AdminView() {
     //
-    const navigate = useNavigate();
+    
     const [companyId, setCompanyId] = useState(1);
 
 
@@ -15,23 +15,22 @@ export function AdminView() {
 
 
 
-    return <navigateContext.Provider value={navigate}>
-        <adminInfoContext.Provider value={companyId} >
-            <main>
-                <ProductList />
-                <SupportList />
-            </main>
+    return <adminInfoContext.Provider value={companyId} >
+            <main className="option-main">
+            <div className="big-button-container">
+            <NavLink to="/products"><button className="big-button">Products</button></NavLink>
+            <NavLink to="/agents"><button className="big-button">Support Agents</button></NavLink>
+        </div>
+    </main>
         </adminInfoContext.Provider>
-    </navigateContext.Provider>
 }
 
 
 
-function ProductList() {
+export function ProductView() {
 
     const [products, setProducts] = useState([]);
-    const companyId = use(adminInfoContext);
-    const navigate = use(navigateContext);
+    const companyId = 1;
 
 
     function BlockProductById(id, active) {
@@ -56,43 +55,41 @@ function ProductList() {
 
 
 
-    return <>
-        <h1 className="admin-section-header">Products</h1>
-        <div className="product-list-container">
-            <ul className="product-list">
+    return <main>
+        <nav className="navbar"><img src={logo}></img> <NavLink to="/admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+        <section className="header-section"><h1>All Products</h1></section>
+            <ul className="list">
                 {products.map(ProductCard)}
-            </ul>
-            <NavLink to={"/product/" + companyId + "/add"}><button className="add-product">Add product</button> </NavLink>
-        </div>
-    </>
+        </ul>
+        <section className="content-box">
+            <NavLink to={"/product/" + companyId + "/add"}><button className="middle-button">Add product</button> </NavLink>
+        </section>
+    </main>
 
 
     function ProductCard(product) {
-        return <li className="product-list-item" key={product.id}>
-            <div>
-                <p>{product.name}</p>
-            </div>
-            <div className="edit-product" >
-                <NavLink to={"/product/" + product.id + "/edit"}>
-                    <button >edit</button>
-                </NavLink>
-            </div>
-            <div className="block-button-div-li">
-                <button onClick={() => BlockProductById(product.id, product.active)}>{product.active ? "block" : "un-block"}</button>
-            </div>
-        </li>
-
+        return <li className="list-item" key={product.id}>
+                <div className="card-info">
+                    <p><strong>Name:</strong><br/>{product.name}</p><br/>
+                    <p><strong>Price:</strong><br/>{product.price}</p><br/>
+                    <p><strong>Category:</strong><br/>{product.category}</p><br/>
+                </div>
+                <div className="card-buttons">
+                    <NavLink to={"/product/" + product.id + "/edit"}><button>Edit</button></NavLink>
+                    <button className="small-button" onClick={() => BlockProductById(product.id, product.active)}>{product.active ? "block" : "un-block"}</button>
+                </div>
+                </li>
     }
 
 }
 
 
 
-function SupportList() {
+export function SupportView() {
 
     const [supports, setSupports] = useState([]);
 
-    const companyId = use(adminInfoContext);
+    const companyId = 1;
 
 
     function BlockSupportById(id, active) {
@@ -112,32 +109,27 @@ function SupportList() {
             response.json())
             .then(data => setSupports(data));
     }, [BlockSupportById]);
-    return <>
-        <h1 className="admin-section-header">Support Agents</h1>
-        <div className="support-list-container">
-            <ul className="support-list">
-                {supports.map(AgentCard
-
-                )}
-
-            </ul>
-            <NavLink to={`/agents/${companyId}/add`}><button className="add-support">Add Support Agent</button></NavLink>
-        </div>
-    </>
+    return <main>
+         <nav className="navbar"><img src={logo}></img> <NavLink to="/admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+        <section className="header-section"><h1>All Products</h1></section>
+            <ul className="list">
+                {supports.map(AgentCard)}
+        </ul>
+        <section className="content-box">
+            <NavLink to={`/agents/${companyId}/add`}><button className="middle-button">Add Support Agent</button></NavLink>
+        </section>
+    </main>
     function AgentCard(support) {
 
-        return <li className="support-list-item" key={support.id}>
-            <div>
-                <p>{support.name}</p>
-                <p>Email: {support.email}</p>
+        return <li className="list-item" key={support.id}>
+            <div className="card-info">
+                <p><strong>Name:</strong><br/>{support.name}</p><br/>
+                <p><strong>Email:</strong><br/>{support.email}</p><br/>
             </div>
-            <div className="delete-button-div-li">
-                <NavLink to={`/agents/${support.id}/edit`}><button>Edit</button></NavLink>
-            </div>
-            <div className="block-button-div-li">
-                <button className="block-button" onClick={() => BlockSupportById(support.id, support.active)}>{support.active ? "block" : "un-block"}</button>
-            </div>
-
+            <div className="card-buttons">
+                    <NavLink to={`/agents/${support.id}/edit`}><button>Edit</button></NavLink>
+                    <button className="small-button" onClick={() => BlockSupportById(support.id, support.active)}>{support.active ? "block" : "un-block"}</button>
+                </div>
         </li>
     }
 }
@@ -172,7 +164,9 @@ export function AdminAddProductView() {
 
     return (
         <main>
-            <form className="productform" onSubmit={PostProduct} action={`/api/products`} method="POST">
+            <nav className="navbar"><img src={logo}></img> <NavLink to="/products"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <form className="data-form" onSubmit={PostProduct} action={`/api/products`} method="POST">
+                <div className="form-box">
                 <label>
                     Name:
                     <input
@@ -207,9 +201,9 @@ export function AdminAddProductView() {
                         required
                     />
                 </label>
-                <input type="submit" value="Save"></input>
+                </div>
+                <input type="submit" value="Save" className="middle-button"></input>
             </form>
-            <NavLink to={"/admin"}><button className="add-admin-button">Back</button></NavLink>
         </main>
     );
 }
@@ -254,7 +248,9 @@ export function AdminEditProductView() {
 
     return (
         <main>
-            <form className="productform" onSubmit={updateProduct} action={`/api/products`} method="PUT">
+            <nav className="navbar"><img src={logo}></img> <NavLink to="/products"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <form className="data-form" onSubmit={updateProduct} action={`/api/products`} method="PUT">
+                <div className="form-box">
                 <label>
                     Name:
                     <input
@@ -292,12 +288,10 @@ export function AdminEditProductView() {
                         type="text"
                         required
                     />
-                </label>
-                <input type="submit" value="Save"></input>
+                    </label>
+                    </div>
+                <input type="submit" value="Save" className="middle-button"></input>
             </form>
-            <NavLink to="/admin">
-                <button className="add-admin-button">Back</button>
-            </NavLink>
         </main>
     );
 
@@ -340,7 +334,9 @@ export function AdminEditSupportView() {
 
     return (
         <main>
-            <form className="supportform" onSubmit={updateUser} action={`/api/users/${agent?.id}`} method="PUT">
+            <nav className="navbar"><img src={logo}></img> <NavLink to="/agents"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <form className="data-form" onSubmit={updateUser} action={`/api/users/${agent?.id}`} method="PUT">
+                <div className="form-box">
                 <label>
                     Name:
                     <input
@@ -369,12 +365,10 @@ export function AdminEditSupportView() {
                         type="password"
                         required
                     />
-                </label>
-                <input type="submit" value="Save"></input>
+                    </label>
+                    </div>
+                <input type="submit" value="Save" className="middle-button"></input>
             </form>
-            <NavLink to="/admin">
-                <button className="add-admin-button">Back</button>
-            </NavLink>
         </main>
     );
 }
@@ -409,7 +403,9 @@ export function AdminAddSupportView() {
 
     return (
         <main>
-            <form className="adminform" onSubmit={postUser} action="/api/users" method="POST">
+            <nav className="navbar"><img src={logo}></img> <NavLink to="/agents"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <form className="data-form" onSubmit={postUser} action="/api/users" method="POST">
+                <div className="form-box">
                 <label>
                     Name:
                     <input
@@ -437,10 +433,9 @@ export function AdminAddSupportView() {
                     />
                 </label>
 
-
-                <input type="submit" value="Save"></input>
+            </div>
+                <input type="submit" value="Save" className="middle-button"></input>
             </form>
-            <NavLink to={"/admin"}><button className="add-admin-button">Back</button></NavLink>
         </main>
     );
 }
