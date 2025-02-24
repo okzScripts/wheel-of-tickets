@@ -1,7 +1,7 @@
 import { StrictMode, useState, use, createContext, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
-import CreateCustomer from './components/CreateCustomer.jsx'
-import CustomerTicket from './components/CustomerTicket.jsx'
+import CreateCustomerView from './components/CreateCustomerView.jsx'
+import CustomerTicketView from './components/CustomerTicketView.jsx'
 import "./styles.css"
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router'
 import { SuperAdminView, SuperAdminCompanyView, SuperAdminAdminView, SuperAdminAddAdminView, SuperAdminEditAdminView, SuperAdminAddCompanyView, SuperAdminEditCompanyView } from "./SuperAdminView.jsx"
@@ -15,8 +15,8 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <Routes>
         <Route index element={<LoginPage />} />
-        <Route path='/customer' element={<CreateCustomer />} />
-        <Route path='/customer/addTicket' element={<CustomerTicket />} />
+        <Route path='/customer' element={<CreateCustomerView />} />
+        <Route path='/customer/addTicket' element={<CustomerTicketView />} />
         <Route path='/super-admin' element={<SuperAdminView />} />
         <Route path='/companies' element={<SuperAdminCompanyView />} />
         <Route path='/companies/add' element={<SuperAdminAddCompanyView />} />

@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router";
 import logo from '../assets/logo.png';
 import "../styles.css"
-export default function CustomerTicket() {
+export default function CustomerTicketView() {
 
     const [companyPick, setCompanyPick] = useState("");
     const [productPick, setProductPick] = useState("");
     const [categoryPick, setCategoryPick] = useState("");
     const [message, setMessage] = useState("");
 
-    const [inputmessage, setInputMessage] = useState("");
     
     const [companies, setCompanies] = useState([]);
     const [products, setProducts] = useState([]);
@@ -33,17 +32,14 @@ export default function CustomerTicket() {
     }, [companyPick]);
       
     useEffect(() => {
-        fetch("/api/categories")
+        fetch("/api/tickets/categories")
             .then((response) => response.json())
             .then((data) => setCategories(data))
             .catch((error) => console.error("Error fetching categories:", error));
     }, []);
-    
-    const handleCompanyOnChange = (e) => {
-        setCompanyPick(e.target.value);
-    }  
+
        
-    const handleOnSubmit = async (e) => {
+    function handleOnSubmit(e) {
         e.preventDefault();
         const formData = {
             companyId: companyPick,
@@ -52,19 +48,18 @@ export default function CustomerTicket() {
             message: message,
         };
 
-        try {
-            const response = await fetch("/api/customerTicket", {
+        fetch("/api/tickets", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
-            });
-            if (!response.ok) {
-                throw new Error("Failed to create ticket");
-            }
-            setInputMessage("Ticket created successfully!");
-        } catch (error) {
-            setInputMessage("Error creating ticket: " + error.message);
-        }
+            }).then(response=>{
+                if (response.ok) {
+                    alert(`Du lade till en ticket`);
+                } else {
+                    alert("Något gick fel ");
+                }
+            })
+          
     };
 
     return (
@@ -129,12 +124,9 @@ export default function CustomerTicket() {
                             />
                         </div>
 
-                        <button type="submit" className="ticket-submit-button">
-                            Create Ticket
-                        </button>
+                        <input type="submit" className="ticket-submit-button" value='Create Ticket' />
                     </form>
                 </div>
-                {inputmessage && <p className="input-message">{inputmessage}</p>}
             </main>
         </>
 

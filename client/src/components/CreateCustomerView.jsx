@@ -1,57 +1,38 @@
 import React, {useState} from "react";
-import { NavLink, useNavigate, useLocation, useParams } from "react-router";
+import { NavLink, useNavigate, useLocation, useParams, data } from "react-router";
 import logo from '../assets/logo.png';
 
 
-const CreateCustomer = () => 
+export default function CreateCustomerView () 
 {
-    const [formData, setFormData] = useState({
-        name:"",        
-        email:"",
-        password:"",
-        rePassword:""
-    });
-    const [inputMessage, setInputMessage] = useState("");
-
-    const handleChange = (e) => {
-        const {name, value} = e.target;
-        setFormData((prevData) => ({ ...prevData, [name]:value}));
-    };
-    
+ 
+   
     
     const handleOnSubmit = async (e) => {
         e.preventDefault();
-        
-        if (formData.password !== formData.rePassword) {
-            setInputMessage("Passwords do not match");
+        const form = e.target;
+        let formData = new FormData(form);
+        let dataObject = Object.fromEntries(formData);
+        dataObject.role=1; 
+        if (dataObject.password !== dataObject.rePassword) {
+            alert(`password does not match `)
             return;
         }
-        
-        const requestBody ={
-            Name: formData.name,
-            Email: formData.email,
-            Password: formData.password,            
-            Role: 1        
-        }
-        
-        try {
-
-            const response = await fetch("/api/users", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(requestBody)
+        let dataJson=JSON.stringify(dataObject);
+        const response = await fetch("/api/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },                body: dataJson
             });
             
-            if (!response.ok){
-                throw new Error("User not created");
-            }
-
-            setInputMessage("User created successfully");               
-
-                
-        } catch (error){
-            setInputMessage(error.inputMessage)
+        if (!response.ok){
+            throw new Error("User not created");
         }
+        if (response.ok) {
+            alert(`Du lade till ${dataObject.name} `);
+        } else {
+            alert("Något gick fel ");
+        }         
+
     };    
     
     return (<main>
@@ -63,10 +44,9 @@ const CreateCustomer = () =>
                             <input
                                 type="text"
                                 name="name"
-                                value={formData.name}
-                                onChange={handleChange}
                                 placeholder="Enter name"
                                 className="ticket-input"
+                                required
                             />
                         </label>
 
@@ -75,10 +55,9 @@ const CreateCustomer = () =>
                             <input
                                 type="email"
                                 name="email"
-                                value={formData.email}
-                                onChange={handleChange}
                                 placeholder="Enter email"
                                 className="ticket-input"
+                                required
                             />
                         </label>
 
@@ -87,10 +66,9 @@ const CreateCustomer = () =>
                             <input
                                 type="password"
                                 name="password"
-                                value={formData.password}
-                                onChange={handleChange}
                                 placeholder="Enter password"
                                 className="ticket-input"
+                                required
                             />
                         </label>
 
@@ -99,10 +77,9 @@ const CreateCustomer = () =>
                             <input
                                 type="password"
                                 name="rePassword"
-                                value={formData.rePassword}
-                                onChange={handleChange}
                                 placeholder="Repeat password"
                                 className="ticket-input"
+                                required
                             />
                         </label>
                         </div>
@@ -114,4 +91,3 @@ const CreateCustomer = () =>
     ); 
 
 }
-export default CreateCustomer;
