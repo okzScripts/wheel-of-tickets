@@ -8,5 +8,6 @@ export default function LoginPage()
         <NavLink to="/customer-service"><button>CustomerSupport</button></NavLink> 
         <NavLink to="/customer"><button>Customer</button></NavLink> 
         <NavLink to="/admin"><button>Admin</button></NavLink>
+        <NavLink to="/customer/addTicket"><button>Create Ticket</button></NavLink>
         </main>
 }
