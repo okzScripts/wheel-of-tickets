@@ -255,7 +255,7 @@ export function SuperAdminAdminView() {
             })
     }
 
-    GetAdmins();
+    useEffect(GetAdmins);
 
     return <main className="role-specific-main">
         <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
