@@ -255,6 +255,18 @@ button {
   flex-direction: column;
   gap: 10px;
 }
+
+select{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin: 1rem;      
+}
+    
+input{
+    margin: 4px;
+}
+    
 .super-admin-list-item {
   display: flex;
   gap: 20px;
@@ -262,6 +274,28 @@ button {
   border: 1px solid black;
   padding: 10px;
 }
+
+button{
+    max-width: 10rem;
+    align-self: center;
+
+}
+
+#messageContainer{
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    p{
+        align-self: flex-start;
+        margin: 0.5rem;
+        margin-left: 0;
+
+    }
+    Button{
+        margin-top: 0.5rem;
+        align-self: flex-start;       
+     
+    }}
 .delete-button-div-li {
   display: flex;
   justify-content: center;
@@ -271,3 +305,9 @@ button {
   width: 100px;
   height: 40px;
 }
+
+textarea{
+    resize: none;
+    background-color: rgb(225, 225, 223);
+}
+

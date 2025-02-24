@@ -11,7 +11,11 @@ public class CompanyRoutes
 
 
     public record Company(int id, string name, string email, string phone, string description, string domain, bool active);
-
+   
+    public record Category(int id, string category_name);
+    
+    public record Product(int id, string product_name);
+    
     public static async Task<Results<Ok<List<Company>>, BadRequest<string>>> GetCompanies(NpgsqlDataSource db)
     {
         List<Company> companies = new List<Company>();
@@ -34,14 +38,73 @@ public class CompanyRoutes
                 ));
             }
 
+            
             return TypedResults.Ok(companies);
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            return TypedResults.BadRequest($"Error: {ex.Message}");
+            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
     }
+
+   
+   
+    public static async Task<Results<Ok<List<Category>>, BadRequest<string>>> GetCategories(NpgsqlDataSource db)
+    {
+        var categories = new List<Category>();
+
+        try
+        {
+            using var cmd = db.CreateCommand(
+                "SELECT id, category_name FROM ticket_categories ORDER BY id ASC"
+            );
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                categories.Add(new Category(
+                    reader.GetInt32(0),     
+                    reader.GetString(1)      
+                ));
+            }
+
+            return TypedResults.Ok(categories);
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+        }
+    }
+    
+    public static async Task<Results<Ok<List<Product>>, BadRequest<string>>> GetProducts(NpgsqlDataSource db)
+    {
+        var products = new List<Product>();
+
+        try
+        {
+            using var cmd = db.CreateCommand(
+                "SELECT id, product_name FROM products ORDER BY id ASC"
+            );
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                products.Add(new Product(
+                    reader.GetInt32(0),   
+                    reader.GetString(1)
+                ));
+            }
+
+            return TypedResults.Ok(products);
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+        }
+    }
+    
+   
 
     public static async Task<Results<Ok<Company>, BadRequest<string>>> GetCompany(int id, NpgsqlDataSource db)
     {
@@ -169,5 +232,6 @@ public class CompanyRoutes
         }
 
     }
-
+    
+    
 }
