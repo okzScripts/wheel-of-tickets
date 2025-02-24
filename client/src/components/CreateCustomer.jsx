@@ -1,5 +1,6 @@
 import React, {useState} from "react";
-import {useNavigate, useLocation} from "react-router";
+import { NavLink, useNavigate, useLocation, useParams } from "react-router";
+import logo from '../assets/logo.png';
 
 
 const CreateCustomer = () => 
@@ -53,16 +54,12 @@ const CreateCustomer = () =>
         }
     };    
     
-    return ( <>
-            <header className="navbar">
-                <img src="../assets/logo.png" alt="Logo" className="navbar-logo" />
-            </header>
-            <main className="ticket-main">
-                <div className="ticket-form-container">
-                    <form className="ticket-form" onSubmit={handleOnSubmit}>
-                        <h4 className="ticket-selection-tag">Create Account</h4>
-
-                        <label className="form-label">
+    return (<main>
+        <nav className="navbar"><img src={logo}></img></nav>
+        <form className="data-form" onSubmit={handleOnSubmit}>
+            <div className="form-box">
+                        <label>
+                                Name:
                             <input
                                 type="text"
                                 name="name"
@@ -73,7 +70,8 @@ const CreateCustomer = () =>
                             />
                         </label>
 
-                        <label className="form-label">
+                <label>
+                    Email:
                             <input
                                 type="email"
                                 name="email"
@@ -84,7 +82,8 @@ const CreateCustomer = () =>
                             />
                         </label>
 
-                        <label className="form-label">
+                <label>
+                    Password:
                             <input
                                 type="password"
                                 name="password"
@@ -95,7 +94,8 @@ const CreateCustomer = () =>
                             />
                         </label>
 
-                        <label className="form-label">
+                <label>
+                    Repeat Password:
                             <input
                                 type="password"
                                 name="rePassword"
@@ -105,16 +105,12 @@ const CreateCustomer = () =>
                                 className="ticket-input"
                             />
                         </label>
-
-                        <button type="submit" className="ticket-submit-button">
-                            Create Account
-                        </button>
+                        </div>
+                            <input type="submit" className="middle-button" value="Create Account">
+                            </input>
+                        
                     </form>
-
-                    {inputMessage && <p className="input-message">{inputMessage}</p>}
-                </div>
             </main>
-        </>
     ); 
 
 }
