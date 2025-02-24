@@ -47,11 +47,25 @@ VALUES
 ( 'Alice Johnson', 'alice.johnson@example.com','password123', NULL, 1, true),
 ( 'Bob Smith', 'bob.smith@example.com', 'password123',1, 2, true),
 ( 'Charlie Brown', 'charlie.brown@example.com', 'password123',1, 3, true),
-( 'Diana Green', 'diana.green@example.com', 'password123',1, 4, true);
+( 'Diana Green', 'diana.green@example.com', 'password123',1, 4, true),
+('Knorre Kulting', 'kulting@host.com', 'auwodh' 4, 3,true  ),  
+( 'Ostkako Hjälm', 'ostkako@host.com', 'aiwdj', 2 , 3,true ), 
+('Grune Grymt', 'grune@grymt.se', 'hejhej',3 ,3,true),
+('Svine Klöven', 'svine.kloven@example.com', 'password123', 1, 3,true ),
+('Nasse Puh','nasse.puh@sjumilla.com', 'nalle', NULL, 1,true),
+('Knorre Galtersson', 'knorre.galterson@test.com', 'styre', Null,1,true), 
+('Orne Nöff', 'orne@host.com', 'nuff', 4, 2,true ),
+('Tryne Galt', 'tryne@hotmail.com', 'asd123', 2, 2,true), 
+('Solina Gyttja', 'solina@gytja@hotmail.com', 'aswe',3 ,2,true),
+('Pelle Svinsson', 'pelle.svinsson@fakemail.com', 'best', 1 , 2 ,true); 
+('Kejsare Gris' ,'hm_gris@mail.com','kung',4, NULL,true )
+ 
 
+ 
+  
 
 INSERT INTO public.users_x_companies(user_id,company)
-VALUES(2,1),(3,1),(4,1);
+VALUES(2,1),(3,1),(4,1),(5,4),(6,2),(7,3),(8,1),(11,4),(12,2),(13,3),(14,1);
 
 
 
