@@ -71,10 +71,16 @@ VALUES(2,1),(3,1),(4,1),(5,4),(6,2),(7,3),(8,1),(11,4),(12,2),(13,3),(14,1);
 
 INSERT INTO public.tickets (message, status, customer, product_id, customer_agent, ticket_category)
 VALUES
-( 'I am facing issues with my internet connection.', 1, 1, 1, 1, 1),
+( 'I am facing issues with my internet connection.', 1, 1, 1, NULL, 1),
 ( 'There seems to be a mistake in my latest bill.', 1, 1, 2, NULL, 2),
 ( 'I would like to suggest improvements for the user interface of your product.', 1, 1, 3, NULL, 3),
-( 'My recent order hasn’t been delivered yet.', 1, 1, 4, 1, 6);
+( 'My recent order hasn’t been delivered yet.', 1, 1, 4, NULL, 6), 
+('My pig is going is not rolling in the deep mudpit', 1, 9,4,NULL,8 ),
+('Donald is losing his toupee even after using your biodegradable glue', 1, 9,3,NULL,7 ),
+('Platform shoes to low does not allow me to see over the pig sty',1,9 ,5, NULL , 1),
+('Only got 2 shoes instead of one for each trotter', 1, 10, 7,NULL, 6  ),
+('Mud temperature control system not working',1,10,8,NULL,8 ), 
+('Missing pig after putting him in cloud storage',1,10,2,NULL,1); 
 
   
 
