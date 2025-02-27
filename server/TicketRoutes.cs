@@ -184,43 +184,7 @@ public class TicketRoutes
         }
     }
 
-    public record MessageDTO(int id, string text, DateTime time, int ticket, bool customer);
 
-    public static async Task<Results<Ok<List<MessageDTO>>, BadRequest<string>>> GetTicketMessage(int id, NpgsqlDataSource db)
-    {
-        List<MessageDTO> messages = new List<MessageDTO>();
-
-        try
-        {
-            using var cmd = db.CreateCommand(@"
-                SELECT m.id, m.text, m.time, m.ticket, m.customer
-                FROM messages m 
-                WHERE m.ticket = $1 ");
-
-            cmd.Parameters.AddWithValue(id);
-
-
-            using var reader = await cmd.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                messages.Add(new(
-                reader.GetInt32(0),
-                reader.GetString(1),
-                reader.GetDateTime(2),
-                reader.GetInt32(3),
-                reader.GetBoolean(4)
-                ));
-
-            }
-
-            return TypedResults.Ok(messages);
-        }
-        catch (Exception ex)
-        {
-            return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
-        }
-    }
 }
 
 

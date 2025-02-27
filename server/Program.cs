@@ -36,7 +36,8 @@ app.MapGet("/api/tickets/assigned/{id}", TicketRoutes.GetAssignedTickets);
 app.MapPost("/api/tickets", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
 
-app.MapGet("/api/messages/{id}", TicketRoutes.GetTicketMessage);
+app.MapGet("/api/messages/{id}", MessageRoutes.GetTicketMessage);
+app.MapPost("/api/messages/",MessageRoutes.AddMessage); 
 
 //app.MapPost("/api/create-user", UserRoutes.AddUser);
 

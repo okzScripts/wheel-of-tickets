@@ -113,7 +113,31 @@ export function TicketInfoView() {
     }
 
     useEffect(GetTicketMessages)
- 
+
+    function PostMessage(e){
+        e.PreventDefault(); 
+        const form=e.target; 
+        let formData=new FormData(form); 
+        let dataObject= Object.fromEntries(formData)
+        dataObject.ticket=id; 
+        dataObject.customer=false;
+        dataObject.time= new Date();
+        
+        let dataJson =JSON.stringify(dataObject); 
+        fetch(form.action, 
+            {
+                headers:{"Conten-Type":"application/json"}, 
+                method: form.method,
+                body: dataJson
+            }).then(response => {
+                if (response.ok) {
+                    alert(`Du lade till ${dataObject.name} `);
+                } else {
+                    alert("Något gick fel ");
+                }
+            })
+    }
+    
     return (
 <main className="chat-main">
 <nav className="navbar"><img src={logo}></img> <NavLink to="/customer-service"><button className="back-button">⬅️ Back</button></NavLink></nav>
@@ -123,13 +147,15 @@ export function TicketInfoView() {
 </ul>
 </section>
 <section className="chat-message-box">
-<input type="textarea"></input><button className="small-button">Send</button>
+<form  className="chat-message-form" onSubmit={PostMessage}   action="/api/messages" method="POST" >
+    <input name="text" type="textarea"></input><input className="small-button" type="submit" value="Send" ></input>
+</form>
 </section>
 </main>
     );
 
     function MessageCard(message) {
         const messageSender = message.customer? "chat-customer-message" : "chat-agent-message"
-        return <li key={message.id} className={messageSender}><p>{message.text}</p></li>
+        return <li key={message.id} className={messageSender}><p>{message.text}{message.time}</p></li>
     }
 }
