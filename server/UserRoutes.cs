@@ -7,15 +7,15 @@ public enum UserRole
 {
     Admin,
     super_admin,
-    Serviceagents,
-    
+    Service_agent,
+
 }
 public record GetUsersDTO(int id, string name, UserRole userrole);
 public class UserRoutes
 {
 
 
-    public record User(int id, string name, string email, string Password, int company, int role, bool active);
+    public record User(int id, string name, string email, string Password, int company, bool active, UserRole role);
 
 
     public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsers(int role, NpgsqlDataSource db)
@@ -36,8 +36,8 @@ public class UserRoutes
                     reader.GetString(2),
                     reader.GetString(3),
                     reader.GetInt32(4),
-                    reader.GetInt32(5),
-                    reader.GetBoolean(6)
+                    reader.GetBoolean(5),
+                    reader.GetFieldValue<UserRole>(6)
                 ));
             }
 
@@ -49,32 +49,40 @@ public class UserRoutes
         }
     }
 
-    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(int role, int company, NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(UserRole role, int company, NpgsqlDataSource db, HttpContext ctx)
     {
 
         List<User> users = new List<User>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,role,active FROM users WHERE role = $1 AND company=$2  ORDER BY id ASC");
+            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,active,role FROM users WHERE role = $1 AND company=$2  ORDER BY id ASC");
             cmd.Parameters.AddWithValue(role);
-            cmd.Parameters.AddWithValue(company);
-            using var reader = await cmd.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
+            if (ctx.Session.IsAvailable)
             {
-                users.Add(new User(
-                    reader.GetInt32(0),
-                    reader.GetString(1),
-                    reader.GetString(2),
-                    reader.GetString(3),
-                    reader.GetInt32(4),
-                    reader.GetInt32(5),
-                    reader.GetBoolean(6)
-                ));
-            }
+                cmd.Parameters.AddWithValue(ctx.Session.GetInt32("company"));
 
-            return TypedResults.Ok(users);
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    users.Add(new User(
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.GetString(3),
+                        reader.GetInt32(4),
+                        reader.GetBoolean(5),
+                        reader.GetFieldValue<UserRole>(6)
+                    ));
+                }
+
+                return TypedResults.Ok(users);
+            }
+            else
+            {
+                return TypedResults.BadRequest("ICKE SA NICKE!");
+            }
         }
         catch (Exception ex)
         {
@@ -136,8 +144,8 @@ public class UserRoutes
                     reader.GetString(2),
                     reader.GetString(3),
                     reader.GetInt32(4),
-                    reader.GetInt32(5),
-                    reader.GetBoolean(6)
+                    reader.GetBoolean(5),
+                    reader.GetFieldValue<UserRole>(6)
                 );
 
                 return TypedResults.Ok(user);
