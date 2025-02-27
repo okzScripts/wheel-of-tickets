@@ -10,7 +10,7 @@ export function CustomerServiceView() {
     const customerServiceAgent = 1;
 
     useEffect(GetUnassignedTickets);
-
+    useEffect(GetAssignedTickets); 
     
   
     function GetUnassignedTickets()
@@ -25,8 +25,7 @@ export function CustomerServiceView() {
         .then((response) => response.json())
         .then((data) => setAssignedTickets(data))
     }
-
-    useEffect(GetAssignedTickets); 
+    
 
 
 
@@ -106,24 +105,31 @@ export function CustomerServiceView() {
 
 
 export function TicketInfoView() {
+    const { id } = useParams()
+    const [messages, setMessages] = useState([])
+    
+    function GetTicketMessages() {
+        fetch(`/api/messages/${id}`).then(response => response.json()).then(data => { setMessages(data) })
+    }
+
+    useEffect(GetTicketMessages)
  
     return (
 <main className="chat-main">
 <nav className="navbar"><img src={logo}></img> <NavLink to="/customer-service"><button className="back-button">⬅️ Back</button></NavLink></nav>
 <section className="chat-header"><h1>HejHej</h1></section>
 <section className="chat">
-<ul className="chat-ul">
-<li className="chat-customer-message">Hejhej</li>
-<li className="chat-agent-message">Hallå!</li>
+<ul className="chat-ul"> {messages.map(MessageCard)}
 </ul>
 </section>
 <section className="chat-message-box">
-<input type="textarea"></input>
-</section>
-
- 
-            <section className="content-box">
+<input type="textarea"></input><button className="small-button">Send</button>
 </section>
 </main>
     );
+
+    function MessageCard(message) {
+        const messageSender = message.customer? "chat-customer-message" : "chat-agent-message"
+        return <li key={message.id} className={messageSender}><p>{message.text}</p></li>
+    }
 }
