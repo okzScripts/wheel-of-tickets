@@ -6,7 +6,7 @@ import "./styles.css"
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router'
 import { SuperAdminView, SuperAdminCompanyView, SuperAdminAdminView, SuperAdminAddAdminView, SuperAdminEditAdminView, SuperAdminAddCompanyView, SuperAdminEditCompanyView } from "./SuperAdminView.jsx"
 import { AdminView, AdminAddProductView, AdminEditProductView, AdminEditSupportView, AdminAddSupportView, ProductView, SupportView } from "./AdminView.jsx"
-import CustomerService from './CustomerService.jsx'
+import {CustomerServiceView,TicketInfoView} from './CustomerService.jsx'
 import LoginPage from './components/LoginPage.jsx'
 
 
@@ -23,7 +23,9 @@ createRoot(document.getElementById('root')).render(
         <Route path='/companies/:id/edit' element={<SuperAdminEditCompanyView />} />
         <Route path='/admins' element={<SuperAdminAdminView />} />
         <Route path='/admins/add' element={<SuperAdminAddAdminView />} />
-        <Route path='/customer-service' element={<CustomerService />} />
+        <Route path='/customer-service' element={<CustomerServiceView />} />
+        <Route path='/customer-service/:id/ticket-info' element={<TicketInfoView />} />
+
         <Route path='/users/:id/edit' element={<SuperAdminEditAdminView />} />
 
         <Route path='/admin' element={<AdminView />} />

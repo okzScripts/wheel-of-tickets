@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation, useParams } from "react-router";
 import logo from './assets/logo.png';
 
-export default function CustomerService() {
+export function CustomerServiceView() {
     //const [ticket, setTicket] = useState(null);
     const [unassignedTickets, setUnassignedTickets] = useState([]);
     const [assignedTickets, setAssignedTickets] = useState([]);
@@ -52,8 +52,8 @@ export default function CustomerService() {
 
         const result = await response.text();
         console.log(result);
-    await GetUnassignedTickets();
-    await GetAssignedTickets();
+     GetUnassignedTickets();
+     GetAssignedTickets();
     } catch (error) {
         console.error("Error assigning ticket:", error);
     }
@@ -73,15 +73,7 @@ export default function CustomerService() {
                     <h2>YOUR TICKETS:</h2>
                         {assignedTickets.length > 0 ? (
                             <ul className="ticket-list">
-                                {assignedTickets.map((ticket) => (
-                                    <li key={ticket.id} className="ticket-list-item">
-                                        <h2>{ticket.customer_url}</h2>
-                                        <div className="ticket-info">
-                                        <p>Ticket id: {ticket.id}</p>
-                                            <p>Agent id:{ticket.customer_agent}</p>
-                                        </div>
-                                    </li>
-                                ))}
+                                {assignedTickets.map(TicketCard)}
                             </ul>
 
                         ) : (
@@ -93,14 +85,7 @@ export default function CustomerService() {
                     <h2>ALL TICKETS:</h2>
                     {unassignedTickets.length > 0 ? (
                         <ul className="ticket-list">
-                            {unassignedTickets.map((ticket) => (
-                                <li key={ticket.id} className="ticket-list-item">
-                                    <h2>{ticket.customer_url}</h2>
-                                    <div className="ticket-info">
-                                        <p>Ticket id {ticket.id}</p>
-                                    </div>
-                                </li>
-                            ))}
+                            {unassignedTickets.map(TicketCard)}
                         </ul>
                     ) : (
                         <ul className="ticket-list"><div className="ticket-list-item"><div className="ticket-info"><p>Inga tickets</p></div></div></ul>
@@ -108,5 +93,39 @@ export default function CustomerService() {
                 </div>
             </section>
         </main>
+    );
+    function TicketCard(ticket){
+        return<NavLink className="ticket-list"  to={"/customer-service/"+ticket.id+"/ticket-info"} >
+            <li key={ticket.id} className="ticket-list-item">
+            <h2>{ticket.customer_url}</h2>
+            <div className="ticket-info">
+                <p>Ticket id: {ticket.id}</p>
+            </div>
+        </li>
+    </NavLink> 
+    }
+}
+
+
+export function TicketInfoView() {
+ 
+    return (
+<main className="chat-main">
+<nav className="navbar"><img src={logo}></img> <NavLink to="/customer-service"><button className="back-button">⬅️ Back</button></NavLink></nav>
+<section className="chat-header"><h1>HejHej</h1></section>
+<section className="chat">
+<ul className="chat-ul">
+<li className="chat-customer-message">Hejhej</li>
+<li className="chat-agent-message">Hallå!</li>
+</ul>
+</section>
+<section className="chat-message-box">
+<input type="textarea"></input>
+</section>
+
+ 
+            <section className="content-box">
+</section>
+</main>
     );
 }
