@@ -67,22 +67,35 @@ VALUES
 
 
 
-INSERT INTO public.tickets (message, status, customerUrl, product_id, customer_agent, ticket_category)
+INSERT INTO public.tickets ( status, customerUrl, product_id, customer_agent, ticket_category)
 VALUES
-( 'I am facing issues with my internet connection.', 1, 'http://something', 1, NULL, 1),
-( 'There seems to be a mistake in my latest bill.', 1, 'http://something', 2, NULL, 2),
-( 'I would like to suggest improvements for the user interface of your product.', 1, 'http://something', 3, NULL, 3),
-( 'My recent order hasn’t been delivered yet.', 1, 'http://something', 4, NULL, 5), 
-('My pig is going is not rolling in the deep mudpit', 1, 'http://something',4,NULL,4 ),
-('Donald is losing his toupee even after using your biodegradable glue', 1, 'http://something',3,NULL,4 ),
-('Platform shoes to low does not allow me to see over the pig sty',1,'http://something' ,5, NULL , 6),
-('Only got 2 shoes instead of one for each trotter', 1, 'http://something', 7,NULL, 8  ),
-('Mud temperature control system not working',1,'http://something',8,NULL,9 ), 
-('Missing pig after putting him in cloud storage',1,'http://something',2,NULL,2); 
+(  1, 'http://something', 1, NULL, 1),
+(  1, 'http://something', 2, NULL, 2),
+(  1, 'http://something', 3, NULL, 3),
+(  1, 'http://something', 4, NULL, 5), 
+( 1, 'http://something',4,NULL,4 ),
+( 1, 'http://something',3,NULL,4 ),
+(1,'http://something' ,5, NULL , 6),
+( 1, 'http://something', 7,NULL, 8  ),
+(1,'http://something',8,NULL,9 ), 
+(1,'http://something',2,NULL,2); 
 
   
 
 INSERT INTO customer_agentsxticket_category (ticket_category,customer_agent)
 VALUES (1,1),(2,2),(3,3),(4,8),(4,9),(5,12), (6,10),(7,13),(8,11),(9,16);
 
+
+Insert INTO public.messages(text,time,ticket,customer)
+VALUES 
+('I am facing issues with my internet connection.',current_timestamp, 1 ,true),
+('There seems to be a mistake in my latest bill.',current_timestamp, 2 ,true),
+('I would like to suggest improvements for the user interface of your product.',current_timestamp, 3 ,true),
+('My recent order hasn’t been delivered yet.',current_timestamp, 4 ,true),
+('My pig is going is not rolling in the deep mudpit', current_timestamp, 5 ,true),
+('Donald is losing his toupee even after using your biodegradable glue',current_timestamp, 6 ,true),
+('Platform shoes to low does not allow me to see over the pig sty',current_timestamp, 7,true),
+('Only got 2 shoes instead of one for each trotter',current_timestamp, 8 ,true),
+('Mud temperature control system not working',current_timestamp, 9 ,true),
+('Missing pig after putting him in cloud storage',current_timestamp, 10 ,true);
 

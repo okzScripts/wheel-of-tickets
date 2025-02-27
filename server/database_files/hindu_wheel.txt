@@ -112,7 +112,6 @@ create table tickets
     id              integer generated always as identity
         constraint tickets_pk
             primary key,
-    message         text not null,
     status          integer not null
         constraint tickets_ticket_status_id_fk
             references ticket_status,
