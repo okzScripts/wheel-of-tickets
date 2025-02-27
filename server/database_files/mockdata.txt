@@ -67,7 +67,7 @@ VALUES
 
 
 
-INSERT INTO public.tickets ( status, customerUrl, product_id, customer_agent, ticket_category)
+INSERT INTO public.tickets ( status, customer_url, product_id, customer_agent, ticket_category)
 VALUES
 (  1, 'http://something', 1, NULL, 1),
 (  1, 'http://something', 2, NULL, 2),
