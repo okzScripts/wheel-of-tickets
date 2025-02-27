@@ -92,7 +92,7 @@ public class TicketRoutes
                 return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
             }
         }*/
-    /*
+    
         public static async Task<Results<Ok<string>, BadRequest<string>>> AssignTicket(int id, int customer_agent, NpgsqlDataSource db)
         {
             try
@@ -117,36 +117,34 @@ public class TicketRoutes
                 return TypedResults.BadRequest($"Error: {ex.Message}");
             }
         }
-        */
+        
 
-    /*
-        public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetAssignedTickets(int company, int customer_agent, NpgsqlDataSource db)
+    
+        public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetAssignedTickets( int id, NpgsqlDataSource db)
         {
             List<Ticket> tickets = new List<Ticket>();
+
 
             try
             {
                 using var cmd = db.CreateCommand(@"
-                SELECT t.id, t.message, t.status, t.customer, t.product_id, t.customer_agent, t.ticket_category
-                FROM tickets t
-                JOIN products p ON t.product_id = p.id
-                WHERE t.customer_agent = $1 AND p.company = $2");
+                SELECT  t.id, t.status, t.customer_url,t.product_id, t.ticket_category
+                FROM tickets t 
+                WHERE t.customer_agent = $1 ");
 
-                cmd.Parameters.AddWithValue(customer_agent);
-                cmd.Parameters.AddWithValue(company);
+                cmd.Parameters.AddWithValue(id);
+            
 
                 using var reader = await cmd.ExecuteReaderAsync();
 
                 while (await reader.ReadAsync())
                 {
                     tickets.Add(new Ticket(
-                        reader.GetInt32(0), // id
-                        reader.GetString(1), // message
-                        reader.GetInt32(2), // status
-                        reader.GetInt32(3), // customer
-                        reader.GetInt32(4), // product_id
-                        reader.IsDBNull(5) ? null : reader.GetInt32(5), // customer_agent (nullable)
-                        reader.GetInt32(6)  // ticket_category
+                    reader.GetInt32(0),
+                    reader.GetInt32(1),
+                    reader.GetString(2),
+                    reader.GetInt32(3),
+                    reader.GetInt32(4)
                     ));
                 }
 
@@ -157,7 +155,7 @@ public class TicketRoutes
                 return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
             }
         }
-    */
+
     public static async Task<Results<Ok<int>, BadRequest<string>>> CreateTicket(NewTicket ticket, NpgsqlDataSource db)
     {
         try

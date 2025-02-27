@@ -6,28 +6,30 @@ import logo from './assets/logo.png';
 export default function CustomerService() {
     //const [ticket, setTicket] = useState(null);
     const [unassignedTickets, setUnassignedTickets] = useState([]);
-    const [yourAssignedTickets, setYourAssignedTickets] = useState([])
-    const [tickets, setTickets] = useState([])
-    const customerServiceAgent = 1
-    const company = 2
+    const [assignedTickets, setAssignedTickets] = useState([]);
+    const customerServiceAgent = 1;
 
-    useEffect(GetUnassignedTickets)
+
+    useEffect(GetUnassignedTickets);
 
     
   
     function GetUnassignedTickets()
     {
-        fetch("/api/tickets/" + customerServiceAgent )
+        fetch("/api/tickets/unassigned/" + customerServiceAgent )
             .then((response) => response.json())
-            .then((data) => setTickets(data))
+            .then((data) => setUnassignedTickets(data))
     }
 
+    function GetAssignedTickets(){
+        fetch("/api/tickets/assigned/" + customerServiceAgent )
+        .then((response) => response.json())
+        .then((data) => setAssignedTickets(data))
+    }
 
-    /*function getUnassignedTickets() {
-        fetch("/api/tickets/" + company + "/unassigned")
-            .then((response) => response.json())
-            .then((data) => setUnassignedTickets(data));
-    }*/
+    useEffect(GetAssignedTickets); 
+
+
 
     async function randomiser() {
     if (unassignedTickets.length === 0) {
@@ -50,19 +52,12 @@ export default function CustomerService() {
 
         const result = await response.text();
         console.log(result);
-    await GetTickets();
-    await getUnassignedTickets();
-    await getYourAssignedTickets();
+    await GetUnassignedTickets();
+    await GetAssignedTickets();
     } catch (error) {
         console.error("Error assigning ticket:", error);
     }
 }
-
-    async function getYourAssignedTickets() {
-        const response = await fetch("/api/tickets/" + company + "/" + customerServiceAgent);
-        const data = await response.json();
-        setYourAssignedTickets(data);
-    }
 
 
     return (
@@ -76,11 +71,11 @@ export default function CustomerService() {
             <section className="lower-section">
                 <div className="tickets-left">
                     <h2>YOUR TICKETS:</h2>
-                        {yourAssignedTickets.length > 0 ? (
+                        {assignedTickets.length > 0 ? (
                             <ul className="ticket-list">
-                                {yourAssignedTickets.map((ticket) => (
+                                {assignedTickets.map((ticket) => (
                                     <li key={ticket.id} className="ticket-list-item">
-                                        <h2>{ticket.message}</h2>
+                                        <h2>{ticket.customer_url}</h2>
                                         <div className="ticket-info">
                                         <p>Ticket id: {ticket.id}</p>
                                             <p>Agent id:{ticket.customer_agent}</p>
@@ -90,15 +85,15 @@ export default function CustomerService() {
                             </ul>
 
                         ) : (
-                            <h2>Här var det tomt 😁</h2>
+                            <ul className="ticket-list"><div className="ticket-list-item"><div className="ticket-info"><p>Inga tickets</p></div></div></ul>
                         )}
                  
                 </div>
                 <div className="tickets-right">
                     <h2>ALL TICKETS:</h2>
-                    {tickets.length > 0 ? (
+                    {unassignedTickets.length > 0 ? (
                         <ul className="ticket-list">
-                            {tickets.map((ticket) => (
+                            {unassignedTickets.map((ticket) => (
                                 <li key={ticket.id} className="ticket-list-item">
                                     <h2>{ticket.customer_url}</h2>
                                     <div className="ticket-info">
