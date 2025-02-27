@@ -8,8 +8,16 @@ Database database = new();
 var db = database.Connection();
 
 builder.Services.AddSingleton<NpgsqlDataSource>(db);
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options => { options.Cookie.IsEssential = true; });
+
+
 
 var app = builder.Build();
+
+app.UseSession();
+
+
 app.MapGet("/api/companies", CompanyRoutes.GetCompanies);
 app.MapGet("/api/companies/{id}", CompanyRoutes.GetCompany);
 app.MapPost("/api/companies", CompanyRoutes.AddCompany);
@@ -23,6 +31,7 @@ app.MapGet("/api/users/{id}", UserRoutes.GetUser);
 app.MapPut("/api/users/{id}", UserRoutes.EditUser);
 app.MapPut("/api/users/block/{id}/{active}", UserRoutes.BlockUser);
 app.MapPost("/api/users", UserRoutes.AddUser);
+app.MapPost("/api/login", LoginRoutes.LoginByRole);
 
 app.MapGet("/api/products/company/{company}", ProductRoutes.GetProducts);
 app.MapGet("/api/products/{ProductId}", ProductRoutes.GetProduct);

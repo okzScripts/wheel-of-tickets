@@ -3,7 +3,14 @@ using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
 namespace server;
-
+public enum UserRole
+{
+    Admin,
+    Superadmin,
+    Serviceagent,
+    customer,
+}
+public record GetUsersDTO(int id, string name, UserRole userrole);
 public class UserRoutes
 {
 
@@ -211,4 +218,26 @@ public class UserRoutes
             return TypedResults.BadRequest($"Error {ex.Message}");
         }
     }
+
 }
+
+
+
+/* public static async Task<Results<Ok<List<UserRole>>, UnauthorizedHttpResult, ForbidHttpResult>> GetUserByRole(NpgsqlDataSource db, HttpContext ctx){
+
+     if(ctx.Session.IsAvailable &&
+     ctx.Session.GetInt32("role") is int role &&
+     Enum.IsDefined(typeof(UserRole), role)){
+
+         if((UserRole)role == UserRole.)
+     }
+
+
+ }
+
+
+
+
+
+
+}*/
