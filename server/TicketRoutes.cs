@@ -92,69 +92,69 @@ public class TicketRoutes
                 return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
             }
         }*/
-    
-        public static async Task<Results<Ok<string>, BadRequest<string>>> AssignTicket(int id, int customer_agent, NpgsqlDataSource db)
+
+    public static async Task<Results<Ok<string>, BadRequest<string>>> AssignTicket(int id, int agent, NpgsqlDataSource db)
+    {
+        try
         {
-            try
+            using var cmd = db.CreateCommand("UPDATE tickets SET customer_agent = $2 WHERE id = $1");
+
+            cmd.Parameters.AddWithValue(id);
+            cmd.Parameters.AddWithValue(agent);
+
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+            if (rowsAffected > 0)
             {
-                using var cmd = db.CreateCommand("UPDATE tickets SET customer_agent = $2 WHERE id = $1");
-
-                cmd.Parameters.AddWithValue(id);
-                cmd.Parameters.AddWithValue(customer_agent);
-
-                int rowsAffected = await cmd.ExecuteNonQueryAsync();
-                if (rowsAffected > 0)
-                {
-                    return TypedResults.Ok("Ticket assigned successfully.");
-                }
-                else
-                {
-                    return TypedResults.BadRequest("Ticket assignment failed. Ticket ID or customer agent might be invalid.");
-                }
+                return TypedResults.Ok("Ticket assigned successfully.");
             }
-            catch (Exception ex)
+            else
             {
-                return TypedResults.BadRequest($"Error: {ex.Message}");
+                return TypedResults.BadRequest("Ticket assignment failed. Ticket ID or customer agent might be invalid.");
             }
         }
-        
-
-    
-        public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetAssignedTickets( int id, NpgsqlDataSource db)
+        catch (Exception ex)
         {
-            List<Ticket> tickets = new List<Ticket>();
+            return TypedResults.BadRequest($"Error: {ex.Message}");
+        }
+    }
 
 
-            try
-            {
-                using var cmd = db.CreateCommand(@"
+
+    public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetAssignedTickets(int id, NpgsqlDataSource db)
+    {
+        List<Ticket> tickets = new List<Ticket>();
+
+
+        try
+        {
+            using var cmd = db.CreateCommand(@"
                 SELECT  t.id, t.status, t.customer_url,t.product_id, t.ticket_category
                 FROM tickets t 
                 WHERE t.customer_agent = $1 ");
 
-                cmd.Parameters.AddWithValue(id);
-            
+            cmd.Parameters.AddWithValue(id);
 
-                using var reader = await cmd.ExecuteReaderAsync();
 
-                while (await reader.ReadAsync())
-                {
-                    tickets.Add(new Ticket(
-                    reader.GetInt32(0),
-                    reader.GetInt32(1),
-                    reader.GetString(2),
-                    reader.GetInt32(3),
-                    reader.GetInt32(4)
-                    ));
-                }
+            using var reader = await cmd.ExecuteReaderAsync();
 
-                return TypedResults.Ok(tickets);
-            }
-            catch (Exception ex)
+            while (await reader.ReadAsync())
             {
-                return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
+                tickets.Add(new Ticket(
+                reader.GetInt32(0),
+                reader.GetInt32(1),
+                reader.GetString(2),
+                reader.GetInt32(3),
+                reader.GetInt32(4)
+                ));
             }
+
+            return TypedResults.Ok(tickets);
         }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
+        }
+    }
 
     public static async Task<Results<Ok<int>, BadRequest<string>>> CreateTicket(NewTicket ticket, NpgsqlDataSource db)
     {

@@ -227,10 +227,13 @@ button {
   height: auto;
   border: 1px solid white;
   cursor: pointer;
-  > h2 {
+  > a h2 {
     font-size: 16px;
     color: rgb(255, 189, 114);
     text-align: center;
+  }
+  > a {
+    text-decoration: none;
   }
 }
 .ticket-info {
@@ -256,17 +259,17 @@ button {
   gap: 10px;
 }
 
-select{
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    margin: 1rem;      
+select {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin: 1rem;
 }
-    
-input{
-    margin: 4px;
+
+input {
+  margin: 4px;
 }
-    
+
 .super-admin-list-item {
   display: flex;
   gap: 20px;
@@ -275,27 +278,25 @@ input{
   padding: 10px;
 }
 
-button{
-    max-width: 10rem;
-    align-self: center;
-
+button {
+  max-width: 10rem;
+  align-self: center;
 }
 
-#messageContainer{
-    display: flex;
-    flex-direction: column;
-    margin: 1rem;
-    p{
-        align-self: flex-start;
-        margin: 0.5rem;
-        margin-left: 0;
-
-    }
-    Button{
-        margin-top: 0.5rem;
-        align-self: flex-start;       
-     
-    }}
+#messageContainer {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+  p {
+    align-self: flex-start;
+    margin: 0.5rem;
+    margin-left: 0;
+  }
+  Button {
+    margin-top: 0.5rem;
+    align-self: flex-start;
+  }
+}
 .delete-button-div-li {
   display: flex;
   justify-content: center;
@@ -306,8 +307,7 @@ button{
   height: 40px;
 }
 
-textarea{
-    resize: none;
-    background-color: rgb(225, 225, 223);
+textarea {
+  resize: none;
+  background-color: rgb(225, 225, 223);
 }
-

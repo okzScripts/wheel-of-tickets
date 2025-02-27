@@ -9,7 +9,6 @@ export function CustomerServiceView() {
     const [assignedTickets, setAssignedTickets] = useState([]);
     const customerServiceAgent = 1;
 
-
     useEffect(GetUnassignedTickets);
 
     
@@ -49,11 +48,10 @@ export function CustomerServiceView() {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
         });
-
         const result = await response.text();
-        console.log(result);
-     GetUnassignedTickets();
-     GetAssignedTickets();
+    
+        GetUnassignedTickets();
+        GetAssignedTickets();
     } catch (error) {
         console.error("Error assigning ticket:", error);
     }
@@ -77,7 +75,7 @@ export function CustomerServiceView() {
                             </ul>
 
                         ) : (
-                            <ul className="ticket-list"><div className="ticket-list-item"><div className="ticket-info"><p>Inga tickets</p></div></div></ul>
+                            <ul className="ticket-list"><li className="ticket-list-item" key={"emptyassigned"}><div className="ticket-info"><p>Inga tickets</p></div></li></ul>
                         )}
                  
                 </div>
@@ -88,21 +86,21 @@ export function CustomerServiceView() {
                             {unassignedTickets.map(TicketCard)}
                         </ul>
                     ) : (
-                        <ul className="ticket-list"><div className="ticket-list-item"><div className="ticket-info"><p>Inga tickets</p></div></div></ul>
+                            <ul className="ticket-list"><li className="ticket-list-item" key={"emptyunnasigned"}><div className="ticket-info"><p>Inga tickets</p></div></li></ul>
                     )}
                 </div>
             </section>
         </main>
     );
-    function TicketCard(ticket){
-        return<NavLink className="ticket-list"  to={"/customer-service/"+ticket.id+"/ticket-info"} >
-            <li key={ticket.id} className="ticket-list-item">
+    function TicketCard(ticket) {
+        return<li key={ticket.id} className="ticket-list-item"><NavLink to={"/customer-service/"+ticket.id+"/ticket-info"} >
+            
             <h2>{ticket.customer_url}</h2>
             <div className="ticket-info">
                 <p>Ticket id: {ticket.id}</p>
-            </div>
+            </div></NavLink> 
         </li>
-    </NavLink> 
+    
     }
 }
 

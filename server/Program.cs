@@ -32,7 +32,7 @@ app.MapPut("/api/products/block/{id}/{active}", ProductRoutes.BlockProductById);
 
 app.MapGet("/api/tickets/unassigned/{id}", TicketRoutes.GetUnassignedTickets);
 //app.MapGet("/api/tickets/{company}/unassigned", TicketRoutes.GetUnassignedTickets);
-app.MapPut("/api/tickets/{id}/{customer_agent}", TicketRoutes.AssignTicket);
+app.MapPut("/api/tickets/{id}/{agent}", TicketRoutes.AssignTicket);
 app.MapGet("/api/tickets/assigned/{id}", TicketRoutes.GetAssignedTickets);
 app.MapPost("/api/tickets", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
