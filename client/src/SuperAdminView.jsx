@@ -237,7 +237,7 @@ export function SuperAdminAdminView() {
 
 
     function GetAdmins() {
-        fetch("/api/roles/users/3").then(response =>
+        fetch("/api/roles/users/2").then(response =>
             response.json())
             .then(data => setAdmins(data));
     }

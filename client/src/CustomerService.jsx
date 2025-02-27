@@ -8,34 +8,26 @@ export default function CustomerService() {
     const [unassignedTickets, setUnassignedTickets] = useState([]);
     const [yourAssignedTickets, setYourAssignedTickets] = useState([])
     const [tickets, setTickets] = useState([])
-    const customerServiceAgent = 29
+    const customerServiceAgent = 1
     const company = 2
 
-    useEffect(() => {
-        GetTickets()
-    })
+    useEffect(GetUnassignedTickets)
 
-    useEffect(() => {
-        getUnassignedTickets();
-    }, []);
     
-    useEffect(() => {
-        getYourAssignedTickets();
-    }, []);
   
-    function GetTickets()
+    function GetUnassignedTickets()
     {
-        fetch("/api/tickets/" + company )
+        fetch("/api/tickets/" + customerServiceAgent )
             .then((response) => response.json())
             .then((data) => setTickets(data))
     }
 
 
-    function getUnassignedTickets() {
+    /*function getUnassignedTickets() {
         fetch("/api/tickets/" + company + "/unassigned")
             .then((response) => response.json())
             .then((data) => setUnassignedTickets(data));
-    }
+    }*/
 
     async function randomiser() {
     if (unassignedTickets.length === 0) {
@@ -108,10 +100,9 @@ export default function CustomerService() {
                         <ul className="ticket-list">
                             {tickets.map((ticket) => (
                                 <li key={ticket.id} className="ticket-list-item">
-                                    <h2>{ticket.message}</h2>
+                                    <h2>{ticket.customer_url}</h2>
                                     <div className="ticket-info">
                                         <p>Ticket id {ticket.id}</p>
-                                        {ticket.customer_agent ? <p><b>Assigned to: Customer agent</b> {ticket.customer_agent}</p> : ""}
                                     </div>
                                 </li>
                             ))}
