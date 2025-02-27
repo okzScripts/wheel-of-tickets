@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using System.Diagnostics;
 using server;
 
+namespace server;
+
 public static class LoginRoutes
 {
-
     public record Credentials(string Email, string Password);
 
     public static async Task<Results<Ok<string>, BadRequest>> LoginByRole(Credentials credentials, NpgsqlDataSource db, HttpContext ctx)
@@ -37,3 +38,4 @@ public static class LoginRoutes
 
 
 }
+
