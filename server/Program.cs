@@ -3,9 +3,10 @@ using server;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Database database = new();
+var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=session_db;Username=postgres;Password=Playa717;Host=5432");
+dataSourceBuilder.MapEnum<UserRole>();
+var db = dataSourceBuilder.Build();
 
-var db = database.Connection();
 
 builder.Services.AddSingleton<NpgsqlDataSource>(db);
 builder.Services.AddDistributedMemoryCache();

@@ -6,9 +6,9 @@ namespace server;
 public enum UserRole
 {
     Admin,
-    Superadmin,
-    Serviceagent,
-    customer,
+    super_admin,
+    Serviceagents,
+    
 }
 public record GetUsersDTO(int id, string name, UserRole userrole);
 public class UserRoutes
