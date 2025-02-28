@@ -16,10 +16,6 @@ VALUES ( '1 ton Pig Feed', 'Comprehensive IT support including troubleshooting a
 ('Logistics Management Software', 'Software solution to optimize global logistics and supply chain management.', 1200, 'Product', 4);
 
 
-INSERT INTO public.roles (role) 
-VALUES ('service_agents')
-,('admin'),('super_admin'); 
-
 INSERT INTO public.ticket_categories (category_name,company)
 VALUES
 ( 'Technical Support',1),
@@ -44,22 +40,22 @@ INSERT INTO public.ticket_status ( status)
 
 INSERT INTO public.users(name, email, password,company, role)
 VALUES
-( 'Alice Johnson', 'alice.johnson@example.com','password123', 1, 1),
-( 'Bob Smith', 'bob.smith@example.com', 'password123',1, 1),
-( 'Charlie Brown', 'charlie.brown@example.com', 'password123',1, 1),
-( 'Diana Green', 'diana.green@example.com', 'password123',1, 2),
-('Knorre Kulting', 'kulting@host.com', 'auwodh', 4, 2 ),  
-( 'Ostkako Hjälm', 'ostkako@host.com', 'aiwdj', 2 , 2), 
-('Grune Grymt', 'grune@grymt.se', 'hejhej',3 ,2),
-('Svine Klöven', 'svine.kloven@example.com', 'password123', 2, 1),
-('Nasse Puh','nasse.puh@sjumilla.com', 'nalle', 2, 1),
-('Knorre Galtersson', 'knorre.galterson@test.com', 'styre', 3,1), 
-('Orne Nöff', 'orne@host.com', 'nuff', 4, 1),
-('Tryne Galt', 'tryne@hotmail.com', 'asd123', 2, 1), 
-('Solina Gyttja', 'solina@gytja@hotmail.com', 'aswe',3 ,1),
-('Pelle Svinsson', 'pelle.svinsson@fakemail.com', 'best', 1 , 2 ),
-('Kejsare Gris' ,'super_gris@mail.com','kung',NULL, 3),
-('Miriam Enuff','enuff@mail.com','123',4,1);
+( 'Alice Johnson', 'alice.johnson@example.com','password123', 1, 'service_agent'),
+( 'Bob Smith', 'bob.smith@example.com', 'password123',1, 'service_agent'),
+( 'Charlie Brown', 'charlie.brown@example.com', 'password123',1, 'service_agent'),
+( 'Diana Green', 'diana.green@example.com', 'password123',1, 'admin'),
+('Knorre Kulting', 'kulting@host.com', 'auwodh', 4, 'admin' ),  
+( 'Ostkako Hjälm', 'ostkako@host.com', 'aiwdj', 2 , 'admin'), 
+('Grune Grymt', 'grune@grymt.se', 'hejhej',3 ,'admin'),
+('Svine Klöven', 'svine.kloven@example.com', 'password123', 2, 'service_agent'),
+('Nasse Puh','nasse.puh@sjumilla.com', 'nalle', 2, 'service_agent'),
+('Knorre Galtersson', 'knorre.galterson@test.com', 'styre', 3,'service_agent'), 
+('Orne Nöff', 'orne@host.com', 'nuff', 4, 'service_agent'),
+('Tryne Galt', 'tryne@hotmail.com', 'asd123', 2, 'service_agent'), 
+('Solina Gyttja', 'solina@gytja@hotmail.com', 'aswe',3 ,'service_agent'),
+('Pelle Svinsson', 'pelle.svinsson@fakemail.com', 'best', 1 , 'admin' ),
+('Kejsare Gris' ,'super_gris@mail.com','kung',NULL, 'super_admin'),
+('Miriam Enuff','enuff@mail.com','123',4,'service_agent');
  
 
  
