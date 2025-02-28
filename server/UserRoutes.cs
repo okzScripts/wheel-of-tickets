@@ -4,9 +4,15 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
 namespace server;
 
+
+
+public enum UserRole{
+    Service_agent, 
+    Admin,
+    super_admin
+}
 public class UserRoutes
 {
-
 
     public record User(int id, string name, string email, string Password, int company, int role, bool active);
 

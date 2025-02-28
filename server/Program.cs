@@ -3,13 +3,22 @@ using server;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Database database = new();
+var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=portedinme;Port=5432");
+dataSourceBuilder.MapEnum<UserRole>();
+var db = dataSourceBuilder.Build();
 
-var db = database.Connection();
 
 builder.Services.AddSingleton<NpgsqlDataSource>(db);
+//builder.Services.AddDistributedMemoryCache();
+//builder.Services.AddSession(options => { options.Cookie.IsEssential = true; });
+
+
 
 var app = builder.Build();
+
+//app.UseSession();
+
+
 app.MapGet("/api/companies", CompanyRoutes.GetCompanies);
 app.MapGet("/api/companies/{id}", CompanyRoutes.GetCompany);
 app.MapPost("/api/companies", CompanyRoutes.AddCompany);

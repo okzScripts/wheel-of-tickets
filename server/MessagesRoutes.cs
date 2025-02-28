@@ -43,14 +43,16 @@ public static class MessageRoutes{
     }
 
 
-    public record MessageDTO2(string text, DateTime time ,int ticket, bool customer); 
+    public record MessageDTO2(string text ,int ticket, bool customer); 
     public static async Task<Results<Ok<string>,BadRequest<string>>> AddMessage(MessageDTO2 message, NpgsqlDataSource db)
     {
+        
+   
         try { 
             using var cmd= db.CreateCommand(@"insert into messages (text,time,ticket,customer)
                                             values ($1,$2,$3,$4) "); 
             cmd.Parameters.AddWithValue(message.text);
-            cmd.Parameters.AddWithValue(message.time);
+            cmd.Parameters.AddWithValue(DateTime.Now);
             cmd.Parameters.AddWithValue(message.ticket);
             cmd.Parameters.AddWithValue(message.customer);
 

@@ -112,7 +112,7 @@ export function TicketInfoView() {
         fetch(`/api/messages/${id}`).then(response => response.json()).then(data => { setMessages(data) })
     }
 
-    useEffect(GetTicketMessages)
+    useEffect(GetTicketMessages,[])
 
     function PostMessage(e){
         e.preventDefault(); 
@@ -121,21 +121,23 @@ export function TicketInfoView() {
         let dataObject= Object.fromEntries(formData)
         dataObject.ticket=id; 
         dataObject.customer=false;
-        dataObject.time= new Date();
         
         let dataJson =JSON.stringify(dataObject); 
-        fetch(form.action, 
+        console.log(dataJson);
+        fetch("/api/messages", 
             {
-                headers:{"Conten-Type":"application/json"}, 
-                method: form.method,
+                headers: { "Content-Type": "application/json" },
+                method: "POST",
                 body: dataJson
             }).then(response => {
                 if (response.ok) {
-                    alert(`Du lade till ${dataObject.name} `);
+                 console.log("message successful")
                 } else {
-                    alert("Något gick fel ");
+                    console.log(response)
+                    alert("respons");
                 }
             })
+            
     }
     
     return (
