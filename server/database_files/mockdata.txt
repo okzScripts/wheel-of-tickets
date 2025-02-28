@@ -6,13 +6,13 @@ VALUES ('Tech Solutions', 'contact@techsolutions.com', '+1-800-123456', 'A leadi
 ('Global Ventures', 'info@globalventures.com', '+1-800-345678', 'A multinational company involved in various industries.', 'globalventures.com');
 
 INSERT INTO public.products ( product_name, product_description, price, product_category, company)
-VALUES ( 'IT Support Service', 'Comprehensive IT support including troubleshooting and system maintenance.', 200, 'Service', 1),
-( 'Cloud Storage Solution', 'Cloud-based storage solution for businesses of all sizes.', 500, 'Service', 1),
-('Biodegradable Packaging', 'Eco-friendly packaging made from biodegradable materials.', 50, 'Product', 2),
-('Sustainable Clothing Line', 'A clothing line made from 100% sustainable materials.', 80, 'Product', 2), 
-('Branding Consultation', 'Professional consultation to develop a unique brand identity.', 350, 'Service', 3),
-('Website Design Package', 'Custom website design services including setup and optimization.', 1000, 'Service', 3),
-( 'Business Consulting', 'Consulting services for global business expansion and strategy.', 700, 'Service', 4),
+VALUES ( '1 ton Pig Feed', 'Comprehensive IT support including troubleshooting and system maintenance.', 200, 'Service', 1),
+( 'Trough five meeters', 'Cloud-based storage solution for businesses of all sizes.', 500, 'Service', 1),
+('Mud Bath', 'Eco-friendly packaging made from biodegradable materials.', 50, 'Product', 2),
+('Trotter Pedicure', 'A clothing line made from 100% sustainable materials.', 80, 'Product', 2), 
+('Swine Flue Vaccine', 'Professional consultation to develop a unique brand identity.', 350, 'Service', 3),
+('Pig Retirment Home', 'Custom website design services including setup and optimization.', 1000, 'Service', 3),
+( 'Knife Sharpening', 'Consulting services for global business expansion and strategy.', 700, 'Service', 4),
 ('Logistics Management Software', 'Software solution to optimize global logistics and supply chain management.', 1200, 'Product', 4);
 
 
@@ -67,7 +67,7 @@ VALUES
 
 
 
-INSERT INTO public.tickets ( status, customerUrl, product_id, customer_agent, ticket_category)
+INSERT INTO public.tickets ( status, customer_url, product_id, customer_agent, ticket_category)
 VALUES
 (  1, 'http://something', 1, NULL, 1),
 (  1, 'http://something', 2, NULL, 2),
