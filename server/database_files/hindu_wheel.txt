@@ -1,4 +1,4 @@
-CREATE DATABASE hindu_wheels; 
+CREATE DATABASE swine_sync; 
 
 
 create table companies
