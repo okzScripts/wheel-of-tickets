@@ -115,7 +115,7 @@ export function TicketInfoView() {
     useEffect(GetTicketMessages)
 
     function PostMessage(e){
-        e.PreventDefault(); 
+        e.preventDefault(); 
         const form=e.target; 
         let formData=new FormData(form); 
         let dataObject= Object.fromEntries(formData)

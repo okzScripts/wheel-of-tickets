@@ -6,7 +6,7 @@ namespace server;
 public static class MessageRoutes{
     
     public record MessageDTO(int id, string text, DateTime time, int ticket, bool customer);
-     public static async Task<Results<Ok<List<MessageDTO>>, BadRequest<string>>> GetTicketMessage(int id, NpgsqlDataSource db)
+     public static async Task<Results<Ok<List<MessageDTO>>, BadRequest<string>>> GetTicketMessages(int id, NpgsqlDataSource db)
     {
         List<MessageDTO> messages = new List<MessageDTO>();
 
@@ -54,13 +54,13 @@ public static class MessageRoutes{
             cmd.Parameters.AddWithValue(message.ticket);
             cmd.Parameters.AddWithValue(message.customer);
 
-            var result= await cmd.ExecuteScalarAsync(); 
+            var result= await cmd.ExecuteNonQueryAsync(); 
 
-            if( result!=null){
+            if( result>0){
                 return TypedResults.Ok("Message recived"); 
             }else 
             {
-                return TypedResults.BadRequest("Failed to added"+ $"{result}"); 
+                return TypedResults.BadRequest("Failed to added"); 
             }
         }catch(Exception ex){
             return TypedResults.BadRequest("Error accessing db" +ex); 
