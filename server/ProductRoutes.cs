@@ -12,9 +12,10 @@ public class ProductRoutes()
 
     public record Product(int id, string Name, string Description, int Price, string Category, int Company, bool active);
 
-    public static async Task<Results<Ok<List<Product>>, BadRequest<string>>> GetProducts(int company, NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<Product>>, BadRequest<string>>> GetProducts(HttpContext ctx, NpgsqlDataSource db)
     {
-        List<Product> products = new();
+        List<Product> products = new ();
+        var company = ctx.Session.GetInt32("company");
 
         try
         {
@@ -114,10 +115,11 @@ public class ProductRoutes()
 
     public record PostProductDTO(string Name, string Description, int Price, string Category, int Company);
 
-    public static async Task<IResult> AddProduct(PostProductDTO product, NpgsqlDataSource db)
+    public static async Task<IResult> AddProduct(PostProductDTO product,HttpContext ctx, NpgsqlDataSource db)
     {
         try
         {
+            var companyId = ctx.Session.GetInt32("company"); 
 
             using var cmd = db.CreateCommand(
                 "INSERT INTO products (product_name, product_description, price, product_category, company) VALUES ($1, $2, $3, $4, $5) RETURNING id");
@@ -126,7 +128,7 @@ public class ProductRoutes()
             cmd.Parameters.AddWithValue(product.Description);
             cmd.Parameters.AddWithValue(product.Price);
             cmd.Parameters.AddWithValue(product.Category);
-            cmd.Parameters.AddWithValue(product.Company);
+            cmd.Parameters.AddWithValue(companyId);
 
             var result = await cmd.ExecuteScalarAsync();
 
