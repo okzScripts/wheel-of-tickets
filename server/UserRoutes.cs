@@ -49,7 +49,9 @@ public class UserRoutes
         }
     }
 
-    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(UserRole role, int company, NpgsqlDataSource db, HttpContext ctx)
+    //?????public record GetUserByRoleDTO(UserRole Role)
+
+    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(string role, NpgsqlDataSource db, HttpContext ctx)
     {
 
         List<User> users = new List<User>();
@@ -57,10 +59,20 @@ public class UserRoutes
         try
         {
             using var cmd = db.CreateCommand("SELECT id,name,email,password,company,active,role FROM users WHERE role = $1 AND company=$2  ORDER BY id ASC");
-            cmd.Parameters.AddWithValue(role);
+
+            Enum.TryParse<UserRole>(role, true, out var userrole);
+
+
             if (ctx.Session.IsAvailable)
             {
-                cmd.Parameters.AddWithValue(ctx.Session.GetInt32("company"));
+                var companyId = ctx.Session.GetInt32("company");
+                if (companyId == null)
+                {
+                    return TypedResults.BadRequest("Session not exisiting");
+                }
+
+                cmd.Parameters.AddWithValue(userrole);
+                cmd.Parameters.AddWithValue(companyId);
 
                 using var reader = await cmd.ExecuteReaderAsync();
 

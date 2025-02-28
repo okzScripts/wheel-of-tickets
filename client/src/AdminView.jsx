@@ -88,27 +88,33 @@ export function ProductView() {
 export function SupportView() {
 
     const [supports, setSupports] = useState([]);
+    const agent = "Service_agent"
 
-
-
+    function fetchUsers() {
+        fetch(`/api/users/company/${agent}`)
+            .then(response => response.json())
+            .then(data => setSupports(data))
+            .catch(error => console.error("Error fetching users:", error));
+    }
 
     function BlockSupportById(id, active) {
         fetch(`/api/users/block/${id}/${active}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify(id, active),
+            body: JSON.stringify({ id, active }),
         })
             .then(response => {
-                if (response.ok) { console.log("Det Funkade Igen") }
+                if (response.ok) {
+                    console.log("User status updated");
+                    fetchUsers();
+                }
             })
+            .catch(error => console.error("Error updating user:", error));
     }
 
-    useEffect(() => {
-
-        fetch(`/api/users/company/Service_agent/company`).then(response =>
-            response.json())
-            .then(data => setSupports(data));
-    }, [BlockSupportById]);
+    useEffect(
+        fetchUsers
+        , []);
     return <main>
         <nav className="navbar"><img src={logo}></img> <NavLink to="/admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
         <section className="header-section"><h1>All Products</h1></section>
