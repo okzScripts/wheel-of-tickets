@@ -9,14 +9,9 @@ var db = dataSourceBuilder.Build();
 
 
 builder.Services.AddSingleton<NpgsqlDataSource>(db);
-//builder.Services.AddDistributedMemoryCache();
-//builder.Services.AddSession(options => { options.Cookie.IsEssential = true; });
-
 
 
 var app = builder.Build();
-
-//app.UseSession();
 
 
 app.MapGet("/api/companies", CompanyRoutes.GetCompanies);
@@ -47,10 +42,5 @@ app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
 
 app.MapGet("/api/messages/{id}", MessageRoutes.GetTicketMessages);
 app.MapPost("/api/messages/", MessageRoutes.AddMessage);
-
-//app.MapPost("/api/create-user", UserRoutes.AddUser);
-
-
-//var serverActions  = new ServerActions(app);
 
 app.Run();

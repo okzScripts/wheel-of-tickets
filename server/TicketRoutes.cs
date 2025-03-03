@@ -30,7 +30,7 @@ public class TicketRoutes
     WHERE 
         t.customer_agent IS NULL AND catc.customer_agent = $1");
 
-            cmd.Parameters.AddWithValue(id); // Correct parameter assignment
+            cmd.Parameters.AddWithValue(id);
 
 
             using var reader = await cmd.ExecuteReaderAsync();
@@ -54,44 +54,7 @@ public class TicketRoutes
             return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
         }
     }
-    /*
-        public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetUnassignedTickets(int company, NpgsqlDataSource db)
-        {
-            List<Ticket> tickets = new List<Ticket>();
 
-            try
-            {
-                using var cmd = db.CreateCommand(@"
-                SELECT t.id, t.message, t.status, t.customer, t.product_id, t.customer_agent, t.ticket_category
-                FROM tickets t
-                JOIN products p ON t.product_id = p.id
-                WHERE t.customer_agent IS NULL AND p.company = $1
-                ORDER BY t.id ASC");
-
-                cmd.Parameters.AddWithValue(company);
-                using var reader = await cmd.ExecuteReaderAsync();
-
-                while (await reader.ReadAsync())
-                {
-                    var ticket = new Ticket(
-                        reader.GetInt32(0),
-                        reader.GetString(1),
-                        reader.GetInt32(2),
-                        reader.GetInt32(3),
-                        reader.GetInt32(4),
-                        reader.IsDBNull(5) ? null : reader.GetInt32(5),
-                        reader.GetInt32(6)
-                    );
-                    tickets.Add(ticket);
-                }
-                return TypedResults.Ok(tickets);
-
-            }
-            catch (Exception ex)
-            {
-                return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
-            }
-        }*/
 
     public static async Task<Results<Ok<string>, BadRequest<string>>> AssignTicket(int id, int agent, NpgsqlDataSource db)
     {
@@ -169,7 +132,7 @@ public class TicketRoutes
             );
             cmd.Parameters.AddWithValue(ticket.message);
             cmd.Parameters.AddWithValue(status);
-            cmd.Parameters.AddWithValue(ticket.companyId); // ska vara customer id efter att vi lagt till login 
+            cmd.Parameters.AddWithValue(ticket.companyId);
             cmd.Parameters.AddWithValue(ticket.productId);
             cmd.Parameters.AddWithValue(ticket.categoryId);
 

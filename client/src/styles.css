@@ -346,42 +346,41 @@ textarea {
   list-style: none;
   padding: 0;
   margin: 0;
+  overflow-y: auto;
 }
 .chat-agent-message {
-  height: 10%;
-  width: 35%;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  height: auto;
+  width: auto;
   margin: 0;
   margin-left: 65%;
   margin-top: 10px;
   margin-right: 10px;
-  background-color: rgb(32, 32, 32);
-  padding: 10px;
-  border-radius: 10px;
-  > p {
-    color: white;
-    text-align: start;
-    padding-right: 5px;
-    padding: 0;
+  > :nth-child(2) {
+    font-size: 8px;
     margin: 0;
+    color: rgb(99, 99, 99);
+    margin-top: 2px;
+    text-align: right;
   }
 }
 .chat-customer-message {
   text-align: end;
-  height: 10%;
-  width: 35%;
+  height: auto;
+  width: auto;
   margin: 0;
   margin-right: 65%;
   margin-top: 10px;
   margin-left: 10px;
-  background-color: rgb(32, 32, 32);
-  padding: 10px;
-  border-radius: 10px;
-  > p {
-    color: white;
-    text-align: start;
-    padding-left: 5px;
-    padding: 0;
+  > :nth-child(2) {
+    color: rgb(99, 99, 99);
+    font-size: 8px;
     margin: 0;
+    margin-top: 2px;
+    text-align: left;
+    margin-bottom: 10px;
   }
 }
 .chat-message-box {
@@ -389,11 +388,41 @@ textarea {
   justify-content: center;
   width: 100%;
   height: 30%;
-  > input {
+  > .chat-message-form {
     width: 60%;
-    height: 50%;
+    height: 100%;
+    > .text-area {
+      width: 80%;
+      height: 70%;
+      border-radius: 5px;
+      border: none;
+      text-align: left;
+      vertical-align: top;
+      resize: none;
+    }
   }
   .small-button {
     align-self: normal;
   }
+}
+.message-holder-customer {
+  padding: 15px;
+  border-radius: 10px;
+  width: fit-content;
+  text-align: left;
+  background-color: rgb(32, 32, 32);
+  color: white;
+  font-size: 12px;
+  margin: 0;
+}
+.message-holder-agent {
+  width: fit-content;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: rgb(32, 32, 32);
+  color: white;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  font-size: 12px;
+  margin: 0;
 }

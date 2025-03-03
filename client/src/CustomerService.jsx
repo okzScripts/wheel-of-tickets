@@ -9,8 +9,8 @@ export function CustomerServiceView() {
     const [assignedTickets, setAssignedTickets] = useState([]);
     const customerServiceAgent = 1;
 
-    useEffect(GetUnassignedTickets);
-    useEffect(GetAssignedTickets); 
+    useEffect(GetUnassignedTickets, []);
+    useEffect(GetAssignedTickets, []);
     
   
     function GetUnassignedTickets()
@@ -106,15 +106,22 @@ export function CustomerServiceView() {
 
 export function TicketInfoView() {
     const { id } = useParams()
+    const [messageText, setMessageText] = useState("");
     const [messages, setMessages] = useState([])
     
     function GetTicketMessages() {
         fetch(`/api/messages/${id}`).then(response => response.json()).then(data => { setMessages(data) })
     }
+    useEffect(GetTicketMessages, [])
 
-    useEffect(GetTicketMessages,[])
+    useEffect(() => {
+    const intervalId = setInterval(GetTicketMessages, 2000);
+    return () => clearInterval(intervalId);
+    }, []);
 
-    function PostMessage(e){
+    
+
+    function PostMessage(e) {
         e.preventDefault(); 
         const form=e.target; 
         let formData=new FormData(form); 
@@ -131,7 +138,8 @@ export function TicketInfoView() {
                 body: dataJson
             }).then(response => {
                 if (response.ok) {
-                 console.log("message successful")
+                    GetTicketMessages();
+                    setMessageText("")
                 } else {
                     console.log(response)
                     alert("respons");
@@ -149,15 +157,17 @@ export function TicketInfoView() {
 </ul>
 </section>
 <section className="chat-message-box">
-<form  className="chat-message-form" onSubmit={PostMessage}   action="/api/messages" method="POST" >
-    <input name="text" type="textarea"></input><input className="small-button" type="submit" value="Send" ></input>
+<form  className="chat-message-form" onSubmit={PostMessage} method="POST" >
+                    <textarea value={messageText} onChange={(e) => setMessageText(e.target.value)} name="text" type="textarea" className="text-area"></textarea>
+                    <input className="small-button" type="submit" value="Send" disabled={!messageText}></input>
 </form>
 </section>
 </main>
     );
 
     function MessageCard(message) {
-        const messageSender = message.customer? "chat-customer-message" : "chat-agent-message"
-        return <li key={message.id} className={messageSender}><p>{message.text}{message.time}</p></li>
+        const messageSender = message.customer ? "chat-customer-message" : "chat-agent-message"
+        const messageholder = message.customer? "message-holder-customer" : "message-holder-agent"
+        return <li key={message.id} className={messageSender}><p className={messageholder}>{message.text}</p><p>{message.time}</p></li>
     }
 }
