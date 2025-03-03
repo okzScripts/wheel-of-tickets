@@ -140,7 +140,7 @@ public class UserRoutes
     {
         try
         {
-            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,role,active FROM users WHERE id = $1 ");
+            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,active,role FROM users WHERE id = $1 ");
 
             cmd.Parameters.AddWithValue(id);
 
@@ -171,12 +171,26 @@ public class UserRoutes
         }
     }
 
-    public record PostUserDTO(string Name, string Email, string Password, int? Company, int Role);
+    public record PostUserDTO(string Name, string Email, string Password, int? Company, string Role);
 
-    public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db)
+    public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db,HttpContext ctx)
     {
+       
         try
         {
+             int? companyId= -1; 
+            Enum.TryParse<UserRole>(user.Role, true, out var userRole);
+            if(user.Company is null){
+                if (ctx.Session.IsAvailable)
+                {
+                    companyId = ctx.Session.GetInt32("company");
+                    if (companyId == null)
+                    {
+                        return TypedResults.BadRequest("Session not exisiting");
+                    }
+                }
+            }else{ companyId= user.Company; }
+
 
             using var cmd = db.CreateCommand(
                 "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
@@ -184,8 +198,8 @@ public class UserRoutes
             cmd.Parameters.AddWithValue(user.Name);
             cmd.Parameters.AddWithValue(user.Email);
             cmd.Parameters.AddWithValue(user.Password);
-            cmd.Parameters.AddWithValue(user.Company.HasValue ? user.Company.Value : DBNull.Value);
-            cmd.Parameters.AddWithValue(user.Role);
+            cmd.Parameters.AddWithValue(companyId.HasValue ? companyId: DBNull.Value );
+            cmd.Parameters.AddWithValue(userRole);
             cmd.Parameters.AddWithValue(true);
 
             var result = await cmd.ExecuteScalarAsync();
@@ -209,19 +223,18 @@ public class UserRoutes
         }
     }
 
-    public static async Task<IResult> EditUser(int id, PostUserDTO user, NpgsqlDataSource db)
+
+public record PutUserDTO(string Name, string Email,string Password); 
+    public static async Task<IResult> EditUser(int id, PutUserDTO user, NpgsqlDataSource db)
     {
         try
-        {
+        { 
             using var cmd = db.CreateCommand(
-                "UPDATE users SET name = $1, email = $2, password = $3, company = $4, role = $5, active = $6 WHERE id = $7");
+                "UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4");
 
             cmd.Parameters.AddWithValue(user.Name);
             cmd.Parameters.AddWithValue(user.Email);
             cmd.Parameters.AddWithValue(user.Password);
-            cmd.Parameters.AddWithValue(user.Company.HasValue ? user.Company.Value : DBNull.Value);
-            cmd.Parameters.AddWithValue(user.Role);
-            cmd.Parameters.AddWithValue(true);
             cmd.Parameters.AddWithValue(id);
 
             int rowsAffected = await cmd.ExecuteNonQueryAsync();
