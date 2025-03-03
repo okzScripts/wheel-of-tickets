@@ -23,10 +23,13 @@ public static class LoginRoutes
         {
 
             var role = reader.GetFieldValue<UserRole>(1);
-            var company = reader.GetInt32(2);
+
+
+
             ctx.Session.SetString("name", reader.GetString(0));
             ctx.Session.SetInt32("role", (int)role);
             ctx.Session.SetInt32("company", reader.GetInt32(2));
+
 
 
 
