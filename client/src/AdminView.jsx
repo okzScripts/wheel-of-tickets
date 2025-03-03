@@ -30,28 +30,29 @@ export function AdminView() {
 export function ProductView() {
 
     const [products, setProducts] = useState([]);
-    const companyId = 1;
-
 
     function BlockProductById(id, active) {
         fetch(`/api/products/block/${id}/${active}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify(id, active),
+            body: JSON.stringify({id, active}),
         })
             .then(response => {
                 if (response.ok) { console.log("Det Funkade Igen") }
+                fetchProducts();
             })
 
+    };
+
+    function fetchProducts() {
+        fetch(`/api/products/company/`)
+            .then(response => response.json())
+            .then(data => setProducts(data))
+            .catch(error => console.error("Error fetching products:", error));
     }
 
-
-    useEffect(() => {
-
-        fetch(`/api/products/company/${companyId}`).then(response =>
-            response.json())
-            .then(data => setProducts(data));
-    }, [BlockProductById]);
+    // Hämta produkter vid första rendering
+    useEffect(fetchProducts, []);
 
 
 
@@ -62,7 +63,7 @@ export function ProductView() {
             {products.map(ProductCard)}
         </ul>
         <section className="content-box">
-            <NavLink to={"/product/" + companyId + "/add"}><button className="middle-button">Add product</button> </NavLink>
+            <NavLink to={`/product/add`}><button className="middle-button">Add product</button> </NavLink>
         </section>
     </main>
 
@@ -143,9 +144,7 @@ export function SupportView() {
 
 export function AdminAddProductView() {
 
-    const { id } = useParams();
-
-
+    const { companyId } = useParams();
 
     function PostProduct(e) {
         e.preventDefault();
@@ -153,7 +152,7 @@ export function AdminAddProductView() {
 
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        dataObject.company = id;
+        dataObject.company = companyId;
         let dataJson = JSON.stringify(dataObject);
         fetch(form.action, {
             headers: { "Content-Type": "application/json" },
@@ -228,7 +227,7 @@ export function AdminEditProductView() {
                 .then(data => setProduct(data)))
 
 
-    });
+    }, []);
 
     function updateProduct(e) {
         e.preventDefault();
