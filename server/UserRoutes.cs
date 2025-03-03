@@ -3,28 +3,32 @@ using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
 namespace server;
-
-
-
-public enum UserRole{
-    Service_agent, 
+public enum UserRole
+{
     Admin,
-    super_admin
+    super_admin,
+    Service_agent,
+
 }
+public record GetUsersDTO(int id, string name, UserRole userrole);
 public class UserRoutes
 {
 
-    public record User(int id, string name, string email, string Password, int company, int role, bool active);
+
+    public record User(int id, string name, string email, string Password, int company, bool active, UserRole role);
 
 
-    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsers(int role, NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsers(string role, NpgsqlDataSource db)
     {
         List<User> users = new List<User>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM users WHERE role = $1  ORDER BY id ASC");
-            cmd.Parameters.AddWithValue(role);
+            Enum.TryParse<UserRole>(role, true, out var userrole);
+
+
+            using var cmd = db.CreateCommand("SELECT id,name,email,password,company, active, role FROM users WHERE role = $1  ORDER BY id ASC");
+            cmd.Parameters.AddWithValue(userrole);
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -35,8 +39,8 @@ public class UserRoutes
                     reader.GetString(2),
                     reader.GetString(3),
                     reader.GetInt32(4),
-                    reader.GetInt32(5),
-                    reader.GetBoolean(6)
+                    reader.GetBoolean(5),
+                    reader.GetFieldValue<UserRole>(6)
                 ));
             }
 
@@ -48,32 +52,52 @@ public class UserRoutes
         }
     }
 
-    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(int role, int company, NpgsqlDataSource db)
+    //?????public record GetUserByRoleDTO(UserRole Role)
+
+    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(string role, NpgsqlDataSource db, HttpContext ctx)
     {
 
         List<User> users = new List<User>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,role,active FROM users WHERE role = $1 AND company=$2  ORDER BY id ASC");
-            cmd.Parameters.AddWithValue(role);
-            cmd.Parameters.AddWithValue(company);
-            using var reader = await cmd.ExecuteReaderAsync();
+            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,active,role FROM users WHERE role = $1 AND company=$2  ORDER BY id ASC");
 
-            while (await reader.ReadAsync())
+            Enum.TryParse<UserRole>(role, true, out var userrole);
+
+
+            if (ctx.Session.IsAvailable)
             {
-                users.Add(new User(
-                    reader.GetInt32(0),
-                    reader.GetString(1),
-                    reader.GetString(2),
-                    reader.GetString(3),
-                    reader.GetInt32(4),
-                    reader.GetInt32(5),
-                    reader.GetBoolean(6)
-                ));
-            }
+                var companyId = ctx.Session.GetInt32("company");
+                if (companyId == null)
+                {
+                    return TypedResults.BadRequest("Session not exisiting");
+                }
 
-            return TypedResults.Ok(users);
+                cmd.Parameters.AddWithValue(userrole);
+                cmd.Parameters.AddWithValue(companyId);
+
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    users.Add(new User(
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.GetString(3),
+                        reader.GetInt32(4),
+                        reader.GetBoolean(5),
+                        reader.GetFieldValue<UserRole>(6)
+                    ));
+                }
+
+                return TypedResults.Ok(users);
+            }
+            else
+            {
+                return TypedResults.BadRequest("ICKE SA NICKE!");
+            }
         }
         catch (Exception ex)
         {
@@ -119,7 +143,7 @@ public class UserRoutes
     {
         try
         {
-            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,role,active FROM users WHERE id = $1 ");
+            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,active,role FROM users WHERE id = $1 ");
 
             cmd.Parameters.AddWithValue(id);
 
@@ -135,8 +159,8 @@ public class UserRoutes
                     reader.GetString(2),
                     reader.GetString(3),
                     reader.GetInt32(4),
-                    reader.GetInt32(5),
-                    reader.GetBoolean(6)
+                    reader.GetBoolean(5),
+                    reader.GetFieldValue<UserRole>(6)
                 );
 
                 return TypedResults.Ok(user);
@@ -150,12 +174,28 @@ public class UserRoutes
         }
     }
 
-    public record PostUserDTO(string Name, string Email, string Password, int? Company, int Role);
+    public record PostUserDTO(string Name, string Email, string Password, int? Company, string Role);
 
-    public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db)
+    public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db, HttpContext ctx)
     {
+
         try
         {
+            int? companyId = -1;
+            Enum.TryParse<UserRole>(user.Role, true, out var userRole);
+            if (user.Company is null)
+            {
+                if (ctx.Session.IsAvailable)
+                {
+                    companyId = ctx.Session.GetInt32("company");
+                    if (companyId == null)
+                    {
+                        return TypedResults.BadRequest("Session not exisiting");
+                    }
+                }
+            }
+            else { companyId = user.Company; }
+
 
             using var cmd = db.CreateCommand(
                 "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
@@ -163,8 +203,8 @@ public class UserRoutes
             cmd.Parameters.AddWithValue(user.Name);
             cmd.Parameters.AddWithValue(user.Email);
             cmd.Parameters.AddWithValue(user.Password);
-            cmd.Parameters.AddWithValue(user.Company.HasValue ? user.Company.Value : DBNull.Value);
-            cmd.Parameters.AddWithValue(user.Role);
+            cmd.Parameters.AddWithValue(companyId.HasValue ? companyId : DBNull.Value);
+            cmd.Parameters.AddWithValue(userRole);
             cmd.Parameters.AddWithValue(true);
 
             var result = await cmd.ExecuteScalarAsync();
@@ -188,19 +228,18 @@ public class UserRoutes
         }
     }
 
-    public static async Task<IResult> EditUser(int id, PostUserDTO user, NpgsqlDataSource db)
+
+    public record PutUserDTO(string Name, string Email, string Password);
+    public static async Task<IResult> EditUser(int id, PutUserDTO user, NpgsqlDataSource db)
     {
         try
         {
             using var cmd = db.CreateCommand(
-                "UPDATE users SET name = $1, email = $2, password = $3, company = $4, role = $5, active = $6 WHERE id = $7");
+                "UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4");
 
             cmd.Parameters.AddWithValue(user.Name);
             cmd.Parameters.AddWithValue(user.Email);
             cmd.Parameters.AddWithValue(user.Password);
-            cmd.Parameters.AddWithValue(user.Company.HasValue ? user.Company.Value : DBNull.Value);
-            cmd.Parameters.AddWithValue(user.Role);
-            cmd.Parameters.AddWithValue(true);
             cmd.Parameters.AddWithValue(id);
 
             int rowsAffected = await cmd.ExecuteNonQueryAsync();
@@ -217,4 +256,26 @@ public class UserRoutes
             return TypedResults.BadRequest($"Error {ex.Message}");
         }
     }
+
 }
+
+
+
+/* public static async Task<Results<Ok<List<UserRole>>, UnauthorizedHttpResult, ForbidHttpResult>> GetUserByRole(NpgsqlDataSource db, HttpContext ctx){
+
+     if(ctx.Session.IsAvailable &&
+     ctx.Session.GetInt32("role") is int role &&
+     Enum.IsDefined(typeof(UserRole), role)){
+
+         if((UserRole)role == UserRole.)
+     }
+
+
+ }
+
+
+
+
+
+
+}*/

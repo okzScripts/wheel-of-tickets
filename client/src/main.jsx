@@ -30,11 +30,11 @@ createRoot(document.getElementById('root')).render(
 
         <Route path='/admin' element={<AdminView />} />
         <Route path='/products' element={<ProductView />} />
-        <Route path='/product/:id/add' element={<AdminAddProductView />} />
+        <Route path='/product/add' element={<AdminAddProductView />} />
         <Route path='/product/:id/edit' element={<AdminEditProductView />} />
         <Route path='/agents' element={<SupportView />} />
         <Route path='/agents/:id/edit' element={<AdminEditSupportView />} />
-        <Route path='/agents/:companyID/add' element={<AdminAddSupportView />} />
+        <Route path='/agents/add' element={<AdminAddSupportView />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

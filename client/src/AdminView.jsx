@@ -7,7 +7,7 @@ const adminInfoContext = createContext({});
 
 export function AdminView() {
     //
-    
+
     const [companyId, setCompanyId] = useState(1);
 
 
@@ -16,13 +16,13 @@ export function AdminView() {
 
 
     return <adminInfoContext.Provider value={companyId} >
-            <main className="option-main">
+        <main className="option-main">
             <div className="big-button-container">
-            <NavLink to="/products"><button className="big-button">Products</button></NavLink>
-            <NavLink to="/agents"><button className="big-button">Support Agents</button></NavLink>
-        </div>
-    </main>
-        </adminInfoContext.Provider>
+                <NavLink to="/products"><button className="big-button">Products</button></NavLink>
+                <NavLink to="/agents"><button className="big-button">Support Agents</button></NavLink>
+            </div>
+        </main>
+    </adminInfoContext.Provider>
 }
 
 
@@ -30,55 +30,56 @@ export function AdminView() {
 export function ProductView() {
 
     const [products, setProducts] = useState([]);
-    const companyId = 1;
-
 
     function BlockProductById(id, active) {
         fetch(`/api/products/block/${id}/${active}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify(id, active),
+            body: JSON.stringify({id, active}),
         })
             .then(response => {
                 if (response.ok) { console.log("Det Funkade Igen") }
+                fetchProducts();
             })
 
+    };
+
+    function fetchProducts() {
+        fetch(`/api/products/company/`)
+            .then(response => response.json())
+            .then(data => setProducts(data))
+            .catch(error => console.error("Error fetching products:", error));
     }
 
-
-    useEffect(() => {
-
-        fetch(`/api/products/company/${companyId}`).then(response =>
-            response.json())
-            .then(data => setProducts(data));
-    }, [BlockProductById]);
+    // Hämta produkter vid första rendering
+    useEffect(fetchProducts, []);
 
 
 
     return <main>
         <nav className="navbar"><img src={logo}></img> <NavLink to="/admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
         <section className="header-section"><h1>All Products</h1></section>
-            <ul className="list">
-                {products.map(ProductCard)}
+        <ul className="list">
+            {products.map(ProductCard)}
         </ul>
         <section className="content-box">
-            <NavLink to={"/product/" + companyId + "/add"}><button className="middle-button">Add product</button> </NavLink>
+            <NavLink to={`/product/add`}><button className="middle-button">Add product</button> </NavLink>
         </section>
     </main>
 
 
     function ProductCard(product) {
         return <li className="list-item" key={product.id}>
-                <div className="card-info">
-                    <p><strong>Name:</strong><br/>{product.name}</p><br/>
-                    <p><strong>Price:</strong><br/>{product.price}</p><br/>
-                    <p><strong>Category:</strong><br/>{product.category}</p><br/>
-                </div>
-                <div className="card-buttons">
-                    <NavLink to={"/product/" + product.id + "/edit"}><button>Edit</button></NavLink>
-                    <button className="small-button" onClick={() => BlockProductById(product.id, product.active)}>{product.active ? "block" : "un-block"}</button>
-                </div>
-                </li>
+            <div className="card-info">
+                <p><strong>Name:</strong><br />{product.name}</p><br />
+                <p><strong>Price:</strong><br />{product.price}</p><br />
+                <p><strong>Category:</strong><br />{product.category}</p><br />
+            </div>
+            <div className="card-buttons">
+                <NavLink to={"/product/" + product.id + "/edit"}><button>Edit</button></NavLink>
+                <button className="small-button" onClick={() => BlockProductById(product.id, product.active)}>{product.active ? "block" : "un-block"}</button>
+            </div>
+        </li>
     }
 
 }
@@ -88,48 +89,54 @@ export function ProductView() {
 export function SupportView() {
 
     const [supports, setSupports] = useState([]);
+    const agent = "Service_agent"
 
-    const companyId = 1;
-
+    function fetchUsers() {
+        fetch(`/api/users/company/${agent}`)
+            .then(response => response.json())
+            .then(data => setSupports(data))
+            .catch(error => console.error("Error fetching users:", error));
+    }
 
     function BlockSupportById(id, active) {
         fetch(`/api/users/block/${id}/${active}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify(id, active),
+            body: JSON.stringify({ id, active }),
         })
             .then(response => {
-                if (response.ok) { console.log("Det Funkade Igen") }
+                if (response.ok) {
+                    console.log("User status updated");
+                    fetchUsers();
+                }
             })
+            .catch(error => console.error("Error updating user:", error));
     }
 
-    useEffect(() => {
-
-        fetch(`/api/users/company/2/${companyId}`).then(response =>
-            response.json())
-            .then(data => setSupports(data));
-    }, [BlockSupportById]);
+    useEffect(
+        fetchUsers
+        , []);
     return <main>
-         <nav className="navbar"><img src={logo}></img> <NavLink to="/admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
-        <section className="header-section"><h1>All Products</h1></section>
-            <ul className="list">
-                {supports.map(AgentCard)}
+        <nav className="navbar"><img src={logo}></img> <NavLink to="/admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+        <section className="header-section"><h1>All Service Agents</h1></section>
+        <ul className="list">
+            {supports.map(AgentCard)}
         </ul>
         <section className="content-box">
-            <NavLink to={`/agents/${companyId}/add`}><button className="middle-button">Add Support Agent</button></NavLink>
+            <NavLink to={`/agents/add`}><button className="middle-button">Add Support Agent</button></NavLink>
         </section>
     </main>
     function AgentCard(support) {
 
         return <li className="list-item" key={support.id}>
             <div className="card-info">
-                <p><strong>Name:</strong><br/>{support.name}</p><br/>
-                <p><strong>Email:</strong><br/>{support.email}</p><br/>
+                <p><strong>Name:</strong><br />{support.name}</p><br />
+                <p><strong>Email:</strong><br />{support.email}</p><br />
             </div>
             <div className="card-buttons">
-                    <NavLink to={`/agents/${support.id}/edit`}><button>Edit</button></NavLink>
-                    <button className="small-button" onClick={() => BlockSupportById(support.id, support.active)}>{support.active ? "block" : "un-block"}</button>
-                </div>
+                <NavLink to={`/agents/${support.id}/edit`}><button>Edit</button></NavLink>
+                <button className="small-button" onClick={() => BlockSupportById(support.id, support.active)}>{support.active ? "block" : "un-block"}</button>
+            </div>
         </li>
     }
 }
@@ -137,9 +144,7 @@ export function SupportView() {
 
 export function AdminAddProductView() {
 
-    const { id } = useParams();
-
-
+    const { companyId } = useParams();
 
     function PostProduct(e) {
         e.preventDefault();
@@ -147,7 +152,7 @@ export function AdminAddProductView() {
 
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        dataObject.company = id;
+        dataObject.company = companyId;
         let dataJson = JSON.stringify(dataObject);
         fetch(form.action, {
             headers: { "Content-Type": "application/json" },
@@ -167,40 +172,40 @@ export function AdminAddProductView() {
             <nav className="navbar"><img src={logo}></img> <NavLink to="/products"><button className="back-button">⬅️ Back</button></NavLink></nav>
             <form className="data-form" onSubmit={PostProduct} action={`/api/products`} method="POST">
                 <div className="form-box">
-                <label>
-                    Name:
-                    <input
-                        name="name"
-                        type="text"
-                        required
-                    />
-                </label>
+                    <label>
+                        Name:
+                        <input
+                            name="name"
+                            type="text"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Description:
-                    <input
-                        name="description"
-                        type="text"
-                        required
-                    />
-                </label>
+                    <label>
+                        Description:
+                        <input
+                            name="description"
+                            type="text"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Price:
-                    <input
-                        name="price"
-                        type="integer"
-                        required
-                    />
-                </label>
-                <label>
-                    Category:
-                    <input
-                        name="category"
-                        type="text"
-                        required
-                    />
-                </label>
+                    <label>
+                        Price:
+                        <input
+                            name="price"
+                            type="integer"
+                            required
+                        />
+                    </label>
+                    <label>
+                        Category:
+                        <input
+                            name="category"
+                            type="text"
+                            required
+                        />
+                    </label>
                 </div>
                 <input type="submit" value="Save" className="middle-button"></input>
             </form>
@@ -222,7 +227,7 @@ export function AdminEditProductView() {
                 .then(data => setProduct(data)))
 
 
-    });
+    }, []);
 
     function updateProduct(e) {
         e.preventDefault();
@@ -251,45 +256,45 @@ export function AdminEditProductView() {
             <nav className="navbar"><img src={logo}></img> <NavLink to="/products"><button className="back-button">⬅️ Back</button></NavLink></nav>
             <form className="data-form" onSubmit={updateProduct} action={`/api/products`} method="PUT">
                 <div className="form-box">
-                <label>
-                    Name:
-                    <input
-                        name="name"
-                        defaultValue={product?.name}
-                        type="text"
-                        required
-                    />
-                </label>
-
-                <label>
-                    Description:
-                    <input
-                        name="description"
-                        defaultValue={product?.description}
-                        type="text"
-                        required
-                    />
-                </label>
-
-                <label>
-                    Price:
-                    <input
-                        name="price"
-                        defaultValue={product?.price}
-                        type="number"
-                        required
-                    />
-                </label>
-                <label>
-                    Category:
-                    <input
-                        name="category"
-                        defaultValue={product?.category}
-                        type="text"
-                        required
-                    />
+                    <label>
+                        Name:
+                        <input
+                            name="name"
+                            defaultValue={product?.name}
+                            type="text"
+                            required
+                        />
                     </label>
-                    </div>
+
+                    <label>
+                        Description:
+                        <input
+                            name="description"
+                            defaultValue={product?.description}
+                            type="text"
+                            required
+                        />
+                    </label>
+
+                    <label>
+                        Price:
+                        <input
+                            name="price"
+                            defaultValue={product?.price}
+                            type="number"
+                            required
+                        />
+                    </label>
+                    <label>
+                        Category:
+                        <input
+                            name="category"
+                            defaultValue={product?.category}
+                            type="text"
+                            required
+                        />
+                    </label>
+                </div>
                 <input type="submit" value="Save" className="middle-button"></input>
             </form>
         </main>
@@ -305,10 +310,14 @@ export function AdminEditSupportView() {
 
         fetch(`/api/users/${id}`)
             .then(response => response.json())
-            .then(data => setAgent(data));
+            .then(data => {setAgent(data)})
+            .then(()=> console.log(agent.role));
+            
+            
 
-    }
-    );
+    },[]);
+
+   
 
     function updateUser(e) {
         e.preventDefault();
@@ -316,8 +325,6 @@ export function AdminEditSupportView() {
 
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        dataObject.company = agent.company;
-        dataObject.role = agent.role;
         let dataJson = JSON.stringify(dataObject);
         fetch(form.action, {
             headers: { "Content-Type": "application/json" },
@@ -337,36 +344,36 @@ export function AdminEditSupportView() {
             <nav className="navbar"><img src={logo}></img> <NavLink to="/agents"><button className="back-button">⬅️ Back</button></NavLink></nav>
             <form className="data-form" onSubmit={updateUser} action={`/api/users/${agent?.id}`} method="PUT">
                 <div className="form-box">
-                <label>
-                    Name:
-                    <input
-                        name="name"
-                        defaultValue={agent?.name}
-                        type="text"
-                        required
-                    />
-                </label>
-
-                <label>
-                    Email:
-                    <input
-                        name="email"
-                        defaultValue={agent?.email}
-                        type="email"
-                        required
-                    />
-                </label>
-
-                <label>
-                    Password:
-                    <input
-                        name="password"
-                        defaultValue={agent?.password}
-                        type="password"
-                        required
-                    />
+                    <label>
+                        Name:
+                        <input
+                            name="name"
+                            defaultValue={agent?.name}
+                            type="text"
+                            required
+                        />
                     </label>
-                    </div>
+
+                    <label>
+                        Email:
+                        <input
+                            name="email"
+                            defaultValue={agent?.email}
+                            type="email"
+                            required
+                        />
+                    </label>
+
+                    <label>
+                        Password:
+                        <input
+                            name="password"
+                            defaultValue={agent?.password}
+                            type="password"
+                            required
+                        />
+                    </label>
+                </div>
                 <input type="submit" value="Save" className="middle-button"></input>
             </form>
         </main>
@@ -374,7 +381,7 @@ export function AdminEditSupportView() {
 }
 
 export function AdminAddSupportView() {
-    const { companyID } = useParams();
+   
 
     function postUser(e) {
         e.preventDefault();
@@ -382,8 +389,8 @@ export function AdminAddSupportView() {
 
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        dataObject.company = companyID;
-        dataObject.role = 2;
+        dataObject.company = null;
+        dataObject.role = "service_agent";
 
 
         let dataJson = JSON.stringify(dataObject);
@@ -406,34 +413,34 @@ export function AdminAddSupportView() {
             <nav className="navbar"><img src={logo}></img> <NavLink to="/agents"><button className="back-button">⬅️ Back</button></NavLink></nav>
             <form className="data-form" onSubmit={postUser} action="/api/users" method="POST">
                 <div className="form-box">
-                <label>
-                    Name:
-                    <input
-                        name="name"
-                        type="text"
-                        required
-                    />
-                </label>
+                    <label>
+                        Name:
+                        <input
+                            name="name"
+                            type="text"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Email:
-                    <input
-                        name="email"
-                        type="email"
-                        required
-                    />
-                </label>
+                    <label>
+                        Email:
+                        <input
+                            name="email"
+                            type="email"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Password:
-                    <input
-                        name="password"
-                        type="password"
-                        required
-                    />
-                </label>
+                    <label>
+                        Password:
+                        <input
+                            name="password"
+                            type="password"
+                            required
+                        />
+                    </label>
 
-            </div>
+                </div>
                 <input type="submit" value="Save" className="middle-button"></input>
             </form>
         </main>

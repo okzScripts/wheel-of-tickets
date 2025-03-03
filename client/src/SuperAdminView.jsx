@@ -42,24 +42,24 @@ export function SuperAdminCompanyView() {
     return <main className="role-specific-main">
         <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
         <section className="header-section"><h1>All Companies</h1></section>
-            <ul className="list">
-                {companies.map(CompanyCard)}
-            </ul>
+        <ul className="list">
+            {companies.map(CompanyCard)}
+        </ul>
         <section className="content-box">
-        <NavLink to="/companies/add"><button className="middle-button">Add Company</button></NavLink></section>
+            <NavLink to="/companies/add"><button className="middle-button">Add Company</button></NavLink></section>
     </main>;
 
     function CompanyCard(company) {
         return <li className="list-item" key={company.id}>
-                    <div className="card-info">
-                        <p><strong>Name:</strong><br/>{company.name}</p><br/>
-                        <p><strong>Email:</strong><br/>{company.email}</p><br/>
-                        <p><strong>Domain:</strong><br/>{company.domain}</p><br/>
-                    </div>
-                    <div className="card-buttons">
-                        <NavLink to={"/companies/" + company.id + "/edit"}><button>Edit</button></NavLink>
-                        <button className="small-button" onClick={() => BlockCompanyById(company.id, company.active)}>{company.active ? "block" : "un-block"}</button>
-                    </div>
+            <div className="card-info">
+                <p><strong>Name:</strong><br />{company.name}</p><br />
+                <p><strong>Email:</strong><br />{company.email}</p><br />
+                <p><strong>Domain:</strong><br />{company.domain}</p><br />
+            </div>
+            <div className="card-buttons">
+                <NavLink to={"/companies/" + company.id + "/edit"}><button>Edit</button></NavLink>
+                <button className="small-button" onClick={() => BlockCompanyById(company.id, company.active)}>{company.active ? "block" : "un-block"}</button>
+            </div>
         </li>
     }
 }
@@ -90,48 +90,48 @@ export function SuperAdminAddCompanyView() {
             <nav className="navbar"><img src={logo}></img> <NavLink to="/companies"><button className="back-button">⬅️ Back</button></NavLink></nav>
             <form className="data-form" onSubmit={postCompany} action="/api/companies" method="POST">
                 <div className="form-box">
-                <label>
-                    Name:
-                    <input
-                        name="name"
-                        type="text"
-                        required
-                    />
-                </label>
+                    <label>
+                        Name:
+                        <input
+                            name="name"
+                            type="text"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Email:
-                    <input
-                        name="email"
-                        type="email"
-                        required
-                    />
-                </label>
+                    <label>
+                        Email:
+                        <input
+                            name="email"
+                            type="email"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Phone:
-                    <input
-                        name="phone"
-                        type="tel"
-                        required
-                    />
-                </label>
-                <label>
-                    Description:
-                    <input
-                        name="description"
-                        type="text"
-                        required
-                    />
-                </label>
-                <label>
-                    Domain:
-                    <input
-                        name="domain"
-                        type="url"
-                        required
-                    />
-                </label>
+                    <label>
+                        Phone:
+                        <input
+                            name="phone"
+                            type="tel"
+                            required
+                        />
+                    </label>
+                    <label>
+                        Description:
+                        <input
+                            name="description"
+                            type="text"
+                            required
+                        />
+                    </label>
+                    <label>
+                        Domain:
+                        <input
+                            name="domain"
+                            type="url"
+                            required
+                        />
+                    </label>
                 </div>
                 <button className="middle-button" type="submit">Save</button>
             </form>
@@ -173,54 +173,54 @@ export function SuperAdminEditCompanyView() {
             <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
             <form className="data-form" onSubmit={updateCompany} action={`/api/companies/${id}`} method="PUT">
                 <div className="form-box">
-                <label>
-                    Name:
-                    <input
-                        name="name"
-                        defaultValue={company?.name}
-                        type="text"
-                        required
-                    />
-                </label>
+                    <label>
+                        Name:
+                        <input
+                            name="name"
+                            defaultValue={company?.name}
+                            type="text"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Email:
-                    <input
-                        name="email"
-                        defaultValue={company?.email}
-                        type="email"
-                        required
-                    />
-                </label>
+                    <label>
+                        Email:
+                        <input
+                            name="email"
+                            defaultValue={company?.email}
+                            type="email"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Phone:
-                    <input
-                        name="phone"
-                        defaultValue={company?.phone}
-                        type="tel"
-                        required
-                    />
-                </label>
+                    <label>
+                        Phone:
+                        <input
+                            name="phone"
+                            defaultValue={company?.phone}
+                            type="tel"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Description:
-                    <input
-                        name="description"
-                        defaultValue={company?.description}
-                        type="text"
-                        required
-                    />
-                </label>
-                <label>
-                    Domain:
-                    <input
-                        name="domain"
-                        defaultValue={company?.domain}
-                        type="url"
-                        required
-                    />
-                </label>
+                    <label>
+                        Description:
+                        <input
+                            name="description"
+                            defaultValue={company?.description}
+                            type="text"
+                            required
+                        />
+                    </label>
+                    <label>
+                        Domain:
+                        <input
+                            name="domain"
+                            defaultValue={company?.domain}
+                            type="url"
+                            required
+                        />
+                    </label>
                 </div>
                 <input type="submit" value="Save" className="middle-button" />
             </form>
@@ -237,7 +237,7 @@ export function SuperAdminAdminView() {
 
 
     function GetAdmins() {
-        fetch("/api/roles/users/2").then(response =>
+        fetch("/api/roles/users/admin").then(response =>
             response.json())
             .then(data => setAdmins(data));
     }
@@ -260,10 +260,10 @@ export function SuperAdminAdminView() {
     return <main className="role-specific-main">
         <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
         <section className="header-section"><h1>All Admins</h1></section>
-            <ul className="list">
-                {admins.map(AdminCard)}
-            </ul>
-        <section className="content-box"> 
+        <ul className="list">
+            {admins.map(AdminCard)}
+        </ul>
+        <section className="content-box">
             <NavLink to="/admins/add"><button className="middle-button">Add Admin</button></NavLink>
         </section>
     </main>;
@@ -273,9 +273,9 @@ export function SuperAdminAdminView() {
 
         return <li className="list-item" key={admin.id}>
             <div className="card-info">
-                <p><strong>Name:</strong><br/>{admin.name}</p><br/>
-                <p><strong>Email:</strong><br/>{admin.email}</p><br/>
-                <p><strong>Company:</strong><br/>{admin.company}</p><br/>
+                <p><strong>Name:</strong><br />{admin.name}</p><br />
+                <p><strong>Email:</strong><br />{admin.email}</p><br />
+                <p><strong>Company:</strong><br />{admin.company}</p><br />
             </div>
             <div className="card-buttons">
                 <NavLink to={"/users/" + admin.id + "/edit"}><button>Edit</button></NavLink>
@@ -299,7 +299,7 @@ export function SuperAdminAddAdminView() {
         const form = e.target;
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        dataObject.role = 3;
+        dataObject.role = "admin";
 
         let dataJson = JSON.stringify(dataObject);
 
@@ -321,45 +321,45 @@ export function SuperAdminAddAdminView() {
             <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
             <form className="data-form" onSubmit={postUser} action="/api/users" method="POST">
                 <div className="form-box">
-                <label>
-                    Name:
-                    <input
-                        name="name"
-                        type="text"
-                        required
-                    />
-                </label>
+                    <label>
+                        Name:
+                        <input
+                            name="name"
+                            type="text"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Email:
-                    <input
-                        name="email"
-                        type="email"
-                        required
-                    />
-                </label>
+                    <label>
+                        Email:
+                        <input
+                            name="email"
+                            type="email"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Password:
-                    <input
-                        name="password"
-                        type="password"
-                        required
-                    />
-                </label>
+                    <label>
+                        Password:
+                        <input
+                            name="password"
+                            type="password"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Company:
-                    <select
-                        name="company"
-                        required
-                    >
-                        <option value="" disabled hidden>Välj ett företag</option>
-                        {companies.map(company => (
-                            <option key={company.id} value={company.id}>{company.name}</option>
-                        ))}
-                    </select>
-                </label>    
+                    <label>
+                        Company:
+                        <select
+                            name="company"
+                            required
+                        >
+                            <option value="" disabled hidden>Välj ett företag</option>
+                            {companies.map(company => (
+                                <option key={company.id} value={company.id}>{company.name}</option>
+                            ))}
+                        </select>
+                    </label>
                 </div>
                 <input type="submit" className="middle-button" value="Save"></input>
             </form>
@@ -414,51 +414,51 @@ export function SuperAdminEditAdminView() {
             <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
             <form className="data-form" onSubmit={updateUser} action={`/api/users/${id}`} method="PUT">
                 <div className="form-box">
-                <label>
-                    Name:
-                    <input
-                        name="name"
-                        defaultValue={admin?.name}
-                        type="text"
-                        required
-                    />
-                </label>
+                    <label>
+                        Name:
+                        <input
+                            name="name"
+                            defaultValue={admin?.name}
+                            type="text"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Email:
-                    <input
-                        name="email"
-                        defaultValue={admin?.email}
-                        type="email"
-                        required
-                    />
-                </label>
+                    <label>
+                        Email:
+                        <input
+                            name="email"
+                            defaultValue={admin?.email}
+                            type="email"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Password:
-                    <input
-                        name="password"
-                        defaultValue={admin?.password}
-                        type="password"
-                        required
-                    />
-                </label>
+                    <label>
+                        Password:
+                        <input
+                            name="password"
+                            defaultValue={admin?.password}
+                            type="password"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    Company:
-                    <select
-                        name="company"
-                        defaultValue={admin?.company}
-                        required
-                    >
-                        <option value="" disabled hidden>Välj ett företag</option>
-                        {companies.map(c => (
-                            <option key={c.id} value={c.id}>
-                                {c.name}
-                            </option>
-                        ))}
-                    </select>
-                </label>
+                    <label>
+                        Company:
+                        <select
+                            name="company"
+                            defaultValue={admin?.company}
+                            required
+                        >
+                            <option value="" disabled hidden>Välj ett företag</option>
+                            {companies.map(c => (
+                                <option key={c.id} value={c.id}>
+                                    {c.name}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
                 </div>
                 <input type="submit" value="Save" className="middle-button"></input>
             </form>
