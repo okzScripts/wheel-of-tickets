@@ -7,7 +7,6 @@ export function CustomerServiceView() {
     //const [ticket, setTicket] = useState(null);
     const [unassignedTickets, setUnassignedTickets] = useState([]);
     const [assignedTickets, setAssignedTickets] = useState([]);
-    const customerServiceAgent = 1;
 
     useEffect(GetUnassignedTickets, []);
     useEffect(GetAssignedTickets, []);
@@ -15,13 +14,13 @@ export function CustomerServiceView() {
   
     function GetUnassignedTickets()
     {
-        fetch("/api/tickets/unassigned/" + customerServiceAgent )
+        fetch("/api/tickets/unassigned/")
             .then((response) => response.json())
             .then((data) => setUnassignedTickets(data))
     }
 
     function GetAssignedTickets(){
-        fetch("/api/tickets/assigned/" + customerServiceAgent )
+        fetch("/api/tickets/assigned/")
         .then((response) => response.json())
         .then((data) => setAssignedTickets(data))
     }
@@ -43,7 +42,7 @@ export function CustomerServiceView() {
     }
 
     try {
-        const response = await fetch(`/api/tickets/${randomTicket.id}/${customerServiceAgent}`, {
+        const response = await fetch(`/api/tickets/${randomTicket.id}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
         });
@@ -82,7 +81,7 @@ export function CustomerServiceView() {
                     <h2>ALL TICKETS:</h2>
                     {unassignedTickets.length > 0 ? (
                         <ul className="ticket-list">
-                            {unassignedTickets.map(TicketCard)}
+                            {unassignedTickets.map(UnassignedTicketCard)}
                         </ul>
                     ) : (
                             <ul className="ticket-list"><li className="ticket-list-item" key={"emptyunnasigned"}><div className="ticket-info"><p>Inga tickets</p></div></li></ul>
@@ -99,7 +98,15 @@ export function CustomerServiceView() {
                 <p>Ticket id: {ticket.id}</p>
             </div></NavLink> 
         </li>
-    
+    }
+    function UnassignedTicketCard(ticket) {
+        return<li key={ticket.id} className="ticket-list-item"><a>
+            
+            <h2>{ticket.customer_url}</h2>
+            <div className="ticket-info">
+                <p>Ticket id: {ticket.id}</p>
+            </div></a>
+        </li>
     }
 }
 
@@ -108,6 +115,7 @@ export function TicketInfoView() {
     const { id } = useParams()
     const [messageText, setMessageText] = useState("");
     const [messages, setMessages] = useState([])
+    const [ticket, setTicket] = useState(1)
     
     function GetTicketMessages() {
         fetch(`/api/messages/${id}`).then(response => response.json()).then(data => { setMessages(data) })
@@ -147,11 +155,32 @@ export function TicketInfoView() {
             })
             
     }
+    useEffect(GetTicket, [])
+
+    function GetTicket() {
+         fetch("/api/tickets/" + id).then(response => response.json()).then(data => setTicket(data))
+    }
+
+    function ChangeStatus() {
+        fetch("/api/tickets/status/" + id, 
+            {
+                headers: { "Content-Type": "application/json" },
+                method: "PUT",
+                body: JSON.stringify({ status: ticket.status }),
+            }).then(response => {
+                if (response.ok) {
+                    GetTicket();
+                } else {
+                    console.log(response)
+                    alert("respons");
+                }
+            })
+    }
     
     return (
 <main className="chat-main">
 <nav className="navbar"><img src={logo}></img> <NavLink to="/customer-service"><button className="back-button">⬅️ Back</button></NavLink></nav>
-<section className="chat-header"><h1>HejHej</h1></section>
+<section className="chat-header"><h1>Chat with Customer</h1></section>
 <section className="chat">
 <ul className="chat-ul"> {messages.map(MessageCard)}
 </ul>
@@ -160,7 +189,8 @@ export function TicketInfoView() {
 <form  className="chat-message-form" onSubmit={PostMessage} method="POST" >
                     <textarea value={messageText} onChange={(e) => setMessageText(e.target.value)} name="text" type="textarea" className="text-area"></textarea>
                     <input className="small-button" type="submit" value="Send" disabled={!messageText}></input>
-</form>
+                </form>
+                <button className="small-button" onClick={ChangeStatus}>{ticket.status < 3 ? "Close Ticket" : "Open Ticket"}</button>
 </section>
 </main>
     );

@@ -41,9 +41,11 @@ app.MapPost("/api/products", ProductRoutes.AddProduct);
 app.MapPut("/api/products", ProductRoutes.EditProduct);
 app.MapPut("/api/products/block/{id}/{active}", ProductRoutes.BlockProductById);
 
-app.MapGet("/api/tickets/unassigned/{id}", TicketRoutes.GetUnassignedTickets);
-app.MapPut("/api/tickets/{id}/{agent}", TicketRoutes.AssignTicket);
-app.MapGet("/api/tickets/assigned/{id}", TicketRoutes.GetAssignedTickets);
+app.MapGet("/api/tickets/{id}", TicketRoutes.GetTicket);
+app.MapGet("/api/tickets/unassigned", TicketRoutes.GetUnassignedTickets);
+app.MapPut("/api/tickets/{id}", TicketRoutes.AssignTicket);
+app.MapPut("/api/tickets/status/{id}", TicketRoutes.ChangeStatus);
+app.MapGet("/api/tickets/assigned", TicketRoutes.GetAssignedTickets);
 app.MapPost("/api/tickets", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
 
