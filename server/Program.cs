@@ -3,7 +3,7 @@ using server;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=1234;Port=5432");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=Playa717;Port=5432");
 dataSourceBuilder.MapEnum<UserRole>();
 var db = dataSourceBuilder.Build();
 
@@ -39,12 +39,13 @@ app.MapGet("/api/products/{ProductId}", ProductRoutes.GetProduct);
 app.MapPost("/api/products", ProductRoutes.AddProduct);
 app.MapPut("/api/products", ProductRoutes.EditProduct);
 app.MapPut("/api/products/block/{id}/{active}", ProductRoutes.BlockProductById);
-
+app.MapGet("/api/products/customer-ticket", ProductRoutes.GetProductsForTicket);
+/*
 app.MapGet("/api/tickets/{company}", TicketRoutes.GetTickets);
 app.MapGet("/api/tickets/{company}/unassigned", TicketRoutes.GetUnassignedTickets);
 app.MapPut("/api/tickets/{id}/{customer_agent}", TicketRoutes.AssignTicket);
 app.MapGet("/api/tickets/{company}/{customer_agent}", TicketRoutes.GetAssignedTickets);
-app.MapPost("/api/tickets", TicketRoutes.CreateTicket);
+*/app.MapPost("/api/tickets", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
 
 //app.MapPost("/api/create-user", UserRoutes.AddUser);

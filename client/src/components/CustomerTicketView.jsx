@@ -4,24 +4,32 @@ import logo from '../assets/logo.png';
 import "../styles.css"
 export default function CustomerTicketView() {
 
-    const [companyPick, setCompanyPick] = useState("");
+    
     const [productPick, setProductPick] = useState("");
     const [categoryPick, setCategoryPick] = useState("");
-    const [message, setMessage] = useState("");
-
-    
-    const [companies, setCompanies] = useState([]);
+    const [message, setMessage] = useState("");   
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
 
+    const [companyId, setCompanyId] = useState(null);
+
+    // Hämta queryparameter från URL (t.ex. ?companyId=1)
     useEffect(() => {
-        if(companyPick){
-            fetch(`/api/products/company/${companyPick}`)
+        // Hämta companyId från URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const companyIdFromUrl = urlParams.get('companyId');
+
+        if (companyIdFromUrl) {
+            setCompanyId(companyIdFromUrl);
+            fetch(`/api/products/customer-ticket?companyId=${companyIdFromUrl}`)
                 .then((response) => response.json())
                 .then((data) => setProducts(data))
                 .catch((error) => console.error("Error fetching products:", error));
+            // 1. Spara companyId i session (kräver backend-endpoint)
+            
         }
-    }, [companyPick]);
+    }, []);
+    
       
     useEffect(() => {
         fetch("/api/tickets/categories")
@@ -34,7 +42,6 @@ export default function CustomerTicketView() {
     function handleOnSubmit(e) {
         e.preventDefault();
         const formData = {
-            companyId: companyPick,
             productId: productPick,
             categoryId: categoryPick,
             message: message,
@@ -77,7 +84,6 @@ export default function CustomerTicketView() {
                         <h4 className="ticket-selection-tag">Select Product</h4>
                         <select
                             name="product"
-                            disabled={!companyPick}
                             value={productPick}
                             onChange={(e) => setProductPick(e.target.value)}
                             className="ticket-product-select">

@@ -5,15 +5,18 @@ import { React, useEffect, useState } from "react";
 
 
 
-export default function Company1()
+export default function TechSolutions()
 {
+    const companyId = 1;
+    
+    
 
     return (
         <main className="form-main">
-            <nav className="navbar"><h2>Company1</h2><NavLink to="/companies"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <h2>Tech Solutions</h2>
             <div>
                 <iframe
-                    src="http://localhost:5173/customer/addTicket"
+                    src = {`http://localhost:5173/customer/addTicket?companyId=${companyId}`}
                     className="ticket-iframe"
                     title="Customer Ticket View"
                     frameBorder="0"

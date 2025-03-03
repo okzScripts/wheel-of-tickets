@@ -8,8 +8,8 @@ import { SuperAdminView, SuperAdminCompanyView, SuperAdminAdminView, SuperAdminA
 import { AdminView, AdminAddProductView, AdminEditProductView, AdminEditSupportView, AdminAddSupportView, ProductView, SupportView } from "./AdminView.jsx"
 import CustomerService from './CustomerService.jsx'
 import LoginPage from './LoginPage.jsx'
-import Company1 from './Company1.jsx'
-
+import TechSolutions from './TechSolutions.jsx'
+import EcoEnterprises from './EcoEnterprises.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -30,7 +30,8 @@ createRoot(document.getElementById('root')).render(
         <Route path='/customer-service' element={<CustomerService />} />
         <Route path='/agents' element={<SupportView />} />
 
-        <Route path='/Company1' element={<Company1/>}/>
+        <Route path='/tech-solutions' element={<TechSolutions/>}/>
+        <Route path='/eco-enterprises' element={<EcoEnterprises/>}/>
 
         <Route path='/admin' element={<AdminView />} />
         <Route path='/products' element={<ProductView />} />

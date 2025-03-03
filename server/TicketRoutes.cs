@@ -1,14 +1,16 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
-//namespace server;
+namespace server;
 
 public class TicketRoutes
 {
     public record Ticket(int id, string message, int status, int customer, int product_id, int? customer_agent, int ticket_category);
     
-    public record NewTicket(int companyId, int productId, int categoryId, string message);
+    public record NewTicket( int productId, int categoryId, string message);
 
+    
+    /*
     public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetTickets(int company, NpgsqlDataSource db)
     {
         List<Ticket> tickets = new List<Ticket>();
@@ -16,7 +18,7 @@ public class TicketRoutes
         try
         {
             using var cmd = db.CreateCommand(@"
-    SELECT t.id, t.message, t.status, t.customer, t.product_id, t.customer_agent, t.ticket_category 
+    SELECT t.id, t.message, t.status, t.customer_url, t.product_id, t.customer_agent, t.ticket_category 
     FROM tickets t
     JOIN products p ON t.product_id = p.id
     JOIN companies c ON p.company = c.id
@@ -150,28 +152,45 @@ public class TicketRoutes
             return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
         }
     }
-    
+    */
     public static async Task<Results<Ok<int>, BadRequest<string>>> CreateTicket(NewTicket ticket, NpgsqlDataSource db)
     {
         try
         {
-           
-            int status = 1;
-
-            using var cmd = db.CreateCommand(
-                @"INSERT INTO tickets (message, status, customer, product_id, ticket_category)
-                  VALUES ($1, $2, $3, $4, $5) RETURNING id"
-            );
-            cmd.Parameters.AddWithValue(ticket.message);
-            cmd.Parameters.AddWithValue(status);
-            cmd.Parameters.AddWithValue(ticket.companyId); // ska vara customer id efter att vi lagt till login 
-            cmd.Parameters.AddWithValue(ticket.productId);
-            cmd.Parameters.AddWithValue(ticket.categoryId);
-
-            var newId = await cmd.ExecuteScalarAsync();
-
             
-            return TypedResults.Ok(Convert.ToInt32(newId));
+            await using var conn = await db.OpenConnectionAsync();
+            await using var transaction = await conn.BeginTransactionAsync();
+            
+            int status = 1;
+            int ticketId;
+            string someUrl = "gissa Vad";
+
+            var sql1 = "INSERT INTO tickets (status, customer_url, product_id, ticket_category) VALUES ($1, $2, $3, $4) RETURNING id";
+            using (var cmd1 = new NpgsqlCommand(sql1, conn, transaction))
+            {
+                cmd1.Parameters.AddWithValue(status);
+                cmd1.Parameters.AddWithValue(someUrl); // ska vara customer id efter att vi lagt till login 
+                cmd1.Parameters.AddWithValue(ticket.productId);
+                cmd1.Parameters.AddWithValue(ticket.categoryId);
+
+                ticketId = (int) await cmd1.ExecuteScalarAsync();
+            }
+
+            var sql2 = "INSERT INTO messages(text, ticket) VALUES ($1, $2)";
+
+            using (var cmd2 = new NpgsqlCommand(sql2, conn, transaction))
+            {
+                cmd2.Parameters.AddWithValue(ticket.message);
+                cmd2.Parameters.AddWithValue(ticketId);
+
+                await cmd2.ExecuteNonQueryAsync();
+            }
+            
+            await transaction.CommitAsync();
+            
+            return TypedResults.Ok(Convert.ToInt32(ticketId));
+            
+            
         }
         catch (Exception ex)
         {
