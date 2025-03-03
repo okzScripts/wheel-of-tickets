@@ -8,6 +8,7 @@ import { SuperAdminView, SuperAdminCompanyView, SuperAdminAdminView, SuperAdminA
 import { AdminView, AdminAddProductView, AdminEditProductView, AdminEditSupportView, AdminAddSupportView, ProductView, SupportView } from "./AdminView.jsx"
 import CustomerService from './CustomerService.jsx'
 import LoginPage from './LoginPage.jsx'
+import Company1 from './Company1.jsx'
 
 
 createRoot(document.getElementById('root')).render(
@@ -17,20 +18,24 @@ createRoot(document.getElementById('root')).render(
         <Route index element={<LoginPage />} />
         <Route path='/customer' element={<CreateCustomerView />} />
         <Route path='/customer/addTicket' element={<CustomerTicketView />} />
+
         <Route path='/super-admin' element={<SuperAdminView />} />
         <Route path='/companies' element={<SuperAdminCompanyView />} />
         <Route path='/companies/add' element={<SuperAdminAddCompanyView />} />
         <Route path='/companies/:id/edit' element={<SuperAdminEditCompanyView />} />
         <Route path='/admins' element={<SuperAdminAdminView />} />
         <Route path='/admins/add' element={<SuperAdminAddAdminView />} />
-        <Route path='/customer-service' element={<CustomerService />} />
         <Route path='/users/:id/edit' element={<SuperAdminEditAdminView />} />
+
+        <Route path='/customer-service' element={<CustomerService />} />
+        <Route path='/agents' element={<SupportView />} />
+
+        <Route path='/Company1' element={<Company1/>}/>
 
         <Route path='/admin' element={<AdminView />} />
         <Route path='/products' element={<ProductView />} />
         <Route path='/product/add' element={<AdminAddProductView />} />
         <Route path='/product/:id/edit' element={<AdminEditProductView />} />
-        <Route path='/agents' element={<SupportView />} />
         <Route path='/agents/:id/edit' element={<AdminEditSupportView />} />
         <Route path='/agents/:companyID/add' element={<AdminAddSupportView />} />
       </Routes>

@@ -14,14 +14,6 @@ export default function CustomerTicketView() {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
 
-
-    useEffect(() => {
-        fetch("/api/companies")
-            .then((response) => response.json())
-            .then((data) => setCompanies(data))
-            .catch((error) => console.error("Error fetching companies:", error));
-    }, []);
-
     useEffect(() => {
         if(companyPick){
             fetch(`/api/products/company/${companyPick}`)
@@ -64,12 +56,12 @@ export default function CustomerTicketView() {
 
     return (
         <>
-            <nav className="navbar"><img src={logo} alt="Logo" className="navbar-logo" /></nav>
+            {/* <nav className="navbar"><img src={logo} alt="Logo" className="navbar-logo" /></nav> */}
             <main className="ticket-main">
                 <div className="ticket-form-container">
                     <form className="ticket-form" onSubmit={handleOnSubmit}>
-                        <h4 className="ticket-selection-tag">Select Company</h4>
-                        <select
+                        {/* <h4 className="ticket-selection-tag">Select Company</h4> */}
+                        {/* <select
                             name="company"
                             value={companyPick}
                             onChange={(e) => setCompanyPick(e.target.value)}
@@ -80,7 +72,7 @@ export default function CustomerTicketView() {
                                     {company.name}
                                 </option>
                             ))}
-                        </select>
+                        </select> */}
 
                         <h4 className="ticket-selection-tag">Select Product</h4>
                         <select
