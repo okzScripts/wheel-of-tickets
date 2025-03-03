@@ -52,9 +52,7 @@ export function ProductView() {
     }
 
     // Hämta produkter vid första rendering
-    useEffect(() => {
-        fetchProducts();
-    }, []); // 
+    useEffect(fetchProducts, []);
 
 
 
