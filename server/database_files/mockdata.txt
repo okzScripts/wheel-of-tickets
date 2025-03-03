@@ -1,32 +1,33 @@
 
 INSERT INTO public.companies (name, email, phone, description,domain) 
-VALUES ('Tech Solutions', 'contact@techsolutions.com', '+1-800-123456', 'A leading provider of IT services and solutions.', 'techsolutions.com'),
+VALUES ('Swine Sync','Knorre_von_Bacon@pig.com','+1-800-345699','A software enterprises developing CRM with a focus on swin breeding','swine_sync.com '),
+('Tech Solutions', 'contact@techsolutions.com', '+1-800-123456', 'A leading provider of IT services and solutions.', 'techsolutions.com'),
 ('Eco Enterprises', 'support@ecoenterprises.com', '+1-800-987654', 'An eco-friendly company focused on sustainable products.', 'ecoenterprises.com'),
 ( 'Innovative Designs', 'info@innovativedesigns.com', '+1-800-234567', 'Creative design firm specializing in branding and marketing.', 'innovativedesigns.com'),
 ('Global Ventures', 'info@globalventures.com', '+1-800-345678', 'A multinational company involved in various industries.', 'globalventures.com');
 
 INSERT INTO public.products ( product_name, product_description, price, product_category, company)
-VALUES ( '1 ton Pig Feed', 'Comprehensive IT support including troubleshooting and system maintenance.', 200, 'Service', 1),
-( 'Trough five meeters', 'Cloud-based storage solution for businesses of all sizes.', 500, 'Service', 1),
-('Mud Bath', 'Eco-friendly packaging made from biodegradable materials.', 50, 'Product', 2),
-('Trotter Pedicure', 'A clothing line made from 100% sustainable materials.', 80, 'Product', 2), 
-('Swine Flue Vaccine', 'Professional consultation to develop a unique brand identity.', 350, 'Service', 3),
-('Pig Retirment Home', 'Custom website design services including setup and optimization.', 1000, 'Service', 3),
-( 'Knife Sharpening', 'Consulting services for global business expansion and strategy.', 700, 'Service', 4),
-('Logistics Management Software', 'Software solution to optimize global logistics and supply chain management.', 1200, 'Product', 4);
+VALUES ( '1 ton Pig Feed', 'Comprehensive IT support including troubleshooting and system maintenance.', 200, 'Service', 2),
+( 'Trough five meeters', 'Cloud-based storage solution for businesses of all sizes.', 500, 'Service', 2),
+('Mud Bath', 'Eco-friendly packaging made from biodegradable materials.', 50, 'Product', 3),
+('Trotter Pedicure', 'A clothing line made from 100% sustainable materials.', 80, 'Product', 3), 
+('Swine Flue Vaccine', 'Professional consultation to develop a unique brand identity.', 350, 'Service', 4),
+('Pig Retirment Home', 'Custom website design services including setup and optimization.', 1000, 'Service', 4),
+( 'Knife Sharpening', 'Consulting services for global business expansion and strategy.', 700, 'Service', 5),
+('Logistics Management Software', 'Software solution to optimize global logistics and supply chain management.', 1200, 'Product', 5);
 
 
 INSERT INTO public.ticket_categories (category_name,company)
 VALUES
-( 'Technical Support',1),
-( 'Billing Issues',1),
-( 'General Inquiry',1),
-( 'Product Feedback',2),
-( 'Account Management',2),
-( 'Shipping and Delivery',3),
-( 'Warranty Claims',3),
-( 'Software Bugs',4),
-( 'Security Issues',4);
+( 'Technical Support',2),
+( 'Billing Issues',2),
+( 'General Inquiry',2),
+( 'Product Feedback',3),
+( 'Account Management',3),
+( 'Shipping and Delivery',4),
+( 'Warranty Claims',4),
+( 'Software Bugs',5),
+( 'Security Issues',5);
 
 
 
@@ -40,22 +41,22 @@ INSERT INTO public.ticket_status ( status)
 
 INSERT INTO public.users(name, email, password,company, role)
 VALUES
-( 'Alice Johnson', 'alice.johnson@example.com','password123', 1, 'service_agent'),
-( 'Bob Smith', 'bob.smith@example.com', 'password123',1, 'service_agent'),
-( 'Charlie Brown', 'charlie.brown@example.com', 'password123',1, 'service_agent'),
-( 'Diana Green', 'diana.green@example.com', 'password123',1, 'admin'),
-('Knorre Kulting', 'kulting@host.com', 'auwodh', 4, 'admin' ),  
-( 'Ostkako Hjälm', 'ostkako@host.com', 'aiwdj', 2 , 'admin'), 
+( 'Alice Johnson', 'alice.johnson@example.com','password123', 2, 'service_agent'),
+( 'Bob Smith', 'bob.smith@example.com', 'password123',2, 'service_agent'),
+( 'Charlie Brown', 'charlie.brown@example.com', 'password123',2, 'service_agent'),
+( 'Diana Green', 'diana.green@example.com', 'password123',2, 'admin'),
+('Knorre Kulting', 'kulting@host.com', 'auwodh', 5, 'admin' ),  
+( 'Ostkako Hjälm', 'ostkako@host.com', 'aiwdj', 3 , 'admin'), 
 ('Grune Grymt', 'grune@grymt.se', 'hejhej',3 ,'admin'),
-('Svine Klöven', 'svine.kloven@example.com', 'password123', 2, 'service_agent'),
-('Nasse Puh','nasse.puh@sjumilla.com', 'nalle', 2, 'service_agent'),
-('Knorre Galtersson', 'knorre.galterson@test.com', 'styre', 3,'service_agent'), 
-('Orne Nöff', 'orne@host.com', 'nuff', 4, 'service_agent'),
-('Tryne Galt', 'tryne@hotmail.com', 'asd123', 2, 'service_agent'), 
-('Solina Gyttja', 'solina@gytja@hotmail.com', 'aswe',3 ,'service_agent'),
-('Pelle Svinsson', 'pelle.svinsson@fakemail.com', 'best', 1 , 'admin' ),
-('Kejsare Gris' ,'super_gris@mail.com','kung',NULL, 'super_admin'),
-('Miriam Enuff','enuff@mail.com','123',4,'service_agent');
+('Svine Klöven', 'svine.kloven@example.com', 'password123', 3, 'service_agent'),
+('Nasse Puh','nasse.puh@sjumilla.com', 'nalle', 3, 'service_agent'),
+('Knorre Galtersson', 'knorre.galterson@test.com', 'styre', 4,'service_agent'), 
+('Orne Nöff', 'orne@host.com', 'nuff', 5, 'service_agent'),
+('Tryne Galt', 'tryne@hotmail.com', 'asd123', 3, 'service_agent'), 
+('Solina Gyttja', 'solina@gytja@hotmail.com', 'aswe',4 ,'service_agent'),
+('Pelle Svinsson', 'pelle.svinsson@fakemail.com', 'best', 2 , 'admin' ),
+('Kejsare Gris' ,'super_gris@mail.com','kung',1, 'super_admin'),
+('Miriam Enuff','enuff@mail.com','123',5,'service_agent');
  
 
  
