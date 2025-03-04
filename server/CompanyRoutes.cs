@@ -11,18 +11,18 @@ public class CompanyRoutes
 
 
     public record Company(int id, string name, string email, string phone, string description, string domain, bool active);
-   
+
     public record Category(int id, string category_name);
-    
+
     public record Product(int id, string product_name);
-    
+
     public static async Task<Results<Ok<List<Company>>, BadRequest<string>>> GetCompanies(NpgsqlDataSource db)
     {
         List<Company> companies = new List<Company>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM companies ORDER BY id ASC");
+            using var cmd = db.CreateCommand("SELECT * FROM companies WHERE id != 5 ORDER BY id ASC ");
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -94,7 +94,7 @@ public class CompanyRoutes
             while (await reader.ReadAsync())
             {
                 products.Add(new Product(
-                    reader.GetInt32(0),   
+                    reader.GetInt32(0),
                     reader.GetString(1)
                 ));
             }

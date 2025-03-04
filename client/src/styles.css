@@ -16,6 +16,7 @@ button {
 .navbar {
   display: flex;
   height: 6%;
+  width: 100%;
   justify-content: left;
   align-items: center;
   background-color: rgb(36, 36, 36);
@@ -227,10 +228,13 @@ button {
   height: auto;
   border: 1px solid white;
   cursor: pointer;
-  > h2 {
+  > a h2 {
     font-size: 16px;
     color: rgb(255, 189, 114);
     text-align: center;
+  }
+  > a {
+    text-decoration: none;
   }
 }
 .ticket-info {
@@ -256,17 +260,17 @@ button {
   gap: 10px;
 }
 
-select{
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    margin: 1rem;      
+select {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin: 1rem;
 }
-    
-input{
-    margin: 4px;
+
+input {
+  margin: 4px;
 }
-    
+
 .super-admin-list-item {
   display: flex;
   gap: 20px;
@@ -275,27 +279,25 @@ input{
   padding: 10px;
 }
 
-button{
-    max-width: 10rem;
-    align-self: center;
-
+button {
+  max-width: 10rem;
+  align-self: center;
 }
 
-#messageContainer{
-    display: flex;
-    flex-direction: column;
-    margin: 1rem;
-    p{
-        align-self: flex-start;
-        margin: 0.5rem;
-        margin-left: 0;
-
-    }
-    Button{
-        margin-top: 0.5rem;
-        align-self: flex-start;       
-     
-    }}
+#messageContainer {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+  p {
+    align-self: flex-start;
+    margin: 0.5rem;
+    margin-left: 0;
+  }
+  Button {
+    margin-top: 0.5rem;
+    align-self: flex-start;
+  }
+}
 .delete-button-div-li {
   display: flex;
   justify-content: center;
@@ -306,8 +308,121 @@ button{
   height: 40px;
 }
 
-textarea{
-    resize: none;
-    background-color: rgb(225, 225, 223);
+textarea {
+  resize: none;
+  background-color: rgb(225, 225, 223);
 }
-
+.chat-main {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+}
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 6%;
+  text-align: center;
+  color: white;
+  > h1 {
+    margin: 0;
+  }
+}
+.chat {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 50%;
+}
+.chat-ul {
+  width: 80%;
+  height: 100%;
+  border: 1px solid white;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+}
+.chat-agent-message {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  height: auto;
+  width: auto;
+  margin: 0;
+  margin-left: 65%;
+  margin-top: 10px;
+  margin-right: 10px;
+  > :nth-child(2) {
+    font-size: 8px;
+    margin: 0;
+    color: rgb(99, 99, 99);
+    margin-top: 2px;
+    text-align: right;
+  }
+}
+.chat-customer-message {
+  text-align: end;
+  height: auto;
+  width: auto;
+  margin: 0;
+  margin-right: 65%;
+  margin-top: 10px;
+  margin-left: 10px;
+  > :nth-child(2) {
+    color: rgb(99, 99, 99);
+    font-size: 8px;
+    margin: 0;
+    margin-top: 2px;
+    text-align: left;
+    margin-bottom: 10px;
+  }
+}
+.chat-message-box {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 30%;
+  > .chat-message-form {
+    width: 60%;
+    height: 100%;
+    > .text-area {
+      width: 80%;
+      height: 70%;
+      border-radius: 5px;
+      border: none;
+      text-align: left;
+      vertical-align: top;
+      resize: none;
+    }
+  }
+  .small-button {
+    align-self: normal;
+  }
+}
+.message-holder-customer {
+  padding: 15px;
+  border-radius: 10px;
+  width: fit-content;
+  text-align: left;
+  background-color: rgb(32, 32, 32);
+  color: white;
+  font-size: 12px;
+  margin: 0;
+}
+.message-holder-agent {
+  width: fit-content;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: rgb(32, 32, 32);
+  color: white;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  font-size: 12px;
+  margin: 0;
+}

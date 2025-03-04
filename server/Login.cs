@@ -13,7 +13,7 @@ public static class LoginRoutes
     public static async Task<Results<Ok<string>, BadRequest>> LoginByRole(Credentials credentials, NpgsqlDataSource db, HttpContext ctx)
     {
 
-        var cmd = db.CreateCommand("select name, role, company from users where email = $1 and password=$2");
+        var cmd = db.CreateCommand("select id, name, role, company from users where email = $1 and password=$2");
         cmd.Parameters.AddWithValue(credentials.Email);
         cmd.Parameters.AddWithValue(credentials.Password);
 
@@ -22,11 +22,13 @@ public static class LoginRoutes
         if (await reader.ReadAsync())
         {
 
-            var role = reader.GetFieldValue<UserRole>(1);
-            var company = reader.GetInt32(2);
-            ctx.Session.SetString("name", reader.GetString(0));
+
+            ctx.Session.SetInt32("id", reader.GetInt32(0));
+            ctx.Session.SetString("name", reader.GetString(1));
+            var role = reader.GetFieldValue<UserRole>(2);
             ctx.Session.SetInt32("role", (int)role);
-            ctx.Session.SetInt32("company", reader.GetInt32(2));
+            ctx.Session.SetInt32("company", reader.GetInt32(3));
+
 
 
 

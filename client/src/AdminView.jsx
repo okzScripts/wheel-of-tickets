@@ -45,7 +45,7 @@ export function ProductView() {
     };
 
     function fetchProducts() {
-        fetch(`/api/products/company/`)
+        fetch(`/api/products/company`)
             .then(response => response.json())
             .then(data => setProducts(data))
             .catch(error => console.error("Error fetching products:", error));
@@ -118,12 +118,12 @@ export function SupportView() {
         , []);
     return <main>
         <nav className="navbar"><img src={logo}></img> <NavLink to="/admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
-        <section className="header-section"><h1>All Products</h1></section>
+        <section className="header-section"><h1>All Service Agents</h1></section>
         <ul className="list">
             {supports.map(AgentCard)}
         </ul>
         <section className="content-box">
-            <NavLink to={`/agents/HÄR ÄR DET FEL/add`}><button className="middle-button">Add Support Agent</button></NavLink>
+            <NavLink to={`/agents/add`}><button className="middle-button">Add Support Agent</button></NavLink>
         </section>
     </main>
     function AgentCard(support) {
@@ -310,10 +310,14 @@ export function AdminEditSupportView() {
 
         fetch(`/api/users/${id}`)
             .then(response => response.json())
-            .then(data => setAgent(data));
+            .then(data => {setAgent(data)})
+            .then(()=> console.log(agent.role));
+            
+            
 
-    }
-    );
+    },[]);
+
+   
 
     function updateUser(e) {
         e.preventDefault();
@@ -321,8 +325,6 @@ export function AdminEditSupportView() {
 
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        dataObject.company = agent.company;
-        dataObject.role = agent.role;
         let dataJson = JSON.stringify(dataObject);
         fetch(form.action, {
             headers: { "Content-Type": "application/json" },
@@ -379,7 +381,7 @@ export function AdminEditSupportView() {
 }
 
 export function AdminAddSupportView() {
-    const { companyID } = useParams();
+   
 
     function postUser(e) {
         e.preventDefault();
@@ -387,8 +389,8 @@ export function AdminAddSupportView() {
 
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        dataObject.company = companyID;
-        dataObject.role = 2;
+        dataObject.company = null;
+        dataObject.role = "service_agent";
 
 
         let dataJson = JSON.stringify(dataObject);
