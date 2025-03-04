@@ -1,7 +1,7 @@
 import "./styles.css"
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation, useParams } from "react-router";
-import logo from './assets/logo.png';
+import { NavigationBar } from "./components/Navbar";
 
 export function CustomerServiceView() {
     //const [ticket, setTicket] = useState(null);
@@ -179,7 +179,7 @@ export function TicketInfoView() {
     
     return (
 <main className="chat-main">
-<nav className="navbar"><img src={logo}></img> <NavLink to="/customer-service"><button className="back-button">⬅️ Back</button></NavLink></nav>
+<NavigationBar back={"/customer-service"}/>
 <section className="chat-header"><h1>Chat with Customer</h1></section>
 <section className="chat">
 <ul className="chat-ul"> {messages.map(MessageCard)}

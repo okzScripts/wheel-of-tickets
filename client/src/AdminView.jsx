@@ -1,7 +1,7 @@
 import { BrowserRouter, NavLink, useFetcher, useNavigate, useLocation, useParams } from "react-router";
 import "./adminViewStyle.css";
 import { createContext, useEffect, useState, use } from "react";
-import logo from './assets/logo.png';
+import { NavigationBar } from "./components/Navbar";
 
 const adminInfoContext = createContext({});
 
@@ -57,7 +57,7 @@ export function ProductView() {
 
 
     return <main>
-        <nav className="navbar"><img src={logo}></img> <NavLink to="/admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+        <NavigationBar back={"/admin"}/>
         <section className="header-section"><h1>All Products</h1></section>
         <ul className="list">
             {products.map(ProductCard)}
@@ -117,7 +117,7 @@ export function SupportView() {
         fetchUsers
         , []);
     return <main>
-        <nav className="navbar"><img src={logo}></img> <NavLink to="/admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+        <NavigationBar back={"/admin"}/>
         <section className="header-section"><h1>All Service Agents</h1></section>
         <ul className="list">
             {supports.map(AgentCard)}
@@ -169,7 +169,7 @@ export function AdminAddProductView() {
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/products"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <NavigationBar back={"/products"}/>
             <form className="data-form" onSubmit={PostProduct} action={`/api/products`} method="POST">
                 <div className="form-box">
                     <label>
@@ -253,7 +253,7 @@ export function AdminEditProductView() {
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/products"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <NavigationBar back={"/products"}/>
             <form className="data-form" onSubmit={updateProduct} action={`/api/products`} method="PUT">
                 <div className="form-box">
                     <label>
@@ -341,7 +341,7 @@ export function AdminEditSupportView() {
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/agents"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <NavigationBar back={"/agents"}/>
             <form className="data-form" onSubmit={updateUser} action={`/api/users/${agent?.id}`} method="PUT">
                 <div className="form-box">
                     <label>
@@ -410,7 +410,7 @@ export function AdminAddSupportView() {
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/agents"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <NavigationBar back={"/agents"}/>
             <form className="data-form" onSubmit={postUser} action="/api/users" method="POST">
                 <div className="form-box">
                     <label>
