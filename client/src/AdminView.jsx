@@ -45,7 +45,7 @@ export function ProductView() {
     };
 
     function fetchProducts() {
-        fetch(`/api/products/company/`)
+        fetch(`/api/products/company`)
             .then(response => response.json())
             .then(data => setProducts(data))
             .catch(error => console.error("Error fetching products:", error));
