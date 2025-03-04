@@ -3,7 +3,7 @@ using server;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=portedinme;Port=5432");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=admin132;Port=5432");
 dataSourceBuilder.MapEnum<UserRole>();
 var db = dataSourceBuilder.Build();
 
@@ -33,7 +33,7 @@ app.MapGet("/api/users/{id}", UserRoutes.GetUser);
 app.MapPut("/api/users/{id}", UserRoutes.EditUser);
 app.MapPut("/api/users/block/{id}/{active}", UserRoutes.BlockUser);
 app.MapPost("/api/users", UserRoutes.AddUser);
-app.MapPut("/api/users/password/",UserRoutes.ChangePassword);
+app.MapPut("/api/users/password/", UserRoutes.ChangePassword);
 
 app.MapPost("/api/login", LoginRoutes.LoginByRole);
 
