@@ -40,7 +40,6 @@ public class ProductRoutes()
         }
         catch (Exception ex)
         {
-
             return TypedResults.BadRequest($"Ett fel uppstod: {ex.Message}");
         }
     }

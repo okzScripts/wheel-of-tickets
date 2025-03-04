@@ -50,15 +50,18 @@ public class CompanyRoutes
 
    
    
-    public static async Task<Results<Ok<List<Category>>, BadRequest<string>>> GetCategories(NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<Category>>, BadRequest<string>>> GetCategories(NpgsqlDataSource db, int companyId)
     {
         var categories = new List<Category>();
 
         try
         {
             using var cmd = db.CreateCommand(
-                "SELECT id, category_name FROM ticket_categories ORDER BY id ASC"
+                "SELECT * FROM ticket_categories WHERE company = $1 ORDER BY id ASC"
             );
+
+            cmd.Parameters.AddWithValue(companyId);
+            
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())

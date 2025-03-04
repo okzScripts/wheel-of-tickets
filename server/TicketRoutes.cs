@@ -7,7 +7,7 @@ public class TicketRoutes
 {
     public record Ticket(int id, string message, int status, int customer, int product_id, int? customer_agent, int ticket_category);
     
-    public record NewTicket( int productId, int categoryId, string message);
+    public record NewTicket( int productId, int categoryId, string message, string email);
 
     
     /*
@@ -158,30 +158,32 @@ public class TicketRoutes
         try
         {
             
-            await using var conn = await db.OpenConnectionAsync();
-            await using var transaction = await conn.BeginTransactionAsync();
+           await using var conn = await db.OpenConnectionAsync();
+           await using var transaction = await conn.BeginTransactionAsync();
             
             int status = 1;
             int ticketId;
-            string someUrl = "gissa Vad";
+            
 
             var sql1 = "INSERT INTO tickets (status, customer_url, product_id, ticket_category) VALUES ($1, $2, $3, $4) RETURNING id";
             using (var cmd1 = new NpgsqlCommand(sql1, conn, transaction))
             {
                 cmd1.Parameters.AddWithValue(status);
-                cmd1.Parameters.AddWithValue(someUrl); // ska vara customer id efter att vi lagt till login 
+                cmd1.Parameters.AddWithValue(ticket.email); // ska vara customer id efter att vi lagt till login 
                 cmd1.Parameters.AddWithValue(ticket.productId);
                 cmd1.Parameters.AddWithValue(ticket.categoryId);
 
                 ticketId = (int) await cmd1.ExecuteScalarAsync();
             }
 
-            var sql2 = "INSERT INTO messages(text, ticket) VALUES ($1, $2)";
+            var sql2 = "INSERT INTO messages(text, ticket, time, customer) VALUES ($1, $2, $3, $4)";
 
             using (var cmd2 = new NpgsqlCommand(sql2, conn, transaction))
             {
                 cmd2.Parameters.AddWithValue(ticket.message);
                 cmd2.Parameters.AddWithValue(ticketId);
+                cmd2.Parameters.AddWithValue(DateTime.Now);
+                cmd2.Parameters.AddWithValue(true);
 
                 await cmd2.ExecuteNonQueryAsync();
             }
