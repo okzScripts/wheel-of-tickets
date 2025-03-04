@@ -33,7 +33,10 @@ app.MapGet("/api/users/{id}", UserRoutes.GetUser);
 app.MapPut("/api/users/{id}", UserRoutes.EditUser);
 app.MapPut("/api/users/block/{id}/{active}", UserRoutes.BlockUser);
 app.MapPost("/api/users", UserRoutes.AddUser);
+app.MapPut("/api/users/password/",UserRoutes.ChangePassword);
+
 app.MapPost("/api/login", LoginRoutes.LoginByRole);
+
 
 app.MapGet("/api/products/company", ProductRoutes.GetProducts);
 app.MapGet("/api/products/{ProductId}", ProductRoutes.GetProduct);

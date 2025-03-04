@@ -257,8 +257,58 @@ public class UserRoutes
         }
     }
 
-}
 
+
+
+
+    public record PasswordDTO( string OldPassword, string Password, string RepeatPassword );
+    public static async Task<Results<Ok<string>, BadRequest<string>>> ChangePassword(PasswordDTO passwords,NpgsqlDataSource db, HttpContext ctx)
+    {
+        if (ctx.Session.IsAvailable)
+            {
+                var Id = ctx.Session.GetInt32("id");
+                if (Id == null)
+                {
+                    return TypedResults.BadRequest("Session not exisiting");
+                }else{
+                      using var cmd = db.CreateCommand(
+                     "select password from  users WHERE id = $1");
+                     cmd.Parameters.AddWithValue(Id);
+
+                     using var reader = await  cmd.ExecuteReaderAsync(); 
+                      
+                     if(await reader.ReadAsync() ){
+                        var oldPassword= reader.GetString(0); 
+
+
+                        if(oldPassword!=passwords.OldPassword){
+                            return TypedResults.BadRequest("password does not match old password");
+                        }else{
+                            if(passwords.Password==passwords.RepeatPassword){
+                            using var cmdPut =  db.CreateCommand("Update users set password=$1 where id=$2 ");
+                            cmdPut.Parameters.AddWithValue(passwords.Password); 
+                            cmdPut.Parameters.AddWithValue(Id); 
+
+                             var rows= await cmdPut.ExecuteNonQueryAsync(); 
+                            if(rows>0){
+                                return TypedResults.Ok("Password changed"); 
+                            }else{
+                                return TypedResults.BadRequest("No rows affected by password change"); 
+                            }
+
+                            }else{
+                                return TypedResults.BadRequest("new passwords do not match"); 
+                            }
+                        
+                        }
+                     }else{return TypedResults.BadRequest("No data found");}
+
+                }
+            }else{
+                return TypedResults.BadRequest("Session does not exist"); 
+            }
+    }
+}
 
 
 /* public static async Task<Results<Ok<List<UserRole>>, UnauthorizedHttpResult, ForbidHttpResult>> GetUserByRole(NpgsqlDataSource db, HttpContext ctx){

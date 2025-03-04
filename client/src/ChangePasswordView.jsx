@@ -3,17 +3,7 @@ import { createContext, useEffect, useState, use } from "react";
 import logo from './assets/logo.png';
 
 export function ChangePasswordView() {
-    const { id } = useParams();
-    const [user, setUser] = useState({});
 
-
-    useEffect(() => {
-        fetch(`/api/users/${id}`)
-            .then(response => response.json())
-            .then(data => {setUser(data)});
-    },[]);
-
-   
 
     function updatePassword(e) {
         e.preventDefault();
@@ -23,7 +13,7 @@ export function ChangePasswordView() {
 
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        if(dataObject.password!==dataObject.repeat_password){
+        if(dataObject.password!==dataObject.repeatPassword){
             alert("Passwords do not match"); 
         }else{
             let dataJson = JSON.stringify(dataObject);
@@ -35,7 +25,7 @@ export function ChangePasswordView() {
                 if (response.ok) {
                     alert(`Du updaterade ${dataObject.name} `);
                 } else {
-                    alert("Något gick fel ");
+                    alert("Var god ange korrekt nuvarande lösenord");
                 }
             })
         }
@@ -43,11 +33,11 @@ export function ChangePasswordView() {
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/agents"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <nav className="navbar"><img src={logo}></img> <NavLink to="/"><button className="back-button">⬅️ Back</button></NavLink></nav>
             <form className="data-form" onSubmit={updatePassword} action={`/api/users/password/`} method="PUT">
                 <div className="form-box">
                         <input
-                            name="old_password"
+                            name="oldPassword"
                             placeholder="current password"
                             type="password"
                             required
@@ -56,17 +46,17 @@ export function ChangePasswordView() {
                         <input
                             name="password"
                             placeholder="new password"
-                            type="text"
+                            type="password"
                             required
                         />
                     <input
-                            name="repeate_password"
-                            type="email"
+                            name="repeatPassword"
+                            type="password"
                             placeholder="repeate new password"
                             required
                         />
                 </div>
-                <input type="submit" value="Save" className="middle-button"></input>
+                <input type="submit" value="Accept" className="middle-button"></input>
             </form>
         </main>
     );
