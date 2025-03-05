@@ -89,8 +89,8 @@ export function CustomerChatView() {
     );
 
     function MessageCard(message) {
-        const messageSender = message.customer ?  "chat-agent-message"   : "chat-customer-message" 
-        const messageholder = message.customer?   "message-holder-agent" : "message-holder-customer"
+        const messageSender = message.customer ?  "chat-right-message"   : "chat-left-message" 
+        const messageholder = message.customer?   "message-holder-right" : "message-holder-left"
         return <li key={message.id} className={messageSender}><p className={messageholder}>{message.text}</p><p>{message.time}</p></li>
     }
 }

@@ -196,8 +196,8 @@ export function TicketInfoView() {
     );
 
     function MessageCard(message) {
-        const messageSender = message.customer ? "chat-customer-message" : "chat-agent-message"
-        const messageholder = message.customer? "message-holder-customer" : "message-holder-agent"
+        const messageSender = message.customer ? "chat-left-message" : "chat-right-message"
+        const messageholder = message.customer? "message-holder-left" : "message-holder-right"
         return <li key={message.id} className={messageSender}><p className={messageholder}>{message.text}</p><p>{message.time}</p></li>
     }
 }

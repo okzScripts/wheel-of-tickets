@@ -348,7 +348,7 @@ textarea {
   margin: 0;
   overflow-y: auto;
 }
-.chat-agent-message {
+.chat-right-message {
   display: flex;
   flex-direction: column;
   align-items: end;
@@ -366,7 +366,7 @@ textarea {
     text-align: right;
   }
 }
-.chat-customer-message {
+.chat-left-message {
   text-align: end;
   height: auto;
   width: auto;
@@ -405,7 +405,7 @@ textarea {
     align-self: normal;
   }
 }
-.message-holder-customer {
+.message-holder-left {
   padding: 15px;
   border-radius: 10px;
   width: fit-content;
@@ -415,7 +415,7 @@ textarea {
   font-size: 12px;
   margin: 0;
 }
-.message-holder-agent {
+.message-holder-right {
   width: fit-content;
   padding: 15px;
   border-radius: 10px;
