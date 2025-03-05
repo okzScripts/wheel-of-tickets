@@ -9,7 +9,8 @@ import { AdminView, AdminAddProductView, AdminEditProductView, AdminEditSupportV
 import {CustomerServiceView,TicketInfoView} from './CustomerService.jsx'
 import { ChangePasswordView } from './ChangePasswordView.jsx'
 import LoginPage from './LoginPage.jsx'
-
+import TechSolutions from './TechSolutions.jsx'
+import EcoEnterprises from './EcoEnterprises.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -29,6 +30,9 @@ createRoot(document.getElementById('root')).render(
         <Route path='/customer-service/:id/ticket-info' element={<TicketInfoView />} />
 
         <Route path='/users/:id/edit' element={<SuperAdminEditAdminView />} />
+          
+        <Route path='/tech-solutions' element={<TechSolutions/>}/>
+        <Route path='/eco-enterprises' element={<EcoEnterprises/>}/>
 
         <Route path='/admin' element={<AdminView />} />
         <Route path='/products' element={<ProductView />} />

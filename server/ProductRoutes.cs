@@ -40,6 +40,37 @@ public class ProductRoutes()
         }
         catch (Exception ex)
         {
+            return TypedResults.BadRequest($"Ett fel uppstod: {ex.Message}");
+        }
+    }
+    
+    public static async Task<Results<Ok<List<Product>>, BadRequest<string>>> GetProductsForTicket(NpgsqlDataSource db,int companyId)
+    {
+        List<Product> products = new ();
+        
+        try
+        {
+            using var cmd = db.CreateCommand("SELECT * FROM products WHERE company = $1  ORDER BY id ASC");
+            cmd.Parameters.AddWithValue(companyId);
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                products.Add(new Product(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.GetInt32(3),
+                    reader.GetString(4),
+                    reader.GetInt32(5),
+                    reader.GetBoolean(6)
+                ));
+            }
+
+            return TypedResults.Ok(products);
+        }
+        catch (Exception ex)
+        {
 
             return TypedResults.BadRequest($"Ett fel uppstod: {ex.Message}");
         }

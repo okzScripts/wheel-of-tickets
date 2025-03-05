@@ -3,26 +3,15 @@ import "./adminViewStyle.css";
 import { createContext, useEffect, useState, use } from "react";
 import logo from './assets/logo.png';
 
-const adminInfoContext = createContext({});
-
 export function AdminView() {
-    //
-
-    const [companyId, setCompanyId] = useState(1);
-
-
-    useEffect(() => { setCompanyId(1) }, []);
-
-
-
-    return <adminInfoContext.Provider value={companyId} >
-        <main className="option-main">
-            <div className="big-button-container">
-                <NavLink to="/products"><button className="big-button">Products</button></NavLink>
-                <NavLink to="/agents"><button className="big-button">Support Agents</button></NavLink>
-            </div>
-        </main>
-    </adminInfoContext.Provider>
+ 
+    return <main className="option-main">
+        <div className="big-button-container">
+            <NavLink to="/products"><button className="big-button">Products</button></NavLink>
+            <NavLink to="/agents"><button className="big-button">Support Agents</button></NavLink>
+        </div>
+    </main>
+    
 }
 
 

@@ -3,7 +3,7 @@ using server;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=admin132;Port=5432");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=Playa717;Port=5432");
 dataSourceBuilder.MapEnum<UserRole>();
 var db = dataSourceBuilder.Build();
 
@@ -11,7 +11,6 @@ var db = dataSourceBuilder.Build();
 builder.Services.AddSingleton<NpgsqlDataSource>(db);
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options => { options.Cookie.IsEssential = true; });
-
 
 
 
@@ -37,12 +36,12 @@ app.MapPut("/api/users/password/", UserRoutes.ChangePassword);
 
 app.MapPost("/api/login", LoginRoutes.LoginByRole);
 
-
-app.MapGet("/api/products/company", ProductRoutes.GetProducts);
+app.MapGet("/api/products/company/", ProductRoutes.GetProducts);
 app.MapGet("/api/products/{ProductId}", ProductRoutes.GetProduct);
 app.MapPost("/api/products", ProductRoutes.AddProduct);
 app.MapPut("/api/products", ProductRoutes.EditProduct);
 app.MapPut("/api/products/block/{id}/{active}", ProductRoutes.BlockProductById);
+app.MapGet("/api/products/customer-ticket/", ProductRoutes.GetProductsForTicket);
 
 app.MapGet("/api/tickets/{id}", TicketRoutes.GetTicket);
 app.MapGet("/api/tickets/unassigned", TicketRoutes.GetUnassignedTickets);
@@ -54,5 +53,6 @@ app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
 
 app.MapGet("/api/messages/{id}", MessageRoutes.GetTicketMessages);
 app.MapPost("/api/messages/", MessageRoutes.AddMessage);
+
 
 app.Run();

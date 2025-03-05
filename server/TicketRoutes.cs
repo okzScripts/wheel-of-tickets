@@ -1,13 +1,13 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
-//namespace server;
+namespace server;
 
 public class TicketRoutes
 {
     public record Ticket(int id, int status, string customer_url, int product_id, int ticket_category);
-
-    public record NewTicket(int companyId, int productId, int categoryId, string message);
+    
+    public record NewTicket( int productId, int categoryId, string message, string email);
 
 
     public static async Task<Results<Ok<Ticket>, BadRequest<string>>> GetTicket(int id, NpgsqlDataSource db)
@@ -188,23 +188,42 @@ public class TicketRoutes
     {
         try
         {
-
+            
+           await using var conn = await db.OpenConnectionAsync();
+           await using var transaction = await conn.BeginTransactionAsync();
+            
             int status = 1;
+            int ticketId;
+            
 
-            using var cmd = db.CreateCommand(
-                @"INSERT INTO tickets (message, status, customer, product_id, ticket_category)
-                  VALUES ($1, $2, $3, $4, $5) RETURNING id"
-            );
-            cmd.Parameters.AddWithValue(ticket.message);
-            cmd.Parameters.AddWithValue(status);
-            cmd.Parameters.AddWithValue(ticket.companyId);
-            cmd.Parameters.AddWithValue(ticket.productId);
-            cmd.Parameters.AddWithValue(ticket.categoryId);
+            var sql1 = "INSERT INTO tickets (status, customer_url, product_id, ticket_category) VALUES ($1, $2, $3, $4) RETURNING id";
+            using (var cmd1 = new NpgsqlCommand(sql1, conn, transaction))
+            {
+                cmd1.Parameters.AddWithValue(status);
+                cmd1.Parameters.AddWithValue(ticket.email);
+                cmd1.Parameters.AddWithValue(ticket.productId);
+                cmd1.Parameters.AddWithValue(ticket.categoryId);
 
-            var newId = await cmd.ExecuteScalarAsync();
+                ticketId = (int) await cmd1.ExecuteScalarAsync();
+            }
 
+            var sql2 = "INSERT INTO messages(text, ticket, time, customer) VALUES ($1, $2, $3, $4)";
 
-            return TypedResults.Ok(Convert.ToInt32(newId));
+            using (var cmd2 = new NpgsqlCommand(sql2, conn, transaction))
+            {
+                cmd2.Parameters.AddWithValue(ticket.message);
+                cmd2.Parameters.AddWithValue(ticketId);
+                cmd2.Parameters.AddWithValue(DateTime.Now);
+                cmd2.Parameters.AddWithValue(true);
+
+                await cmd2.ExecuteNonQueryAsync();
+            }
+            
+            await transaction.CommitAsync();
+            
+            return TypedResults.Ok(Convert.ToInt32(ticketId));
+            
+            
         }
         catch (Exception ex)
         {
