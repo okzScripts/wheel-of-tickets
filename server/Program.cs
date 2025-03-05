@@ -41,6 +41,7 @@ app.MapGet("/api/products/{ProductId}", ProductRoutes.GetProduct);
 app.MapPost("/api/products", ProductRoutes.AddProduct);
 app.MapPut("/api/products", ProductRoutes.EditProduct);
 app.MapPut("/api/products/block/{id}/{active}", ProductRoutes.BlockProductById);
+app.MapGet("/api/products/customer-ticket/", ProductRoutes.GetProductsForTicket);
 
 app.MapGet("/api/tickets/{id}", TicketRoutes.GetTicket);
 app.MapGet("/api/tickets/unassigned", TicketRoutes.GetUnassignedTickets);

@@ -57,7 +57,7 @@ public class CompanyRoutes
         try
         {
             using var cmd = db.CreateCommand(
-                "SELECT * FROM ticket_categories WHERE company = $1 ORDER BY id ASC"
+                "SELECT id, category_name FROM ticket_categories WHERE company = $1 ORDER BY id ASC"
             );
 
             cmd.Parameters.AddWithValue(companyId);

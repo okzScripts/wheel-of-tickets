@@ -200,7 +200,7 @@ public class TicketRoutes
             using (var cmd1 = new NpgsqlCommand(sql1, conn, transaction))
             {
                 cmd1.Parameters.AddWithValue(status);
-                cmd1.Parameters.AddWithValue(ticket.email); // ska vara customer id efter att vi lagt till login 
+                cmd1.Parameters.AddWithValue(ticket.email);
                 cmd1.Parameters.AddWithValue(ticket.productId);
                 cmd1.Parameters.AddWithValue(ticket.categoryId);
 
