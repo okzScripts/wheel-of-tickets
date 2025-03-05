@@ -64,18 +64,18 @@ VALUES
 
 
 
-INSERT INTO public.tickets ( status, customer_url, product_id, customer_agent, ticket_category)
+INSERT INTO public.tickets ( status, customer_email, product_id, customer_agent, ticket_category)
 VALUES
-(  1, 'http://something', 1, NULL, 1),
-(  1, 'http://something', 2, NULL, 2),
-(  1, 'http://something', 3, NULL, 3),
-(  1, 'http://something', 4, NULL, 5), 
-( 1, 'http://something',4,NULL,4 ),
-( 1, 'http://something',3,NULL,4 ),
-(1,'http://something' ,5, NULL , 6),
-( 1, 'http://something', 7,NULL, 8  ),
-(1,'http://something',8,NULL,9 ), 
-(1,'http://something',2,NULL,2); 
+(  1, 'svine-lisa@stia.com', 1, NULL, 1),
+(  1, 'pelle-gris@host.com', 2, NULL, 2),
+(  1, 'galter@trynet.com', 3, NULL, 3),
+(  1, 'sofina@stia.com', 4, NULL, 5), 
+( 1, 'nasse.kultinggren@trynet.com',4,NULL,4 ),
+( 1, 'nuffer@svinmail.com',3,NULL,4 ),
+(1,'kurt.kulting@fakemail.se' ,5, NULL , 6),
+( 1, 'griselda.lergrop@svinmail.com', 7,NULL, 8  ),
+(1,'orne.lera@stia.com',8,NULL,9 ), 
+(1,'tryne.enuff@fakemail.se',2,NULL,2); 
 
   
 

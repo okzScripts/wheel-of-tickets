@@ -105,7 +105,7 @@ create table tickets
     status          integer not null
         constraint tickets_ticket_status_id_fk
             references ticket_status,
-    customer_url       text  not null,
+    customer_email       text  not null,
     product_id      integer not null 
         constraint tickets_products_id_fk
             references products,
