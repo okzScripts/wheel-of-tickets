@@ -188,7 +188,7 @@ export function TicketInfoView() {
 <section className="chat-message-box">
 <form  className="chat-message-form" onSubmit={PostMessage} method="POST" >
                     <textarea value={messageText} onChange={(e) => setMessageText(e.target.value)} name="text" type="textarea" className="text-area"></textarea>
-                    <input className="small-button" type="submit" value="Send" disabled={!messageText}></input>
+                    <input className="small-button" type="submit" value="Send" disabled={!messageText|| ticket.status>2 }></input>
                 </form>
                 <button className="small-button" onClick={ChangeStatus}>{ticket.status < 3 ? "Close Ticket" : "Open Ticket"}</button>
 </section>
