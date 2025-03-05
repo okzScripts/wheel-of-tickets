@@ -11,6 +11,7 @@ import { ChangePasswordView } from './ChangePasswordView.jsx'
 import LoginPage from './LoginPage.jsx'
 import TechSolutions from './TechSolutions.jsx'
 import EcoEnterprises from './EcoEnterprises.jsx'
+import { CustomerChatView } from './components/CustomerChatView.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')).render(
         <Route index element={<LoginPage />} />
         <Route path='/change-password' element={<ChangePasswordView />}/>
         <Route path='/customer' element={<CreateCustomerView />} />
+        <Route path='/customer/:id/chat' element={<CustomerChatView/> } />
         <Route path='/customer/addTicket' element={<CustomerTicketView />} />
         <Route path='/super-admin' element={<SuperAdminView />} />
         <Route path='/companies' element={<SuperAdminCompanyView />} />
