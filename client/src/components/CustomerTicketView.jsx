@@ -11,28 +11,25 @@ export default function CustomerTicketView() {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [email, setEmail] = useState([]);
-    const [companyId, setCompanyId] = useState(null);
+   
 
 
     const urlParams = new URLSearchParams(window.location.search);
-    const companyIdFromUrl = urlParams.get('companyId');
+    const companyId = urlParams.get('companyId');
    
     useEffect(() => {
-        if (companyIdFromUrl) {
-            setCompanyId(companyIdFromUrl);
-            fetch(`/api/products/customer-ticket?companyId=${companyIdFromUrl}`)
+        if (companyId) {
+            fetch(`/api/products/customer-ticket?companyId=${companyId}`)
                 .then((response) => response.json())
                 .then((data) => setProducts(data))
                 .catch((error) => console.error("Error fetching products:", error));
-            // 1. Spara companyId i session (kräver backend-endpoint)
-            
         }
     }, []);
     
       
     useEffect(() => {
         
-        fetch(`/api/tickets/categories?companyId=${companyIdFromUrl}`)
+        fetch(`/api/tickets/categories?companyId=${companyId}`)
             .then((response) => response.json())
             .then((data) => setCategories(data))
             .catch((error) => console.error("Error fetching categories:", error));
