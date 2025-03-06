@@ -3,39 +3,30 @@ import { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation, useParams } from "react-router";
 import logo from './assets/logo.png';
 
-export default function CustomerService() {
+export function CustomerServiceView() {
     //const [ticket, setTicket] = useState(null);
     const [unassignedTickets, setUnassignedTickets] = useState([]);
-    const [yourAssignedTickets, setYourAssignedTickets] = useState([])
-    const [tickets, setTickets] = useState([])
-    const customerServiceAgent = 29
-    const company = 2
+    const [assignedTickets, setAssignedTickets] = useState([]);
 
-    useEffect(() => {
-        GetTickets()
-    })
-
-    useEffect(() => {
-        getUnassignedTickets();
-    }, []);
+    useEffect(GetUnassignedTickets, []);
+    useEffect(GetAssignedTickets, []);
     
-    useEffect(() => {
-        getYourAssignedTickets();
-    }, []);
   
-    function GetTickets()
+    function GetUnassignedTickets()
     {
-        fetch("/api/tickets/" + company )
+        fetch("/api/tickets/unassigned/")
             .then((response) => response.json())
-            .then((data) => setTickets(data))
+            .then((data) => setUnassignedTickets(data))
     }
 
-
-    function getUnassignedTickets() {
-        fetch("/api/tickets/" + company + "/unassigned")
-            .then((response) => response.json())
-            .then((data) => setUnassignedTickets(data));
+    function GetAssignedTickets(){
+        fetch("/api/tickets/assigned/")
+        .then((response) => response.json())
+        .then((data) => setAssignedTickets(data))
     }
+    
+
+
 
     async function randomiser() {
     if (unassignedTickets.length === 0) {
@@ -51,26 +42,18 @@ export default function CustomerService() {
     }
 
     try {
-        const response = await fetch(`/api/tickets/${randomTicket.id}/${customerServiceAgent}`, {
+        const response = await fetch(`/api/tickets/${randomTicket.id}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
         });
-
         const result = await response.text();
-        console.log(result);
-    await GetTickets();
-    await getUnassignedTickets();
-    await getYourAssignedTickets();
+    
+        GetUnassignedTickets();
+        GetAssignedTickets();
     } catch (error) {
         console.error("Error assigning ticket:", error);
     }
 }
-
-    async function getYourAssignedTickets() {
-        const response = await fetch("/api/tickets/" + company + "/" + customerServiceAgent);
-        const data = await response.json();
-        setYourAssignedTickets(data);
-    }
 
 
     return (
@@ -84,43 +67,137 @@ export default function CustomerService() {
             <section className="lower-section">
                 <div className="tickets-left">
                     <h2>YOUR TICKETS:</h2>
-                        {yourAssignedTickets.length > 0 ? (
+                        {assignedTickets.length > 0 ? (
                             <ul className="ticket-list">
-                                {yourAssignedTickets.map((ticket) => (
-                                    <li key={ticket.id} className="ticket-list-item">
-                                        <h2>{ticket.message}</h2>
-                                        <div className="ticket-info">
-                                        <p>Ticket id: {ticket.id}</p>
-                                            <p>Agent id:{ticket.customer_agent}</p>
-                                        </div>
-                                    </li>
-                                ))}
+                                {assignedTickets.map(TicketCard)}
                             </ul>
 
                         ) : (
-                            <h2>Här var det tomt 😁</h2>
+                            <ul className="ticket-list"><li className="ticket-list-item" key={"emptyassigned"}><div className="ticket-info"><p>Inga tickets</p></div></li></ul>
                         )}
                  
                 </div>
                 <div className="tickets-right">
                     <h2>ALL TICKETS:</h2>
-                    {tickets.length > 0 ? (
+                    {unassignedTickets.length > 0 ? (
                         <ul className="ticket-list">
-                            {tickets.map((ticket) => (
-                                <li key={ticket.id} className="ticket-list-item">
-                                    <h2>{ticket.message}</h2>
-                                    <div className="ticket-info">
-                                        <p>Ticket id {ticket.id}</p>
-                                        {ticket.customer_agent ? <p><b>Assigned to: Customer agent</b> {ticket.customer_agent}</p> : ""}
-                                    </div>
-                                </li>
-                            ))}
+                            {unassignedTickets.map(UnassignedTicketCard)}
                         </ul>
                     ) : (
-                        <ul className="ticket-list"><div className="ticket-list-item"><div className="ticket-info"><p>Inga tickets</p></div></div></ul>
+                            <ul className="ticket-list"><li className="ticket-list-item" key={"emptyunnasigned"}><div className="ticket-info"><p>Inga tickets</p></div></li></ul>
                     )}
                 </div>
             </section>
         </main>
     );
+    function TicketCard(ticket) {
+        return<li key={ticket.id} className="ticket-list-item"><NavLink to={"/customer-service/"+ticket.id+"/ticket-info"} >
+            
+            <h2>{ticket.customer_url}</h2>
+            <div className="ticket-info">
+                <p>Ticket id: {ticket.id}</p>
+            </div></NavLink> 
+        </li>
+    }
+    function UnassignedTicketCard(ticket) {
+        return<li key={ticket.id} className="ticket-list-item"><a>
+            
+            <h2>{ticket.customer_url}</h2>
+            <div className="ticket-info">
+                <p>Ticket id: {ticket.id}</p>
+            </div></a>
+        </li>
+    }
+}
+
+
+export function TicketInfoView() {
+    const { id } = useParams()
+    const [messageText, setMessageText] = useState("");
+    const [messages, setMessages] = useState([])
+    const [ticket, setTicket] = useState(1)
+    
+    function GetTicketMessages() {
+        fetch(`/api/messages/${id}`).then(response => response.json()).then(data => { setMessages(data) })
+    }
+    useEffect(GetTicketMessages, [])
+
+    useEffect(() => {
+    const intervalId = setInterval(GetTicketMessages, 2000);
+    return () => clearInterval(intervalId);
+    }, []);
+
+    
+
+    function PostMessage(e) {
+        e.preventDefault(); 
+        const form=e.target; 
+        let formData=new FormData(form); 
+        let dataObject= Object.fromEntries(formData)
+        dataObject.ticket=id; 
+        dataObject.customer=false;
+        
+        let dataJson =JSON.stringify(dataObject); 
+        console.log(dataJson);
+        fetch("/api/messages", 
+            {
+                headers: { "Content-Type": "application/json" },
+                method: "POST",
+                body: dataJson
+            }).then(response => {
+                if (response.ok) {
+                    GetTicketMessages();
+                    setMessageText("")
+                } else {
+                    console.log(response)
+                    alert("respons");
+                }
+            })
+            
+    }
+    useEffect(GetTicket, [])
+
+    function GetTicket() {
+         fetch("/api/tickets/" + id).then(response => response.json()).then(data => setTicket(data))
+    }
+
+    function ChangeStatus() {
+        fetch("/api/tickets/status/" + id, 
+            {
+                headers: { "Content-Type": "application/json" },
+                method: "PUT",
+                body: JSON.stringify({ status: ticket.status }),
+            }).then(response => {
+                if (response.ok) {
+                    GetTicket();
+                } else {
+                    console.log(response)
+                    alert("respons");
+                }
+            })
+    }
+    
+    return (
+<main className="chat-main">
+<nav className="navbar"><img src={logo}></img> <NavLink to="/customer-service"><button className="back-button">⬅️ Back</button></NavLink></nav>
+<section className="chat-header"><h1>Chat with Customer</h1></section>
+<section className="chat">
+<ul className="chat-ul"> {messages.map(MessageCard)}
+</ul>
+</section>
+<section className="chat-message-box">
+<form  className="chat-message-form" onSubmit={PostMessage} method="POST" >
+                    <textarea value={messageText} onChange={(e) => setMessageText(e.target.value)} name="text" type="textarea" className="text-area"></textarea>
+                    <input className="small-button" type="submit" value="Send" disabled={!messageText|| ticket.status>2 }></input>
+                </form>
+                <button className="small-button" onClick={ChangeStatus}>{ticket.status < 3 ? "Close Ticket" : "Open Ticket"}</button>
+</section>
+</main>
+    );
+
+    function MessageCard(message) {
+        const messageSender = message.customer ? "chat-left-message" : "chat-right-message"
+        const messageholder = message.customer? "message-holder-left" : "message-holder-right"
+        return <li key={message.id} className={messageSender}><p className={messageholder}>{message.text}</p><p>{message.time}</p></li>
+    }
 }

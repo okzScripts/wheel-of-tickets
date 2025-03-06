@@ -6,16 +6,21 @@ import "./styles.css"
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router'
 import { SuperAdminView, SuperAdminCompanyView, SuperAdminAdminView, SuperAdminAddAdminView, SuperAdminEditAdminView, SuperAdminAddCompanyView, SuperAdminEditCompanyView } from "./SuperAdminView.jsx"
 import { AdminView, AdminAddProductView, AdminEditProductView, AdminEditSupportView, AdminAddSupportView, ProductView, SupportView } from "./AdminView.jsx"
-import CustomerService from './CustomerService.jsx'
+import {CustomerServiceView,TicketInfoView} from './CustomerService.jsx'
+import { ChangePasswordView } from './ChangePasswordView.jsx'
 import LoginPage from './LoginPage.jsx'
-
+import TechSolutions from './TechSolutions.jsx'
+import EcoEnterprises from './EcoEnterprises.jsx'
+import { CustomerChatView } from './components/CustomerChatView.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
         <Route index element={<LoginPage />} />
+        <Route path='/change-password' element={<ChangePasswordView />}/>
         <Route path='/customer' element={<CreateCustomerView />} />
+        <Route path='/customer/:id/chat' element={<CustomerChatView/> } />
         <Route path='/customer/addTicket' element={<CustomerTicketView />} />
         <Route path='/super-admin' element={<SuperAdminView />} />
         <Route path='/companies' element={<SuperAdminCompanyView />} />
@@ -23,8 +28,13 @@ createRoot(document.getElementById('root')).render(
         <Route path='/companies/:id/edit' element={<SuperAdminEditCompanyView />} />
         <Route path='/admins' element={<SuperAdminAdminView />} />
         <Route path='/admins/add' element={<SuperAdminAddAdminView />} />
-        <Route path='/customer-service' element={<CustomerService />} />
+        <Route path='/customer-service' element={<CustomerServiceView />} />
+        <Route path='/customer-service/:id/ticket-info' element={<TicketInfoView />} />
+
         <Route path='/users/:id/edit' element={<SuperAdminEditAdminView />} />
+          
+        <Route path='/tech-solutions' element={<TechSolutions/>}/>
+        <Route path='/eco-enterprises' element={<EcoEnterprises/>}/>
 
         <Route path='/admin' element={<AdminView />} />
         <Route path='/products' element={<ProductView />} />

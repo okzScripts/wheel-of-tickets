@@ -3,7 +3,7 @@ using server;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=1234;Port=5432");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=portedinme;Port=5432");
 dataSourceBuilder.MapEnum<UserRole>();
 var db = dataSourceBuilder.Build();
 
@@ -32,24 +32,27 @@ app.MapGet("/api/users/{id}", UserRoutes.GetUser);
 app.MapPut("/api/users/{id}", UserRoutes.EditUser);
 app.MapPut("/api/users/block/{id}/{active}", UserRoutes.BlockUser);
 app.MapPost("/api/users", UserRoutes.AddUser);
+app.MapPut("/api/users/password/", UserRoutes.ChangePassword);
+
 app.MapPost("/api/login", LoginRoutes.LoginByRole);
 
-app.MapGet("/api/products/company/{company}", ProductRoutes.GetProducts);
+app.MapGet("/api/products/company/", ProductRoutes.GetProducts);
 app.MapGet("/api/products/{ProductId}", ProductRoutes.GetProduct);
 app.MapPost("/api/products", ProductRoutes.AddProduct);
 app.MapPut("/api/products", ProductRoutes.EditProduct);
 app.MapPut("/api/products/block/{id}/{active}", ProductRoutes.BlockProductById);
+app.MapGet("/api/products/customer-ticket/", ProductRoutes.GetProductsForTicket);
 
-app.MapGet("/api/tickets/{company}", TicketRoutes.GetTickets);
-app.MapGet("/api/tickets/{company}/unassigned", TicketRoutes.GetUnassignedTickets);
-app.MapPut("/api/tickets/{id}/{customer_agent}", TicketRoutes.AssignTicket);
-app.MapGet("/api/tickets/{company}/{customer_agent}", TicketRoutes.GetAssignedTickets);
+app.MapGet("/api/tickets/{id}", TicketRoutes.GetTicket);
+app.MapGet("/api/tickets/unassigned", TicketRoutes.GetUnassignedTickets);
+app.MapPut("/api/tickets/{id}", TicketRoutes.AssignTicket);
+app.MapPut("/api/tickets/status/{id}", TicketRoutes.ChangeStatus);
+app.MapGet("/api/tickets/assigned", TicketRoutes.GetAssignedTickets);
 app.MapPost("/api/tickets", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
 
-//app.MapPost("/api/create-user", UserRoutes.AddUser);
+app.MapGet("/api/messages/{id}", MessageRoutes.GetTicketMessages);
+app.MapPost("/api/messages/", MessageRoutes.AddMessage);
 
-
-//var serverActions  = new ServerActions(app);
 
 app.Run();

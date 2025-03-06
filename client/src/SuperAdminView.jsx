@@ -37,7 +37,7 @@ export function SuperAdminCompanyView() {
             })
     }
 
-    useEffect(GetCompanies);
+    useEffect(GetCompanies,[]);
 
     return <main className="role-specific-main">
         <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
@@ -146,7 +146,7 @@ export function SuperAdminEditCompanyView() {
 
     useEffect(() => {
         fetch("/api/companies/" + id).then(response => response.json()).then(data => { setCompany(data) })
-    })
+    },[])
 
     function updateCompany(e) {
         e.preventDefault();
@@ -255,7 +255,7 @@ export function SuperAdminAdminView() {
             })
     }
 
-    useEffect(GetAdmins);
+    useEffect(GetAdmins, []);
 
     return <main className="role-specific-main">
         <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
@@ -385,7 +385,7 @@ export function SuperAdminEditAdminView() {
             .then(data => { setAdmin(data) })
             .catch(error => console.error("Error fetching user:", error));
 
-    })
+    },[])
 
 
     function updateUser(e) {
