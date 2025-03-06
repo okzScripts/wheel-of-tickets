@@ -2,6 +2,7 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
+using System.ComponentModel;
 namespace server;
 public enum UserRole
 {
@@ -228,6 +229,86 @@ public class UserRoutes
         }
     }
 
+    public record PostAgentDTO(string Name, string Email, string Password, List<int> Categories, int? Company, string Role);
+
+    public static async Task<IResult> AddAgent(PostAgentDTO agent, NpgsqlDataSource db, HttpContext ctx)
+    {
+        await using var conn = await db.OpenConnectionAsync();
+        await using var transaction = await conn.BeginTransactionAsync();
+
+        try
+        {
+            int? companyId = -1;
+            Enum.TryParse<UserRole>(agent.Role, true, out var userRole);
+            if (agent.Company is null)
+            {
+                if (ctx.Session.IsAvailable)
+                {
+                    companyId = ctx.Session.GetInt32("company");
+                    if (companyId == null)
+                    {
+                        return TypedResults.BadRequest("Session not existing");
+                    }
+                }
+            }
+            else { companyId = agent.Company; }
+
+            // Första insert: användare
+            using var cmd = db.CreateCommand(
+                "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
+
+            cmd.Parameters.AddWithValue(agent.Name);
+            cmd.Parameters.AddWithValue(agent.Email);
+            cmd.Parameters.AddWithValue(agent.Password);
+            cmd.Parameters.AddWithValue(companyId.HasValue ? companyId : DBNull.Value);
+            cmd.Parameters.AddWithValue(userRole);
+            cmd.Parameters.AddWithValue(true);
+
+            var result = await cmd.ExecuteScalarAsync();
+
+            if (result != null)
+            {
+                var id = Convert.ToInt32(result);
+
+                // För varje kategori, sätt in relationen
+                foreach (var category in agent.Categories)
+                {
+                    using var cmd2 = db.CreateCommand(
+                        "INSERT INTO customer_agentsxticket_category (ticket_category, customer_agent) VALUES ($1, $2) RETURNING id");
+
+                    // Använd rätt kommandon och parametrar för cmd2
+                    cmd2.Parameters.AddWithValue(category);
+                    cmd2.Parameters.AddWithValue(id);
+
+                    var result2 = await cmd2.ExecuteScalarAsync();
+
+                    if (result2 != null)
+                    {
+                        return TypedResults.Ok("Det funkade! Du la till en category!");
+                    }
+                    else
+                    {
+                        return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till category");
+                    }
+                }
+
+                return TypedResults.Ok("category done");
+            }
+            else
+            {
+                return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
+            }
+        }
+        catch (PostgresException ex) when (ex.SqlState == "23505")
+        {
+            return TypedResults.BadRequest("Email-adressen är redan registrerad!");
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
+        }
+    }
+
 
     public record PutUserDTO(string Name, string Email, string Password);
     public static async Task<IResult> EditUser(int id, PutUserDTO user, NpgsqlDataSource db)
@@ -261,52 +342,67 @@ public class UserRoutes
 
 
 
-    public record PasswordDTO( string OldPassword, string Password, string RepeatPassword );
-    public static async Task<Results<Ok<string>, BadRequest<string>>> ChangePassword(PasswordDTO passwords,NpgsqlDataSource db, HttpContext ctx)
+    public record PasswordDTO(string OldPassword, string Password, string RepeatPassword);
+    public static async Task<Results<Ok<string>, BadRequest<string>>> ChangePassword(PasswordDTO passwords, NpgsqlDataSource db, HttpContext ctx)
     {
         if (ctx.Session.IsAvailable)
+        {
+            var Id = ctx.Session.GetInt32("id");
+            if (Id == null)
             {
-                var Id = ctx.Session.GetInt32("id");
-                if (Id == null)
-                {
-                    return TypedResults.BadRequest("Session not exisiting");
-                }else{
-                      using var cmd = db.CreateCommand(
-                     "select password from  users WHERE id = $1");
-                     cmd.Parameters.AddWithValue(Id);
-
-                     using var reader = await  cmd.ExecuteReaderAsync(); 
-                      
-                     if(await reader.ReadAsync() ){
-                        var oldPassword= reader.GetString(0); 
-
-
-                        if(oldPassword!=passwords.OldPassword){
-                            return TypedResults.BadRequest("password does not match old password");
-                        }else{
-                            if(passwords.Password==passwords.RepeatPassword){
-                            using var cmdPut =  db.CreateCommand("Update users set password=$1 where id=$2 ");
-                            cmdPut.Parameters.AddWithValue(passwords.Password); 
-                            cmdPut.Parameters.AddWithValue(Id); 
-
-                             var rows= await cmdPut.ExecuteNonQueryAsync(); 
-                            if(rows>0){
-                                return TypedResults.Ok("Password changed"); 
-                            }else{
-                                return TypedResults.BadRequest("No rows affected by password change"); 
-                            }
-
-                            }else{
-                                return TypedResults.BadRequest("new passwords do not match"); 
-                            }
-                        
-                        }
-                     }else{return TypedResults.BadRequest("No data found");}
-
-                }
-            }else{
-                return TypedResults.BadRequest("Session does not exist"); 
+                return TypedResults.BadRequest("Session not exisiting");
             }
+            else
+            {
+                using var cmd = db.CreateCommand(
+               "select password from  users WHERE id = $1");
+                cmd.Parameters.AddWithValue(Id);
+
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    var oldPassword = reader.GetString(0);
+
+
+                    if (oldPassword != passwords.OldPassword)
+                    {
+                        return TypedResults.BadRequest("password does not match old password");
+                    }
+                    else
+                    {
+                        if (passwords.Password == passwords.RepeatPassword)
+                        {
+                            using var cmdPut = db.CreateCommand("Update users set password=$1 where id=$2 ");
+                            cmdPut.Parameters.AddWithValue(passwords.Password);
+                            cmdPut.Parameters.AddWithValue(Id);
+
+                            var rows = await cmdPut.ExecuteNonQueryAsync();
+                            if (rows > 0)
+                            {
+                                return TypedResults.Ok("Password changed");
+                            }
+                            else
+                            {
+                                return TypedResults.BadRequest("No rows affected by password change");
+                            }
+
+                        }
+                        else
+                        {
+                            return TypedResults.BadRequest("new passwords do not match");
+                        }
+
+                    }
+                }
+                else { return TypedResults.BadRequest("No data found"); }
+
+            }
+        }
+        else
+        {
+            return TypedResults.BadRequest("Session does not exist");
+        }
     }
 }
 
