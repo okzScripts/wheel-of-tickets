@@ -4,14 +4,14 @@ import { createContext, useEffect, useState, use } from "react";
 import logo from './assets/logo.png';
 
 export function AdminView() {
- 
+
     return <main className="option-main">
         <div className="big-button-container">
             <NavLink to="/products"><button className="big-button">Products</button></NavLink>
             <NavLink to="/agents"><button className="big-button">Support Agents</button></NavLink>
         </div>
     </main>
-    
+
 }
 
 
@@ -24,7 +24,7 @@ export function ProductView() {
         fetch(`/api/products/block/${id}/${active}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify({id, active}),
+            body: JSON.stringify({ id, active }),
         })
             .then(response => {
                 if (response.ok) { console.log("Det Funkade Igen") }
@@ -294,19 +294,29 @@ export function AdminEditSupportView() {
     const { id } = useParams();
     const [agent, setAgent] = useState({});
 
+    const [categories, setCategories] = useState([]);
+    const selectedCategories = []
+
+    useEffect(() => {
+
+        fetch(`/api/tickets/categories?companyId=1337`)
+            .then((response) => response.json())
+            .then((data) => setCategories(data))
+            .catch((error) => console.error("Error fetching categories:", error));
+    }, []);
 
     useEffect(() => {
 
         fetch(`/api/users/${id}`)
             .then(response => response.json())
-            .then(data => {setAgent(data)})
-            .then(()=> console.log(agent.role));
-            
-            
+            .then(data => { setAgent(data) })
+            .then(() => console.log(agent.role));
 
-    },[]);
 
-   
+
+    }, []);
+
+
 
     function updateUser(e) {
         e.preventDefault();
@@ -362,11 +372,23 @@ export function AdminEditSupportView() {
                             required
                         />
                     </label>
+                    <label>
+                        Categories:
+                        <ul className="category-list">
+                            {categories.map(CategoryCard)}
+                        </ul>
+
+                    </label>
                 </div>
                 <input type="submit" value="Save" className="middle-button"></input>
             </form>
         </main>
     );
+    function CategoryCard(category) {
+        return <li key={category.id}><input onChange={() => HandleCategories(category.id)} id={category.id} type="checkbox" />
+            <label htmlFor={category.id}>{category.category_name} </label>
+        </li>
+    }
 }
 
 export function AdminAddSupportView() {
@@ -374,7 +396,7 @@ export function AdminAddSupportView() {
     const selectedCategories = []
 
     useEffect(() => {
-        
+
         fetch(`/api/tickets/categories?companyId=1337`)
             .then((response) => response.json())
             .then((data) => setCategories(data))
@@ -413,7 +435,7 @@ export function AdminAddSupportView() {
             selectedCategories.push(categoryId);
             console.log(selectedCategories)
         }
-        
+
     }
 
     return (
@@ -446,24 +468,24 @@ export function AdminAddSupportView() {
                             type="password"
                             required
                         />
-                    </label>        
+                    </label>
                     <label>
                         Categories:
                         <ul className="category-list">
                             {categories.map(CategoryCard)}
                         </ul>
-                        
+
                     </label>
                 </div>
                 <input type="submit" value="Save" className="middle-button"></input>
             </form>
         </main>
 
-        
+
     );
     function CategoryCard(category) {
-        return <li key={category.id}><input onChange={() => HandleCategories(category.id)} id={category.id} name={category.id} type="checkbox"/>
-                <label htmlFor={category.id}>{category.category_name} </label>
-            </li>
-        }
+        return <li key={category.id}><input onChange={() => HandleCategories(category.id)} id={category.id} type="checkbox" />
+            <label htmlFor={category.id}>{category.category_name} </label>
+        </li>
+    }
 }

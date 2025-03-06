@@ -229,12 +229,16 @@ public class UserRoutes
         }
     }
 
-    public record PostAgentDTO(string Name, string Email, string Password, List<int> Categories, int? Company, string Role);
+    public record PostAgentDTO(string Name, string Email, string Password, List<int> SelectedCategories, int? Company, string Role);
 
     public static async Task<IResult> AddAgent(PostAgentDTO agent, NpgsqlDataSource db, HttpContext ctx)
     {
         await using var conn = await db.OpenConnectionAsync();
         await using var transaction = await conn.BeginTransactionAsync();
+
+        //var categoryList = agent.SelectedCategories?.Select(Convert.ToInt32).ToList() ?? new List<int>();
+
+        List<int> categorylist = agent.SelectedCategories;
 
         try
         {
@@ -265,31 +269,25 @@ public class UserRoutes
             cmd.Parameters.AddWithValue(true);
 
             var result = await cmd.ExecuteScalarAsync();
-
+            Console.WriteLine(result);
             if (result != null)
             {
                 var id = Convert.ToInt32(result);
+                Console.WriteLine("ID: " + id);
 
-                // För varje kategori, sätt in relationen
-                foreach (var category in agent.Categories)
+                foreach (int category in categorylist)
                 {
+                    Console.WriteLine(category);
                     using var cmd2 = db.CreateCommand(
-                        "INSERT INTO customer_agentsxticket_category (ticket_category, customer_agent) VALUES ($1, $2) RETURNING id");
+                        "INSERT INTO customer_agentsxticket_category (ticket_category, customer_agent) VALUES ($1, $2);");
 
                     // Använd rätt kommandon och parametrar för cmd2
                     cmd2.Parameters.AddWithValue(category);
                     cmd2.Parameters.AddWithValue(id);
 
-                    var result2 = await cmd2.ExecuteScalarAsync();
+                    int rowsaffected = await cmd2.ExecuteNonQueryAsync();
 
-                    if (result2 != null)
-                    {
-                        return TypedResults.Ok("Det funkade! Du la till en category!");
-                    }
-                    else
-                    {
-                        return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till category");
-                    }
+                    Console.WriteLine(rowsaffected);
                 }
 
                 return TypedResults.Ok("category done");
