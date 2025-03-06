@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
+using System.Runtime.InteropServices;
 namespace server;
 public enum UserRole
 {
@@ -176,33 +178,36 @@ public class UserRoutes
         }
     }
 
-    public record PostUserDTO(string Name, string Email, string Password, int? Company, string Role);
+    public record PostUserDTO(string Name, string Email, int Company, string Role);
 
     public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db, HttpContext ctx)
     {
-        if(ctx.Session.IsAvailable){
+        if(ctx.Session.IsAvailable || (UserRole)ctx.Session.GetInt32("role") != UserRole.Service_agent  ){
             try
             {   string password;
                 int? companyId; 
                 Enum.TryParse<UserRole>(user.Role, true, out var userRole);           
                 companyId = ctx.Session.GetInt32("company");
-                var role = (UserRole)ctx.Session.GetInt32("role");
+                if((UserRole)ctx.Session.GetInt32("role") == UserRole.super_admin ){
+                    companyId=user.Company; 
+                }
                 if (companyId == null){  
                         return TypedResults.BadRequest("Session error variable not existing");
-                } 
-                if(UserRole.Admin==role){
-                    password= GeneratePassword(8);  
-                }else{
-                    password=user.Password; 
                 }
 
+
+
+                 
+                
+                password= GeneratePassword(8);  
+                
                 using var cmd = db.CreateCommand(
                     "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
 
                 cmd.Parameters.AddWithValue(user.Name);
                 cmd.Parameters.AddWithValue(user.Email);
                 cmd.Parameters.AddWithValue(password);
-                cmd.Parameters.AddWithValue(companyId.HasValue ? companyId : DBNull.Value);
+                cmd.Parameters.AddWithValue(companyId);
                 cmd.Parameters.AddWithValue(userRole);
                 cmd.Parameters.AddWithValue(true);
 
@@ -210,11 +215,11 @@ public class UserRoutes
 
                 if (result != null)
                 {
-                    if(UserRole.Admin==role){
-                        string subject = "Account created";
-                        string message = "Hi "+user.Name +"\nyour account has now been created for " +user.Email +"\nwith the temporary password: "+password +"\nBest regards Svine Sync";
-                        MailService.SendMail(user.Email, subject, message);
-                    }
+                    string subject = "Account created";
+                    string message = "Hi "+user.Name +"\nyour account has now been created for " +user.Email +
+                    "\nwith the temporary password: "+password +"\nBest regards Swine Sync";
+                    MailService.SendMail(user.Email, subject, message);
+                    
                     return TypedResults.Ok("Det funkade! Du la till en admin!");
                 }
                 else
@@ -395,7 +400,7 @@ public static string GeneratePassword(int length){
                     if (rows > 0)
                     {
                         string subject = "Password reset successfully";
-                        string message = "Hi \nyour new temporary password is" + password;
+                        string message = "Hi \nyour new temporary password is: " + password;
                         MailService.SendMail(email, subject, message);
                         return TypedResults.Ok("password successfully changed");
                     }

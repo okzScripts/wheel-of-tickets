@@ -306,7 +306,18 @@ export function AdminEditSupportView() {
 
     },[]);
 
-   
+   function ResetPassword(e){
+    e.preventDefault(); 
+    fetch("PUT","/api/users/password/"+id)
+    .then(response=> {
+        if(response.ok){
+            alert("Password has been reset")
+        }else{
+            alert("An error occured when reseting the password.")    
+        }
+        }
+    ) 
+   }
 
     function updateUser(e) {
         e.preventDefault();
@@ -352,19 +363,10 @@ export function AdminEditSupportView() {
                             required
                         />
                     </label>
-
-                    <label>
-                        Password:
-                        <input
-                            name="password"
-                            defaultValue={agent?.password}
-                            type="password"
-                            required
-                        />
-                    </label>
                 </div>
-                <input type="submit" value="Save" className="middle-button"></input>
+                <input type="submit" value="Save" className="middle-button"></input>       <button className="middle-button" onClick={ResetPassword} >Reset Password</button>
             </form>
+
         </main>
     );
 }
@@ -379,8 +381,7 @@ export function AdminAddSupportView() {
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
         dataObject.company = null;
-        dataObject.role = "service_agent";
-        dataObject.password=""; 
+        dataObject.role = "service_agent"; 
 
 
         let dataJson = JSON.stringify(dataObject);

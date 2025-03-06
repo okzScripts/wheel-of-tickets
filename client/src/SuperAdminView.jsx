@@ -338,16 +338,6 @@ export function SuperAdminAddAdminView() {
                             required
                         />
                     </label>
-
-                    <label>
-                        Password:
-                        <input
-                            name="password"
-                            type="password"
-                            required
-                        />
-                    </label>
-
                     <label>
                         Company:
                         <select
@@ -433,17 +423,6 @@ export function SuperAdminEditAdminView() {
                             required
                         />
                     </label>
-
-                    <label>
-                        Password:
-                        <input
-                            name="password"
-                            defaultValue={admin?.password}
-                            type="password"
-                            required
-                        />
-                    </label>
-
                     <label>
                         Company:
                         <select
