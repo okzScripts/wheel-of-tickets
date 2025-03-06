@@ -345,24 +345,80 @@ public static string GeneratePassword(int length){
 
 
 
-public static async Task<Results<Ok<string>, BadRequest<string>>>ResetPassword(NpgsqlDataSource db, HttpContext ctx)
+    public static async Task<Results<Ok<string>, BadRequest<string>>> ResetPassword(int id, NpgsqlDataSource db, HttpContext ctx)
     {
         if (ctx.Session.IsAvailable)
         {
-        var role = (UserRole) ctx.Session.GetInt32("role");
 
-        if (role == UserRole.Service_agent)
-        {
-            return TypedResults.BadRequest("Unauthorized access");
+            var role = (UserRole)ctx.Session.GetInt32("role");
+
+            string password = GeneratePassword(8);
+            string email = "";
+
+            if (role == UserRole.Service_agent)
+            {
+                return TypedResults.BadRequest("Unauthorized access");
+            }
+            else
+            {
+                await using var conn = await db.OpenConnectionAsync();
+                await using var transaction = await conn.BeginTransactionAsync();
+
+
+                var sql1 = "SELECT email FROM users WHERE id = $1";
+                using (var cmd1 = new NpgsqlCommand(sql1, conn, transaction))
+                {
+                    cmd1.Parameters.AddWithValue(id);
+
+                    using var reader = await cmd1.ExecuteReaderAsync();
+
+                    if (await reader.ReadAsync())
+                    {
+                        email = reader.GetString(0);
+                    }
+
+
+                }
+
+                var sql2 = "UPDATE users SET password = $1 WHERE id =$2";
+                using (var cmd2 = new NpgsqlCommand(sql2, conn, transaction))
+                {
+
+                    cmd2.Parameters.AddWithValue(password);
+                    cmd2.Parameters.AddWithValue(id);
+
+                    var rows = await cmd2.ExecuteNonQueryAsync();
+
+
+                    await transaction.CommitAsync();
+
+                    if (rows > 0)
+                    {
+                        string subject = "Password reset successfully";
+                        string message = "Hi \nyour new temporary password is" + password;
+                        MailService.SendMail(email, subject, message);
+                        return TypedResults.Ok("password successfully changed");
+                    }
+                    else
+                    {
+                        return TypedResults.BadRequest("password not changed");
+                    }
+
+                }
+
+
+
+
+
+            }
+
+
+
+
         }
         else
         {
-            
-        }
-        
-        
-
-
+            return TypedResults.BadRequest("Session not available");
         }
     }
 
