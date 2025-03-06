@@ -25,7 +25,7 @@ app.MapPost("/api/companies", CompanyRoutes.AddCompany);
 app.MapPut("/api/companies/{id}", CompanyRoutes.EditCompany);
 app.MapPut("/api/companies/block/{id}/{active}", CompanyRoutes.BlockCompany);
 
-app.MapGet("/api/roles/users/{role}", UserRoutes.GetUsers);
+app.MapGet("/api/roles/users/", UserRoutes.GetUsers);
 
 app.MapGet("/api/users/company/{role}", UserRoutes.GetUsersFromCompany);
 app.MapGet("/api/users/{id}", UserRoutes.GetUser);

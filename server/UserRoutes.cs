@@ -2,6 +2,7 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
+using Microsoft.AspNetCore.Mvc;
 namespace server;
 public enum UserRole
 {
@@ -18,39 +19,56 @@ public class UserRoutes
     public record User(int id, string name, string email, string Password, int company, bool active, UserRole role);
 
 
-    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsers(string role, NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<User>>, BadRequest<string>, ForbidHttpResult>> GetUsers(HttpContext ctx, NpgsqlDataSource db)
     {
         List<User> users = new List<User>();
 
-        try
+        string queryrole = "";
+
+        if (ctx.Session.IsAvailable &&
+        ctx.Session.GetInt32("role") is int role &&
+        Enum.IsDefined(typeof(UserRole), role))
         {
-            Enum.TryParse<UserRole>(role, true, out var userrole);
 
-
-            using var cmd = db.CreateCommand("SELECT id,name,email,password,company, active, role FROM users WHERE role = $1  ORDER BY id ASC");
-            cmd.Parameters.AddWithValue(userrole);
-            using var reader = await cmd.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
+            if ((UserRole)role == UserRole.super_admin)
             {
-                users.Add(new User(
-                    reader.GetInt32(0),
-                    reader.GetString(1),
-                    reader.GetString(2),
-                    reader.GetString(3),
-                    reader.GetInt32(4),
-                    reader.GetBoolean(5),
-                    reader.GetFieldValue<UserRole>(6)
-                ));
-            }
+                queryrole = "admin";
 
-            return TypedResults.Ok(users);
+                try
+                {
+
+                    using var cmd = db.CreateCommand("SELECT id,name,email,password,company, active, role FROM users WHERE role = $1::user_role  ORDER BY id ASC");
+                    cmd.Parameters.AddWithValue(queryrole);
+                    using var reader = await cmd.ExecuteReaderAsync();
+
+                    while (await reader.ReadAsync())
+                    {
+                        users.Add(new User(
+                            reader.GetInt32(0),
+                            reader.GetString(1),
+                            reader.GetString(2),
+                            reader.GetString(3),
+                            reader.GetInt32(4),
+                            reader.GetBoolean(5),
+                            reader.GetFieldValue<UserRole>(6)
+                        ));
+                    }
+
+                    return TypedResults.Ok(users);
+                }
+                catch (Exception ex)
+                {
+                    return TypedResults.BadRequest($"An error occurred: {ex.Message}");
+                }
+            }
+            else
+            {
+                return TypedResults.Forbid();
+            }
         }
-        catch (Exception ex)
-        {
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
-        }
+        return TypedResults.BadRequest("No session available");
     }
+
 
     //?????public record GetUserByRoleDTO(UserRole Role)
 
