@@ -308,7 +308,11 @@ export function AdminEditSupportView() {
 
    function ResetPassword(e){
     e.preventDefault(); 
-    fetch("PUT","/api/users/password/"+id)
+    fetch("/api/users/password/"+id,{
+        headers: { "Content-Type": "application/json" },
+        method: "PUT",
+        body: JSON.stringify({})
+    } )
     .then(response=> {
         if(response.ok){
             alert("Password has been reset")
