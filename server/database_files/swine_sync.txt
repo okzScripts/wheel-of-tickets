@@ -114,7 +114,9 @@ create table tickets
             references users,
     ticket_category integer not null
         constraint tickets_ticket_categories_id_fk
-            references ticket_categories
+            references ticket_categories,
+    description text, 
+    rating numeric(2,1)
 );
 
 alter table tickets
