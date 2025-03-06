@@ -2,6 +2,7 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 namespace server;
 public enum UserRole
@@ -237,27 +238,25 @@ public class UserRoutes
     }
 
 
-    public record PutUserDTO(string Name, string Email, string Password);
+    public record PutUserDTO(string Name, string Email);
     public static async Task<IResult> EditUser(int id, PutUserDTO user, NpgsqlDataSource db ,HttpContext ctx)
     {    
+        
 
-
-        if(ctx.Session.IsAvailable){
-          
-        //     string password;
-        //    if(UserRole.Admin==role){
-        //         password= await GeneratePassword(8);  
-        //    }else{
-        //     password=user.Password; 
-        //    }
+        if(ctx.Session.IsAvailable)
+        {
+            var role = (UserRole)  ctx.Session.GetInt32("role");
+            if (role== UserRole.Service_agent)
+            {
+                return TypedResults.BadRequest("No access for you");
+            }
         try
         {
             using var cmd = db.CreateCommand(
-                "UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4");
+                "UPDATE users SET name = $1, email = $2 WHERE id = $3");
 
             cmd.Parameters.AddWithValue(user.Name);
             cmd.Parameters.AddWithValue(user.Email);
-            cmd.Parameters.AddWithValue(user.Password);
             cmd.Parameters.AddWithValue(id);
 
             int rowsAffected = await cmd.ExecuteNonQueryAsync();
@@ -266,13 +265,6 @@ public class UserRoutes
             {
                 return TypedResults.NotFound("Ingen User hittades");
             }
-
-            //     if(UserRole.Admin==role){
-            //         string subject = "Account created";
-            //         string message = "Hi "+user.Name +"\n your account has now been created for" +user.Email +"with the temprary password"+password +"\n best regards Svine Sync";
-            // MailService.SendMail(user.Email, subject, message);
-
-            //     }
                 return TypedResults.Ok("User updaterades");
             }
             catch (Exception ex)
@@ -349,7 +341,36 @@ public static string GeneratePassword(int length){
         }
         return password.ToString(); 
     }
+
+
+
+
+public static async Task<Results<Ok<string>, BadRequest<string>>>ResetPassword(NpgsqlDataSource db, HttpContext ctx)
+    {
+        if (ctx.Session.IsAvailable)
+        {
+        var role = (UserRole) ctx.Session.GetInt32("role");
+
+        if (role == UserRole.Service_agent)
+        {
+            return TypedResults.BadRequest("Unauthorized access");
+        }
+        else
+        {
+            
+        }
+        
+        
+
+
+        }
+    }
+
+
+
+
 }
+
 
 
 
