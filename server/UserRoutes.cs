@@ -2,6 +2,7 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
+using System.Text;
 namespace server;
 public enum UserRole
 {
@@ -178,60 +179,77 @@ public class UserRoutes
 
     public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db, HttpContext ctx)
     {
+        if(ctx.Session.IsAvailable){
+            try
+            {   string password;
+                int? companyId; 
+                Enum.TryParse<UserRole>(user.Role, true, out var userRole);           
+                companyId = ctx.Session.GetInt32("company");
+                var role = (UserRole)ctx.Session.GetInt32("role");
+                if (companyId == null){  
+                        return TypedResults.BadRequest("Session error variable not existing");
+                } 
+                if(UserRole.Admin==role){
+                    password= GeneratePassword(8);  
+                }else{
+                    password=user.Password; 
+                }
 
-        try
-        {
-            int? companyId = -1;
-            Enum.TryParse<UserRole>(user.Role, true, out var userRole);
-            if (user.Company is null)
-            {
-                if (ctx.Session.IsAvailable)
+                using var cmd = db.CreateCommand(
+                    "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
+
+                cmd.Parameters.AddWithValue(user.Name);
+                cmd.Parameters.AddWithValue(user.Email);
+                cmd.Parameters.AddWithValue(password);
+                cmd.Parameters.AddWithValue(companyId.HasValue ? companyId : DBNull.Value);
+                cmd.Parameters.AddWithValue(userRole);
+                cmd.Parameters.AddWithValue(true);
+
+                var result = await cmd.ExecuteScalarAsync();
+
+                if (result != null)
                 {
-                    companyId = ctx.Session.GetInt32("company");
-                    if (companyId == null)
-                    {
-                        return TypedResults.BadRequest("Session not exisiting");
+                    if(UserRole.Admin==role){
+                        string subject = "Account created";
+                        string message = "Hi "+user.Name +"\nyour account has now been created for " +user.Email +"\nwith the temporary password: "+password +"\nBest regards Svine Sync";
+                        MailService.SendMail(user.Email, subject, message);
                     }
+                    return TypedResults.Ok("Det funkade! Du la till en admin!");
+                }
+                else
+                {
+                    return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
                 }
             }
-            else { companyId = user.Company; }
-
-
-            using var cmd = db.CreateCommand(
-                "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
-
-            cmd.Parameters.AddWithValue(user.Name);
-            cmd.Parameters.AddWithValue(user.Email);
-            cmd.Parameters.AddWithValue(user.Password);
-            cmd.Parameters.AddWithValue(companyId.HasValue ? companyId : DBNull.Value);
-            cmd.Parameters.AddWithValue(userRole);
-            cmd.Parameters.AddWithValue(true);
-
-            var result = await cmd.ExecuteScalarAsync();
-
-            if (result != null)
+            catch (PostgresException ex) when (ex.SqlState == "23505")
             {
-                return TypedResults.Ok("Det funkade! Du la till en admin!");
+                return TypedResults.BadRequest("Email-adressen är redan registrerad!");
             }
-            else
+            catch (Exception ex)
             {
-                return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
+                return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
             }
+        
         }
-        catch (PostgresException ex) when (ex.SqlState == "23505")
-        {
-            return TypedResults.BadRequest("Email-adressen är redan registrerad!");
-        }
-        catch (Exception ex)
-        {
-            return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
+        else{
+            return TypedResults.BadRequest("Session does not exist");         
         }
     }
 
 
     public record PutUserDTO(string Name, string Email, string Password);
-    public static async Task<IResult> EditUser(int id, PutUserDTO user, NpgsqlDataSource db)
-    {
+    public static async Task<IResult> EditUser(int id, PutUserDTO user, NpgsqlDataSource db ,HttpContext ctx)
+    {    
+
+
+        if(ctx.Session.IsAvailable){
+          
+        //     string password;
+        //    if(UserRole.Admin==role){
+        //         password= await GeneratePassword(8);  
+        //    }else{
+        //     password=user.Password; 
+        //    }
         try
         {
             using var cmd = db.CreateCommand(
@@ -249,15 +267,23 @@ public class UserRoutes
                 return TypedResults.NotFound("Ingen User hittades");
             }
 
-            return TypedResults.Ok("User updaterades");
+            //     if(UserRole.Admin==role){
+            //         string subject = "Account created";
+            //         string message = "Hi "+user.Name +"\n your account has now been created for" +user.Email +"with the temprary password"+password +"\n best regards Svine Sync";
+            // MailService.SendMail(user.Email, subject, message);
+
+            //     }
+                return TypedResults.Ok("User updaterades");
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.BadRequest($"Error {ex.Message}");
+            }
+        }else{
+            return TypedResults.BadRequest("Session not availabel"); 
         }
-        catch (Exception ex)
-        {
-            return TypedResults.BadRequest($"Error {ex.Message}");
-        }
+     
     }
-
-
 
 
 
@@ -308,7 +334,25 @@ public class UserRoutes
                 return TypedResults.BadRequest("Session does not exist"); 
             }
     }
+
+public static string GeneratePassword(int length){
+        const string capitalLetters = "QWERTYUIOPASDFGHJKLZXCVBNM";
+        const string smallLetters = "qwertyuiopasdfghjklzxcvbnm";
+        const string digits = "0123456789";
+        const string specialCharacters = "!@#$%^&*()-_=+<,>.";
+        const string allChars = capitalLetters + smallLetters + digits + specialCharacters;
+        StringBuilder password = new StringBuilder();
+        Random rnd = new Random();
+        while (0 < length--)
+        {
+            password.Append(allChars[rnd.Next(allChars.Length)]);
+        }
+        return password.ToString(); 
+    }
 }
+
+
+
 
 
 /* public static async Task<Results<Ok<List<UserRole>>, UnauthorizedHttpResult, ForbidHttpResult>> GetUserByRole(NpgsqlDataSource db, HttpContext ctx){

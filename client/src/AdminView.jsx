@@ -380,6 +380,7 @@ export function AdminAddSupportView() {
         let dataObject = Object.fromEntries(formData);
         dataObject.company = null;
         dataObject.role = "service_agent";
+        dataObject.password=""; 
 
 
         let dataJson = JSON.stringify(dataObject);
@@ -416,15 +417,6 @@ export function AdminAddSupportView() {
                         <input
                             name="email"
                             type="email"
-                            required
-                        />
-                    </label>
-
-                    <label>
-                        Password:
-                        <input
-                            name="password"
-                            type="password"
                             required
                         />
                     </label>
