@@ -370,20 +370,27 @@ export function AdminEditSupportView() {
 }
 
 export function AdminAddSupportView() {
-   
+    const [categories, setCategories] = useState([]);
+    const selectedCategories = []
+
+    useEffect(() => {
+        
+        fetch(`/api/tickets/categories?companyId=1337`)
+            .then((response) => response.json())
+            .then((data) => setCategories(data))
+            .catch((error) => console.error("Error fetching categories:", error));
+    }, []);
 
     function postUser(e) {
         e.preventDefault();
         const form = e.target;
-
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
+        dataObject.selectedCategories = selectedCategories;
         dataObject.company = null;
         dataObject.role = "service_agent";
-
-
         let dataJson = JSON.stringify(dataObject);
-
+        console.log(dataJson)
         fetch(form.action, {
             headers: { "Content-Type": "application/json" },
             method: form.method,
@@ -397,10 +404,22 @@ export function AdminAddSupportView() {
         });
     }
 
+    function HandleCategories(categoryId) {
+        const index = selectedCategories.indexOf(categoryId);
+        if (index !== -1) {
+            selectedCategories.splice(index, 1);
+            console.log(selectedCategories)
+        } else {
+            selectedCategories.push(categoryId);
+            console.log(selectedCategories)
+        }
+        
+    }
+
     return (
         <main>
             <nav className="navbar"><img src={logo}></img> <NavLink to="/agents"><button className="back-button">⬅️ Back</button></NavLink></nav>
-            <form className="data-form" onSubmit={postUser} action="/api/users" method="POST">
+            <form className="data-form" onSubmit={postUser} action="/api/users/agent" method="POST">
                 <div className="form-box">
                     <label>
                         Name:
@@ -427,11 +446,24 @@ export function AdminAddSupportView() {
                             type="password"
                             required
                         />
+                    </label>        
+                    <label>
+                        Categories:
+                        <ul className="category-list">
+                            {categories.map(CategoryCard)}
+                        </ul>
+                        
                     </label>
-
                 </div>
                 <input type="submit" value="Save" className="middle-button"></input>
             </form>
         </main>
+
+        
     );
+    function CategoryCard(category) {
+        return <li key={category.id}><input onChange={() => HandleCategories(category.id)} id={category.id} name={category.id} type="checkbox"/>
+                <label htmlFor={category.id}>{category.category_name} </label>
+            </li>
+        }
 }
