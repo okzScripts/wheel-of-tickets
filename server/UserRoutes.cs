@@ -3,6 +3,7 @@ using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
 using System.ComponentModel;
+using Org.BouncyCastle.Asn1;
 namespace server;
 public enum UserRole
 {
@@ -328,6 +329,58 @@ public class UserRoutes
                 return TypedResults.NotFound("Ingen User hittades");
             }
 
+            return TypedResults.Ok("User updaterades");
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"Error {ex.Message}");
+        }
+    }
+
+    public record PutAgentDTO(string Name, string Email, string Password, List<int> Categories);
+    public static async Task<IResult> EditAgent(int id, PutAgentDTO agent, NpgsqlDataSource db)
+    {
+        List<int> categories = agent.Categories;
+        try
+        {
+            using var cmd = db.CreateCommand(
+                "UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4 RETURNING id");
+
+            cmd.Parameters.AddWithValue(agent.Name);
+            cmd.Parameters.AddWithValue(agent.Email);
+            cmd.Parameters.AddWithValue(agent.Password);
+            cmd.Parameters.AddWithValue(id);
+
+            var result = await cmd.ExecuteScalarAsync();
+
+            if (result != null)
+            {
+                var agentid = Convert.ToInt32(result);
+                Console.WriteLine("ID: " + id);
+
+                //HÄR MÅSTE VI TROLIGTVIS TA BORT ALLA KOPPLINGAR HAN HAR I CATEGORYXAGENTS OCH SEDAN LÄGGA TILL DOM NYA
+
+                foreach (int category in categories)
+                {
+                    Console.WriteLine(category);
+                    using var cmd2 = db.CreateCommand(
+                        "INSERT INTO customer_agentsxticket_category (ticket_category, customer_agent) VALUES ($1, $2);");
+
+                    // Använd rätt kommandon och parametrar för cmd2
+                    cmd2.Parameters.AddWithValue(category);
+                    cmd2.Parameters.AddWithValue(id);
+
+                    int rowsaffected = await cmd2.ExecuteNonQueryAsync();
+
+                    Console.WriteLine(rowsaffected);
+                }
+
+                return TypedResults.Ok("category done");
+            }
+            else
+            {
+                return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
+            }
             return TypedResults.Ok("User updaterades");
         }
         catch (Exception ex)
