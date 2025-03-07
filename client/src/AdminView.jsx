@@ -293,9 +293,20 @@ export function AdminEditProductView() {
 export function AdminEditSupportView() {
     const { id } = useParams();
     const [agent, setAgent] = useState({});
-
     const [categories, setCategories] = useState([]);
-    const selectedCategories = []
+    const [selectedCategories, setSelectedCategories] = useState([]);
+
+   
+    function showExistingCategories(){
+        fetch("/api/categories/" + id)
+            .then((response) => response.json())
+            .then((data) => setSelectedCategories(data))
+            .catch((error) => console.error("Error fetching categories:", error))
+    }
+
+    function CompareId(categoryId) {
+        return selectedCategories.some(selectedCategory => selectedCategory === categoryId);
+    }
 
     useEffect(() => {
 
@@ -303,6 +314,7 @@ export function AdminEditSupportView() {
             .then((response) => response.json())
             .then((data) => setCategories(data))
             .catch((error) => console.error("Error fetching categories:", error));
+        showExistingCategories();
     }, []);
 
     useEffect(() => {
@@ -385,7 +397,8 @@ export function AdminEditSupportView() {
         </main>
     );
     function CategoryCard(category) {
-        return <li key={category.id}><input onChange={() => HandleCategories(category.id)} id={category.id} type="checkbox" />
+        const isChecked = CompareId(category.id);
+        return <li key={category.id}><input onChange={() => HandleCategories(category.id)} id={category.id} type="checkbox" checked={isChecked} />
             <label htmlFor={category.id}>{category.category_name} </label>
         </li>
     }
