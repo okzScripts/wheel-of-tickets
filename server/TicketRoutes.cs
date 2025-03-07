@@ -193,7 +193,8 @@ public class TicketRoutes
             await using var transaction = await conn.BeginTransactionAsync();
 
             int status = 1;
-            int ticketId;
+            int? ticketIdNullable;
+            int ticketId; 
 
 
             var sql1 = "INSERT INTO tickets (status, customer_url, product_id, ticket_category) VALUES ($1, $2, $3, $4) RETURNING id";
@@ -204,7 +205,13 @@ public class TicketRoutes
                 cmd1.Parameters.AddWithValue(ticket.productId);
                 cmd1.Parameters.AddWithValue(ticket.categoryId);
 
-                ticketId = (int)await cmd1.ExecuteScalarAsync();
+                ticketIdNullable = (int?)await cmd1.ExecuteScalarAsync();
+                if(!ticketIdNullable.HasValue){
+                    await transaction.DisposeAsync();
+                    return TypedResults.BadRequest("Failed to create ticket");  
+                }else{
+                    ticketId=ticketIdNullable.Value; 
+                }
             }
 
             var sql2 = "INSERT INTO messages(text, ticket, time, customer) VALUES ($1, $2, $3, $4)";

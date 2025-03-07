@@ -182,13 +182,18 @@ public class UserRoutes
 
     public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db, HttpContext ctx)
     {
-        if(ctx.Session.IsAvailable || (UserRole)ctx.Session.GetInt32("role") != UserRole.Service_agent  ){
+        if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt != UserRole.Service_agent ){
             try
             {   string password;
-                int? companyId; 
+                int? companyId;
+                var role_nullable= ctx.Session.GetInt32("role");
+                if(!role_nullable.HasValue){
+                    return TypedResults.BadRequest("Error in loading Session variables"); 
+                }
+                int role =role_nullable.Value;   
                 Enum.TryParse<UserRole>(user.Role, true, out var userRole);           
                 companyId = ctx.Session.GetInt32("company");
-                if((UserRole)ctx.Session.GetInt32("role") == UserRole.super_admin ){
+                if((UserRole)role== UserRole.super_admin ){
                     companyId=user.Company; 
                 }
                 if (companyId == null){  
@@ -246,17 +251,16 @@ public class UserRoutes
     public record PutUserDTO(string Name, string Email);
     public static async Task<IResult> EditUser(int id, PutUserDTO user, NpgsqlDataSource db ,HttpContext ctx)
     {    
-        
 
-        if(ctx.Session.IsAvailable)
-        {
-            var role = (UserRole)  ctx.Session.GetInt32("role");
-            if (role== UserRole.Service_agent)
-            {
-                return TypedResults.BadRequest("No access for you");
+     if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt != UserRole.Service_agent ){
+        
+            var role_nullable= ctx.Session.GetInt32("role");
+            if(!role_nullable.HasValue){
+                return TypedResults.BadRequest("Error in loading Session variables"); 
             }
-        try
-        {
+            int role =role_nullable.Value;   
+            try
+            {
             using var cmd = db.CreateCommand(
                 "UPDATE users SET name = $1, email = $2 WHERE id = $3");
 
@@ -287,8 +291,8 @@ public class UserRoutes
     public record PasswordDTO( string OldPassword, string Password, string RepeatPassword );
     public static async Task<Results<Ok<string>, BadRequest<string>>> ChangePassword(PasswordDTO passwords,NpgsqlDataSource db, HttpContext ctx)
     {
-        if (ctx.Session.IsAvailable)
-            {
+        if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) ){
+            
                 var Id = ctx.Session.GetInt32("id");
                 if (Id == null)
                 {
@@ -352,10 +356,14 @@ public static string GeneratePassword(int length){
 
     public static async Task<Results<Ok<string>, BadRequest<string>>> ResetPassword(int id, NpgsqlDataSource db, HttpContext ctx)
     {
-        if (ctx.Session.IsAvailable)
-        {
+        if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt != UserRole.Service_agent ){
+        
 
-            var role = (UserRole)ctx.Session.GetInt32("role");
+            var role_nullable= ctx.Session.GetInt32("role");
+            if(!role_nullable.HasValue){
+                return TypedResults.BadRequest("Error in loading Session variables"); 
+            }
+            var role =(UserRole)role_nullable.Value;  
 
             string password = GeneratePassword(8);
             string email = "";
