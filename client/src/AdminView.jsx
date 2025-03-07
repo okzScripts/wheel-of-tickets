@@ -293,6 +293,7 @@ export function AdminEditProductView() {
 export function AdminEditSupportView() {
     const { id } = useParams();
     const [agent, setAgent] = useState({});
+    const [disabled, setDisabled] = useState(false);
 
 
     useEffect(() => {
@@ -306,7 +307,14 @@ export function AdminEditSupportView() {
 
     },[]);
 
-   function ResetPassword(e){
+    function ResetPassword(e) {
+       
+        e.preventDefault();
+        setDisabled(true);
+        setTimeout(() => {
+            setDisabled(false);
+        }, 2000)
+
     e.preventDefault(); 
     fetch("/api/users/password/"+id,{
         headers: { "Content-Type": "application/json" },
@@ -368,7 +376,7 @@ export function AdminEditSupportView() {
                         />
                     </label>
                 </div>
-                <input type="submit" value="Save" className="middle-button"></input>       <button className="middle-button" onClick={ResetPassword} >Reset Password</button>
+                <input type="submit" value="Save" className="middle-button"></input>     <button disabled={disabled} className="middle-button reset-button" onClick={ResetPassword} >Reset Password</button>
             </form>
 
         </main>
@@ -384,7 +392,7 @@ export function AdminAddSupportView() {
 
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        dataObject.company = null;
+        dataObject.company = -1;
         dataObject.role = "service_agent"; 
 
 
