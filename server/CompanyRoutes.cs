@@ -60,9 +60,14 @@ public class CompanyRoutes
                 "SELECT id, category_name FROM ticket_categories WHERE company = $1 ORDER BY id ASC"
             );
 
-            if (ctx.Session.IsAvailable && ctx.Session.GetInt32("company") != null)
+            if (ctx.Session.IsAvailable )
             {
-                int? companySessionId = ctx.Session.GetInt32("company");
+                int? companySessionIdNullable = ctx.Session.GetInt32("company");
+                
+                if(!companySessionIdNullable.HasValue ){
+                    return TypedResults.BadRequest("Error loading session variables"); 
+                }
+                int companySessionId= companySessionIdNullable.Value; 
                 cmd.Parameters.AddWithValue(companySessionId);
             }
             else
