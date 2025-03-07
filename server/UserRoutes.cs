@@ -337,10 +337,11 @@ public class UserRoutes
         }
     }
 
-    public record PutAgentDTO(string Name, string Email, string Password, List<int> Categories);
+    public record CategoryDTO(int id, bool value);
+    public record PutAgentDTO(string Name, string Email, string Password, List<CategoryDTO> Categories);
     public static async Task<IResult> EditAgent(int id, PutAgentDTO agent, NpgsqlDataSource db)
     {
-        List<int> categories = agent.Categories;
+        List<CategoryDTO> categories = agent.Categories;
         try
         {
             using var cmd = db.CreateCommand(
@@ -360,7 +361,7 @@ public class UserRoutes
 
                 //HÄR MÅSTE VI TROLIGTVIS TA BORT ALLA KOPPLINGAR HAN HAR I CATEGORYXAGENTS OCH SEDAN LÄGGA TILL DOM NYA
 
-                foreach (int category in categories)
+                foreach (var category in categories)
                 {
                     Console.WriteLine(category);
                     using var cmd2 = db.CreateCommand(

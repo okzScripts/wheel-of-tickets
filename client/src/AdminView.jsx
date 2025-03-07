@@ -294,115 +294,122 @@ export function AdminEditSupportView() {
     const { id } = useParams();
     const [agent, setAgent] = useState({});
     const [categories, setCategories] = useState([]);
-    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState([{}]);
 
-   
-    function showExistingCategories(){
-        fetch("/api/categories/" + id)
-            .then((response) => response.json())
-            .then((data) => setSelectedCategories(data))
-            .catch((error) => console.error("Error fetching categories:", error))
-    }
-
-    function CompareId(categoryId) {
-        return selectedCategories.some(selectedCategory => selectedCategory === categoryId);
-    }
-
+    // Fetch categories assigned to this user
     useEffect(() => {
+        fetch(`/api/categories/${id}`)
+            .then((res) => res.json())
+            .then(setSelectedCategories)
+            .catch((err) => console.error("Error fetching categories:", err));
+    }, [id]);
 
+    // Fetch all available categories
+    useEffect(() => {
         fetch(`/api/tickets/categories?companyId=1337`)
-            .then((response) => response.json())
-            .then((data) => setCategories(data))
-            .catch((error) => console.error("Error fetching categories:", error));
-        showExistingCategories();
+            .then((res) => res.json())
+            .then(setCategories)
+            .catch((err) => console.error("Error fetching categories:", err));
     }, []);
 
+    // Fetch user details
     useEffect(() => {
-
         fetch(`/api/users/${id}`)
-            .then(response => response.json())
-            .then(data => { setAgent(data) })
-            .then(() => console.log(agent.role));
+            .then((res) => res.json())
+            .then(setAgent)
+            .catch((err) => console.error("Error fetching user:", err));
+    }, [id]);
 
+    // Toggle category selection
+    function handleCategoryToggle(categoryId) {
+        setSelectedCategories((prev) =>
+            prev.includes(categoryId)
+                ? prev.filter((id) => id !== categoryId) // Uncheck
+                : [...prev, categoryId] // Check
+        );
+    }
 
-
-    }, []);
-
-
-
+    // Update user data, including selected categories
     function updateUser(e) {
         e.preventDefault();
-        const form = e.target;
+        const formData = new FormData(e.target);
+        let dataObject = Object.fromEntries(formData.entries());
 
-        let formData = new FormData(form);
-        let dataObject = Object.fromEntries(formData);
-        let dataJson = JSON.stringify(dataObject);
-        fetch(form.action, {
-            headers: { "Content-Type": "application/json" },
+        // Convert selectedCategories into { id: true/false }
+        let categoriesObject = {};
+        categories.forEach((category) => {
+            categoriesObject[category.id] = selectedCategories.includes(category.id);
+        });
+
+        dataObject.categories = categoriesObject; // Attach formatted categories
+        console.log(JSON.stringify(dataObject));
+        fetch(e.target.action, {
             method: "PUT",
-            body: dataJson
-        }).then(response => {
-            if (response.ok) {
-                alert(`Du updaterade ${dataObject.name} `);
-            } else {
-                alert("Något gick fel ");
-            }
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dataObject),
         })
+            .then((res) => {
+                if (res.ok) alert(`Updated ${dataObject.name}`);
+                else alert("Something went wrong");
+            })
+            .catch((err) => console.error("Update failed", err));
     }
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/agents"><button className="back-button">⬅️ Back</button></NavLink></nav>
-            <form className="data-form" onSubmit={updateUser} action={`/api/users/${agent?.id}`} method="PUT">
+            <nav className="navbar">
+                <img src={logo} alt="logo" />
+                <NavLink to="/agents">
+                    <button className="back-button">⬅️ Back</button>
+                </NavLink>
+            </nav>
+            <form
+                className="data-form"
+                onSubmit={updateUser}
+                action={`/api/users/${agent?.id}`}
+                method="PUT"
+            >
                 <div className="form-box">
                     <label>
                         Name:
-                        <input
-                            name="name"
-                            defaultValue={agent?.name}
-                            type="text"
-                            required
-                        />
+                        <input name="name" defaultValue={agent?.name} type="text" required />
                     </label>
-
                     <label>
                         Email:
-                        <input
-                            name="email"
-                            defaultValue={agent?.email}
-                            type="email"
-                            required
-                        />
+                        <input name="email" defaultValue={agent?.email} type="email" required />
                     </label>
-
                     <label>
                         Password:
-                        <input
-                            name="password"
-                            defaultValue={agent?.password}
-                            type="password"
-                            required
-                        />
+                        <input name="password" defaultValue={agent?.password} type="password" required />
                     </label>
                     <label>
                         Categories:
                         <ul className="category-list">
-                            {categories.map(CategoryCard)}
+                            {categories.map((category) => (
+                                <li key={category.id}>
+                                    <input
+                                        type="checkbox"
+                                        id={category.id} name={category.id}
+                                        checked={selectedCategories.includes(category.id)}
+                                        onChange={() => handleCategoryToggle(category.id)}
+                                    />
+                                    <label htmlFor={category.id}>{category.category_name}</label>
+                                </li>
+                            ))}
                         </ul>
-
                     </label>
                 </div>
-                <input type="submit" value="Save" className="middle-button"></input>
+                <input type="submit" value="Save" className="middle-button" />
             </form>
         </main>
     );
-    function CategoryCard(category) {
-        const isChecked = CompareId(category.id);
-        return <li key={category.id}><input onChange={() => HandleCategories(category.id)} id={category.id} type="checkbox" checked={isChecked} />
-            <label htmlFor={category.id}>{category.category_name} </label>
-        </li>
-    }
 }
+
+
+
+///////////////ADD ADMIN/////////////
+
+
 
 export function AdminAddSupportView() {
     const [categories, setCategories] = useState([]);
