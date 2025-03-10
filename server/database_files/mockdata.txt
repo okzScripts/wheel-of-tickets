@@ -89,10 +89,10 @@ VALUES
 ('There seems to be a mistake in my latest bill, The trough i got is only 4.99m not 5m I refuse to pay full price since the length is not correct.',current_timestamp, 2 ,true),
 ('My pig is going is not rolling in the deep mudpit',current_timestamp, 3 ,true),
 ('The pedicure could be improved by adding nailpolish to the procedure, when will your company be able to supply this service?',current_timestamp, 4 ,true),
-('Our Vaccine haven\'t arrived and seems to gone missing during Shipping', current_timestamp, 5 ,true),
+('Our Vaccine have not arrived and seems to gone missing during Shipping', current_timestamp, 5 ,true),
 ('Donald is losing his toupee after taking a bath in your mud bath that disolved the glue this is unacceptiable!',current_timestamp, 6 ,true),
 ('The platform shoes to low does not allow me to see over the pig sty',current_timestamp, 7,true),
 ('The knife i sent to Sharpening is still not sharp enuough and causes uneccessary suffering',current_timestamp, 8 ,true),
-('A truck is missing from the software system, We need help so we can locate it',current_timestamp, 9 ,true),
+('A truck is missing from the software system,We need help so we can locate it',current_timestamp, 9 ,true),
 ('Mud temperature control system not working',current_timestamp, 10 ,true);
 
