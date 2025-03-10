@@ -6,8 +6,8 @@ namespace server;
 public class TicketRoutes
 {
     public record Ticket(int id, int status, string customer_url, int product_id, int ticket_category);
-    
-    public record NewTicket( int productId, int categoryId, string message, string email);
+
+    public record NewTicket(int productId, int categoryId, string message, string email);
 
 
     public static async Task<Results<Ok<Ticket>, BadRequest<string>>> GetTicket(int id, NpgsqlDataSource db)
@@ -184,17 +184,18 @@ public class TicketRoutes
         }
     }
 
-    public static async Task<Results<Ok<int>, BadRequest<string>>> CreateTicket(NewTicket ticket, NpgsqlDataSource db)
+    public static async Task<Results<Ok<string>, BadRequest<string>>> CreateTicket(NewTicket ticket, NpgsqlDataSource db)
     {
         try
         {
-            
-           await using var conn = await db.OpenConnectionAsync();
-           await using var transaction = await conn.BeginTransactionAsync();
-            
+
+            await using var conn = await db.OpenConnectionAsync();
+            await using var transaction = await conn.BeginTransactionAsync();
+
             int status = 1;
-            int ticketId;
-            
+            int? ticketIdNullable;
+            int ticketId; 
+
 
             var sql1 = "INSERT INTO tickets (status, customer_url, product_id, ticket_category) VALUES ($1, $2, $3, $4) RETURNING id";
             using (var cmd1 = new NpgsqlCommand(sql1, conn, transaction))
@@ -204,7 +205,13 @@ public class TicketRoutes
                 cmd1.Parameters.AddWithValue(ticket.productId);
                 cmd1.Parameters.AddWithValue(ticket.categoryId);
 
-                ticketId = (int) await cmd1.ExecuteScalarAsync();
+                ticketIdNullable = (int?)await cmd1.ExecuteScalarAsync();
+                if(!ticketIdNullable.HasValue){
+                    await transaction.DisposeAsync();
+                    return TypedResults.BadRequest("Failed to create ticket");  
+                }else{
+                    ticketId=ticketIdNullable.Value; 
+                }
             }
 
             var sql2 = "INSERT INTO messages(text, ticket, time, customer) VALUES ($1, $2, $3, $4)";
@@ -218,12 +225,16 @@ public class TicketRoutes
 
                 await cmd2.ExecuteNonQueryAsync();
             }
-            
+
             await transaction.CommitAsync();
-            
-            return TypedResults.Ok(Convert.ToInt32(ticketId));
-            
-            
+
+            string url = "http://localhost:5173/customer/" + ticketId + "/chat";
+            string subject = "Ticket on Produkt" + ticket.productId;
+            string message = "Hej, Vi kommer svara på din ticket så fort vi kan! Här är en länk till chatten. " + url;
+            MailService.SendMail(ticket.email, subject, message);
+            return TypedResults.Ok(url);
+
+
         }
         catch (Exception ex)
         {

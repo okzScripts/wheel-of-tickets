@@ -293,6 +293,7 @@ export function AdminEditProductView() {
 export function AdminEditSupportView() {
     const { id } = useParams();
     const [agent, setAgent] = useState({});
+    const [disabled, setDisabled] = useState(false);
 
 
     useEffect(() => {
@@ -306,7 +307,29 @@ export function AdminEditSupportView() {
 
     },[]);
 
-   
+    function ResetPassword(e) {
+       
+        e.preventDefault();
+        setDisabled(true);
+        setTimeout(() => {
+            setDisabled(false);
+        }, 2000)
+
+    e.preventDefault(); 
+    fetch("/api/users/password/"+id,{
+        headers: { "Content-Type": "application/json" },
+        method: "PUT",
+        body: JSON.stringify({})
+    } )
+    .then(response=> {
+        if(response.ok){
+            alert("Password has been reset")
+        }else{
+            alert("An error occured when reseting the password.")    
+        }
+        }
+    ) 
+   }
 
     function updateUser(e) {
         e.preventDefault();
@@ -352,19 +375,10 @@ export function AdminEditSupportView() {
                             required
                         />
                     </label>
-
-                    <label>
-                        Password:
-                        <input
-                            name="password"
-                            defaultValue={agent?.password}
-                            type="password"
-                            required
-                        />
-                    </label>
                 </div>
-                <input type="submit" value="Save" className="middle-button"></input>
+                <input type="submit" value="Save" className="middle-button"></input>     <button disabled={disabled} className="middle-button reset-button" onClick={ResetPassword} >Reset Password</button>
             </form>
+
         </main>
     );
 }
@@ -378,8 +392,8 @@ export function AdminAddSupportView() {
 
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        dataObject.company = null;
-        dataObject.role = "service_agent";
+        dataObject.company = -1;
+        dataObject.role = "service_agent"; 
 
 
         let dataJson = JSON.stringify(dataObject);
@@ -416,15 +430,6 @@ export function AdminAddSupportView() {
                         <input
                             name="email"
                             type="email"
-                            required
-                        />
-                    </label>
-
-                    <label>
-                        Password:
-                        <input
-                            name="password"
-                            type="password"
                             required
                         />
                     </label>

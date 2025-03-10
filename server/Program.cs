@@ -32,7 +32,8 @@ app.MapGet("/api/users/{id}", UserRoutes.GetUser);
 app.MapPut("/api/users/{id}", UserRoutes.EditUser);
 app.MapPut("/api/users/block/{id}/{active}", UserRoutes.BlockUser);
 app.MapPost("/api/users", UserRoutes.AddUser);
-app.MapPut("/api/users/password/",UserRoutes.ChangePassword);
+app.MapPut("/api/users/password/", UserRoutes.ChangePassword);
+app.MapPut("/api/users/password/{id}",UserRoutes.ResetPassword);
 
 app.MapPost("/api/login", LoginRoutes.LoginByRole);
 
