@@ -342,10 +342,13 @@ public class UserRoutes
     public record PutAgentDTO(string Name, string Email, string Password, Dictionary<int, bool> Categories);
     public static async Task<IResult> EditAgent(int id, PutAgentDTO agent, NpgsqlDataSource db)
     {
-        Dictionary<int, bool> categories = agent.Categories.ToList();
+
 
         Console.WriteLine("HEJ HEJ HEJ");
-
+        foreach (var value in agent.Categories)
+        {
+            Console.WriteLine($"ID: {value.Key} Value:  {value.Value}");
+        }
         try
         {
 
@@ -359,36 +362,43 @@ public class UserRoutes
             cmd.Parameters.AddWithValue(id);
 
             var result = await cmd.ExecuteScalarAsync();
-            Console.WriteLine(categories[0].id, "", categories[0].value);
+
             if (result != null)
             {
                 var agentid = Convert.ToInt32(result);
                 Console.WriteLine("ID: " + id);
 
                 //HÄR MÅSTE VI TROLIGTVIS TA BORT ALLA KOPPLINGAR HAN HAR I CATEGORYXAGENTS OCH SEDAN LÄGGA TILL DOM NYA
-
-                foreach (var category in categories)
+                string command = "";
+                foreach (var category in agent.Categories)
                 {
-                    Console.WriteLine(category);
-                    using var cmd2 = db.CreateCommand(
-                        "INSERT INTO customer_agentsxticket_category (ticket_category, customer_agent) VALUES ($1, $2);");
+                    if (category.Value == true)
+                    {
+                        command = "INSERT INTO customer_agentsxticket_category (ticket_category, customer_agent) VALUES($1,$2) ON CONFLICT DO NOTHING ";
 
-                    // Använd rätt kommandon och parametrar för cmd2
-                    cmd2.Parameters.AddWithValue(category);
+                    }
+                    else
+                    {
+                        command = "DELETE FROM customer_agentsxticket_category WHERE ticket_category = $1 and customer_agent=$2 ON CONFLICT DO NOTHING";
+                    }
+
+                    using var cmd2 = db.CreateCommand(command);
+                    cmd2.Parameters.AddWithValue(category.Key);
                     cmd2.Parameters.AddWithValue(id);
 
-                    int rowsaffected = await cmd2.ExecuteNonQueryAsync();
+                    int results = await cmd2.ExecuteNonQueryAsync();
 
-                    Console.WriteLine(rowsaffected);
+                    Console.WriteLine("rows affected" + results);
+
                 }
+                return TypedResults.Ok("Det funkade, hurra!");
 
-                return TypedResults.Ok("category done");
             }
             else
             {
                 return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
             }
-            return TypedResults.Ok("User updaterades");
+
         }
         catch (Exception ex)
         {
