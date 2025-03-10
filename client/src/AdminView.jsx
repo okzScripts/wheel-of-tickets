@@ -526,55 +526,65 @@ export function AdminAddSupportView() {
 
 function AdminCategoryView() {
 
-    const [categories, setCategories] = useState([]);
+    const [activeCategories, setActiveCategories] = useState([]);
+    const [inactiveCategories, setInactiveCategories] = useState([]);
 
-    function fetchCategories() {
-        fetch(`/api/tickets/categories/company`)
+    function fetchActiveCategories() {
+        fetch(`/api/tickets/categories/company/?active=true`)
             .then((response) => response.json())
-            .then((data) => setCategories(data))
+            .then((data) => setActiveCategories(data))
+            .catch((error) => console.error("Ånej inte ett error!", error));
+    }
+        
+    function fetchInactiveCategories() {
+        fetch(`/api/tickets/categories/company/?active=false`)
+            .then((response) => response.json())
+            .then((data) => setInactiveCategories(data))
             .catch((error) => console.error("Ånej inte ett error!", error));
     }
 
+    useEffect(fetchActiveCategories,[]); 
+    useEffect(fetchInactiveCategories,[]); 
 
     return <main>
         <h1>Category Page!</h1>
-
+        <h2>Active categories</h2>
+        <ul> 
+         {activeCategories.map(CategoryCard2)}   
+        </ul>
+        <h2>Inactive categories </h2>
+        <ul> 
+            {inactiveCategories.map(CategoryCard2)}
+        </ul>
+        <> </>
 
 
     </main>
 
     function CategoryCard2(category) {
 
-        return <li key={category.id}>Name: {category.name}<button id={category.id} className="small-button" value="Delete" onClick={HandleDeleteCategeory}></button></li>
+        return <li key={category.id}>Name: {category.name}<button  className="small-button" value={category.active? "Delete":"Activate" } onClick={(e) => HandleCategoryStatus(e,category) }></button></li>
 
 
     }
 
-    function HandleDeleteCategory(e) {
-        const button = e.target;
-
+    function HandleCategoryStatus(e,category) {
         e.preventDefault();
 
 
-        fetch(`/api/categories/delete/${button.id}`, {
+        fetch(`/api/categories/active/`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: 
+            body: JSON.stringify({id:category.id,active:category.active}) 
     }).then(response => {
                 if (response.ok) {
                     alert(`Du lade till   `);
                 } else {
-                    alert("Något gick fel ");
-
-
-
-
-
-
-                }
+                    alert("Något gick fel "); }
 
             }
-
-
-
-
+        )
+        fetchActiveCategories();
+        fetchInactiveCategories();
+    }
+}
