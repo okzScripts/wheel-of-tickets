@@ -92,6 +92,19 @@ button {
   cursor: pointer;
   font-size: 100%;
 }
+
+.reset-button{
+   background-color: rgb(206, 147, 21);
+
+
+}
+
+.reset-button:disabled{
+  background-color: rgba(192, 158, 47, 0.295);
+  color: rgba(255, 255, 255, 0.295);
+
+
+}
 .small-button {
   height: 60%;
   width: 70px;
