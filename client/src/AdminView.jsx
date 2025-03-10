@@ -366,7 +366,7 @@ export function AdminEditSupportView() {
             <form
                 className="data-form"
                 onSubmit={updateUser}
-                action={`/api/users/${agent?.id}`}
+                action={`/api/users/agent/${agent.id}`}
                 method="PUT"
             >
                 <div className="form-box">

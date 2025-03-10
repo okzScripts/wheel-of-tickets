@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
 using System.ComponentModel;
 using Org.BouncyCastle.Asn1;
+using System;
 namespace server;
 public enum UserRole
 {
@@ -337,13 +338,18 @@ public class UserRoutes
         }
     }
 
-    public record CategoryDTO(int id, bool value);
-    public record PutAgentDTO(string Name, string Email, string Password, List<CategoryDTO> Categories);
+
+    public record PutAgentDTO(string Name, string Email, string Password, Dictionary<int, bool> Categories);
     public static async Task<IResult> EditAgent(int id, PutAgentDTO agent, NpgsqlDataSource db)
     {
-        List<CategoryDTO> categories = agent.Categories;
+        Dictionary<int, bool> categories = agent.Categories.ToList();
+
+        Console.WriteLine("HEJ HEJ HEJ");
+
         try
         {
+
+
             using var cmd = db.CreateCommand(
                 "UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4 RETURNING id");
 
@@ -353,7 +359,7 @@ public class UserRoutes
             cmd.Parameters.AddWithValue(id);
 
             var result = await cmd.ExecuteScalarAsync();
-
+            Console.WriteLine(categories[0].id, "", categories[0].value);
             if (result != null)
             {
                 var agentid = Convert.ToInt32(result);
