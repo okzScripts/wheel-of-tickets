@@ -368,7 +368,6 @@ public class UserRoutes
                 var agentid = Convert.ToInt32(result);
                 Console.WriteLine("ID: " + id);
 
-                //HÄR MÅSTE VI TROLIGTVIS TA BORT ALLA KOPPLINGAR HAN HAR I CATEGORYXAGENTS OCH SEDAN LÄGGA TILL DOM NYA
                 string command = "";
                 foreach (var category in agent.Categories)
                 {
