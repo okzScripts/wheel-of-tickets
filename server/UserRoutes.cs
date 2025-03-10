@@ -378,7 +378,7 @@ public class UserRoutes
                     }
                     else
                     {
-                        command = "DELETE FROM customer_agentsxticket_category WHERE ticket_category = $1 and customer_agent=$2 ON CONFLICT DO NOTHING";
+                        command = "DELETE FROM customer_agentsxticket_category WHERE ticket_category = $1 and customer_agent=$2";
                     }
 
                     using var cmd2 = db.CreateCommand(command);
