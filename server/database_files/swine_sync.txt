@@ -132,7 +132,9 @@ create table customer_agentsxticket_category
             references ticket_categories,
     customer_agent  integer not null
         constraint customer_agentsxticket_category_users_id_fk
-            references users
+            references users,
+    constraint customer_agentsxticket_category_pk
+        primary key (customer_agent, ticket_category)   
 );
 
 alter table customer_agentsxticket_category
