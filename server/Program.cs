@@ -3,7 +3,7 @@ using server;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=portedinme;Port=5432");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=Playa717;Port=5432");
 dataSourceBuilder.MapEnum<UserRole>();
 var db = dataSourceBuilder.Build();
 
@@ -51,6 +51,7 @@ app.MapPut("/api/tickets/status/{id}", TicketRoutes.ChangeStatus);
 app.MapGet("/api/tickets/assigned", TicketRoutes.GetAssignedTickets);
 app.MapPost("/api/tickets", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
+app.MapPut("/api/tickets/rating/{id}", TicketRoutes.TicketRating);
 
 app.MapGet("/api/messages/{id}", MessageRoutes.GetTicketMessages);
 app.MapPost("/api/messages/", MessageRoutes.AddMessage);

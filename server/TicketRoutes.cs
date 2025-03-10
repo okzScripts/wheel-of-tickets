@@ -5,9 +5,11 @@ namespace server;
 
 public class TicketRoutes
 {
-    public record Ticket(int id, int status, string customer_url, int product_id, int ticket_category);
+    public record Ticket(int id, int status, string customer_email, int product_id, int ticket_category);
 
     public record NewTicket(int productId, int categoryId, string message, string email);
+
+    public record TicketRatingDTO(int id, int rating);
 
 
     public static async Task<Results<Ok<Ticket>, BadRequest<string>>> GetTicket(int id, NpgsqlDataSource db)
@@ -16,7 +18,7 @@ public class TicketRoutes
     SELECT 
         t.id,
         t.status,
-        t.customer_url,
+        t.customer_email,
         t.product_id,
         t.ticket_category
     FROM 
@@ -56,7 +58,7 @@ public class TicketRoutes
     SELECT 
         t.id,
         t.status,
-        t.customer_url,
+        t.customer_email,
         t.product_id,
         t.ticket_category
     FROM 
@@ -151,7 +153,7 @@ public class TicketRoutes
                     return TypedResults.BadRequest("Session not exisiting");
                 }
                 using var cmd = db.CreateCommand(@"
-                SELECT  t.id, t.status, t.customer_url,t.product_id, t.ticket_category
+                SELECT  t.id, t.status, t.customer_email,t.product_id, t.ticket_category
                 FROM tickets t 
                 WHERE t.customer_agent = $1 ");
 
@@ -197,7 +199,7 @@ public class TicketRoutes
             int ticketId; 
 
 
-            var sql1 = "INSERT INTO tickets (status, customer_url, product_id, ticket_category) VALUES ($1, $2, $3, $4) RETURNING id";
+            var sql1 = "INSERT INTO tickets (status, customer_email, product_id, ticket_category) VALUES ($1, $2, $3, $4) RETURNING id";
             using (var cmd1 = new NpgsqlCommand(sql1, conn, transaction))
             {
                 cmd1.Parameters.AddWithValue(status);
@@ -265,6 +267,31 @@ public class TicketRoutes
         {
             return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
+    }
+
+    public static async Task<Results<Ok<int>, BadRequest<string>>> TicketRating(int id, TicketRatingDTO ticketRating,
+        NpgsqlDataSource db)
+    {
+        
+        try
+        {
+            
+            
+            using var cmd = db.CreateCommand("UPDATE tickets SET rating=$2 WHERE id=$1 AND status=3 ");
+
+            cmd.Parameters.AddWithValue(id);
+            cmd.Parameters.AddWithValue(ticketRating.rating);
+
+            await cmd.ExecuteNonQueryAsync();
+
+            return TypedResults.Ok(id);
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest("fan är det för fel");
+        }
+        
+        
     }
 
 }
