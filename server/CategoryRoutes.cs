@@ -32,9 +32,9 @@ public class CategoryRoutes
 
     }
 
-    public record Category(int id, string category_name);
+    public record Category(int id, string category_name,bool active);
 
-    public static async Task<Results<Ok<List<Category>>, BadRequest<string>>> GetCategoriesByCompany(NpgsqlDataSource db, HttpContext ctx)
+    public static async Task<Results<Ok<List<Category>>, BadRequest<string>>> GetCategoriesByCompany(NpgsqlDataSource db, HttpContext ctx ,bool active)
     {
 
         List<Category> categorylist = new();
@@ -44,7 +44,7 @@ public class CategoryRoutes
             try
             {
 
-                using var cmd = db.CreateCommand("SELECT id, category_name,active FROM ticket_categories WHERE company = $1");
+                using var cmd = db.CreateCommand("SELECT id, category_name,active FROM ticket_categories WHERE company = $1 AND active=$2");
 
                 int? companyId = ctx.Session.GetInt32("company");
 
@@ -54,13 +54,15 @@ public class CategoryRoutes
                 }
 
                 cmd.Parameters.AddWithValue(companyId.Value);
+                cmd.Parameters.AddWithValue(active);
 
                 using var reader = await cmd.ExecuteReaderAsync();
 
                 while (await reader.ReadAsync())
                 {
                     categorylist.Add(new Category(reader.GetInt32(0),
-                                                  reader.GetString(1)));
+                                                  reader.GetString(1),
+                                                  reader.GetBoolean(2)));
                 }
                 return TypedResults.Ok(categorylist);
 
