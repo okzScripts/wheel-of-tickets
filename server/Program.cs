@@ -3,7 +3,7 @@ using server;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=portedinme;Port=5432");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=1234;Port=5432");
 dataSourceBuilder.MapEnum<UserRole>();
 var db = dataSourceBuilder.Build();
 
@@ -35,11 +35,12 @@ app.MapPost("/api/users", UserRoutes.AddAdmin);
 app.MapPost("/api/users/agent", UserRoutes.AddAgent);
 app.MapPut("/api/users/password/", UserRoutes.ChangePassword);
 app.MapPut("/api/users/agent/{id}", UserRoutes.EditAgent);
-app.MapPut("/api/users/password/{id}",UserRoutes.ResetPassword);
+app.MapPut("/api/users/password/{id}", UserRoutes.ResetPassword);
 
 app.MapPost("/api/login", LoginRoutes.LoginByRole);
 
 app.MapGet("/api/categories/{id}", CategoryRoutes.GetCategoriesByUserId);
+app.MapGet("/api/categories/company", CategoryRoutes.GetCategoriesByCompany);
 
 app.MapGet("/api/products/company/", ProductRoutes.GetProducts);
 app.MapGet("/api/products/{ProductId}", ProductRoutes.GetProduct);
