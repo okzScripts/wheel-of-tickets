@@ -22,7 +22,7 @@ public class CompanyRoutes
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM companies WHERE id != 5 ORDER BY id ASC ");
+            using var cmd = db.CreateCommand("SELECT id,name,email,phone,description,domain,active FROM companies WHERE id != 1 ORDER BY id ASC ");
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())

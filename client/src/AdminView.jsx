@@ -405,10 +405,6 @@ export function AdminEditSupportView() {
                         <input name="email" defaultValue={agent?.email} type="email" required />
                     </label>
                     <label>
-                        Password:
-                        <input name="password" defaultValue={agent?.password} type="password" required />
-                    </label>
-                    <label>
                         Categories:
                         <ul className="category-list">
                             {categories.map((category) => (
@@ -456,7 +452,6 @@ export function AdminAddSupportView() {
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
         dataObject.selectedCategories = selectedCategories;
-        dataObject.company = -1;
         dataObject.role = "service_agent";
         let dataJson = JSON.stringify(dataObject);
         console.log(dataJson)
@@ -504,15 +499,6 @@ export function AdminAddSupportView() {
                         <input
                             name="email"
                             type="email"
-                            required
-                        />
-                    </label>
-
-                    <label>
-                        Password:
-                        <input
-                            name="password"
-                            type="password"
                             required
                         />
                     </label>

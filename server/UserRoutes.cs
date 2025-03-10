@@ -175,32 +175,15 @@ public class UserRoutes
         }
     }
 
-    public record PostUserDTO(string Name, string Email, int Company, string Role);
+    public record PostAdminDTO(string Name, string Email, int Company, string Role);
 
-    public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db, HttpContext ctx)
+    public static async Task<IResult> AddAdmin(PostAdminDTO user, NpgsqlDataSource db, HttpContext ctx)
     {
-        if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt != UserRole.Service_agent ){
+        if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt == UserRole.super_admin ){
             try
             {   string password;
-                int? companyId;
-                var role_nullable= ctx.Session.GetInt32("role");
-                if(!role_nullable.HasValue){
-                    return TypedResults.BadRequest("Error in loading Session variables"); 
-                }
-                int role =role_nullable.Value;   
                 Enum.TryParse<UserRole>(user.Role, true, out var userRole);           
-                companyId = ctx.Session.GetInt32("company");
-                if((UserRole)role== UserRole.super_admin ){
-                    companyId=user.Company; 
-                }
-                if (companyId == null){  
-                        return TypedResults.BadRequest("Session error variable not existing");
-                }
-
-
-
-                 
-                
+    
                 password= GeneratePassword(8);  
                 
                 using var cmd = db.CreateCommand(
@@ -209,7 +192,7 @@ public class UserRoutes
                 cmd.Parameters.AddWithValue(user.Name);
                 cmd.Parameters.AddWithValue(user.Email);
                 cmd.Parameters.AddWithValue(password);
-                cmd.Parameters.AddWithValue(companyId);
+                cmd.Parameters.AddWithValue(user.Company);
                 cmd.Parameters.AddWithValue(userRole);
                 cmd.Parameters.AddWithValue(true);
 
@@ -244,10 +227,12 @@ public class UserRoutes
         }
     }
 
-    public record PostAgentDTO(string Name, string Email, string Password, List<int> SelectedCategories, int? Company, string Role);
+    public record PostAgentDTO(string Name, string Email, List<int> SelectedCategories, string Role);
 
     public static async Task<IResult> AddAgent(PostAgentDTO agent, NpgsqlDataSource db, HttpContext ctx)
     {
+        if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt == UserRole.super_admin )
+        {
         await using var conn = await db.OpenConnectionAsync();
         await using var transaction = await conn.BeginTransactionAsync();
 
@@ -257,20 +242,21 @@ public class UserRoutes
 
         try
         {
-            int? companyId = -1;
+            int? companyIdNullable ;
+            int companyId=-1; 
+            string password= GeneratePassword(8);  
             Enum.TryParse<UserRole>(agent.Role, true, out var userRole);
-            if (agent.Company is null)
+            
+          
+            companyIdNullable = ctx.Session.GetInt32("company");
+            if (!companyIdNullable.HasValue)
             {
-                if (ctx.Session.IsAvailable)
-                {
-                    companyId = ctx.Session.GetInt32("company");
-                    if (companyId == null)
-                    {
-                        return TypedResults.BadRequest("Session not existing");
-                    }
-                }
+                return TypedResults.BadRequest("Session not existing");
+            }else{
+                companyId=companyIdNullable.Value; 
             }
-            else { companyId = agent.Company; }
+            
+            
 
             // Första insert: användare
             using var cmd = db.CreateCommand(
@@ -278,21 +264,21 @@ public class UserRoutes
 
             cmd.Parameters.AddWithValue(agent.Name);
             cmd.Parameters.AddWithValue(agent.Email);
-            cmd.Parameters.AddWithValue(agent.Password);
-            cmd.Parameters.AddWithValue(companyId.HasValue ? companyId : DBNull.Value);
+            cmd.Parameters.AddWithValue(password);
+            cmd.Parameters.AddWithValue(companyId);
             cmd.Parameters.AddWithValue(userRole);
             cmd.Parameters.AddWithValue(true);
 
             var result = await cmd.ExecuteScalarAsync();
-            Console.WriteLine(result);
+     
             if (result != null)
             {
                 var id = Convert.ToInt32(result);
-                Console.WriteLine("ID: " + id);
+       
 
                 foreach (int category in categorylist)
                 {
-                    Console.WriteLine(category);
+             
                     using var cmd2 = db.CreateCommand(
                         "INSERT INTO customer_agentsxticket_category (ticket_category, customer_agent) VALUES ($1, $2);");
 
@@ -302,9 +288,13 @@ public class UserRoutes
 
                     int rowsaffected = await cmd2.ExecuteNonQueryAsync();
 
-                    Console.WriteLine(rowsaffected);
+                 
                 }
 
+                string subject = "Account created";
+                string message = "Hi "+agent.Name +"\nyour account has now been created for " +agent.Email +
+                "\nwith the temporary password: "+password +"\nBest regards Swine Sync";
+                MailService.SendMail(agent.Email, subject, message);    
                 return TypedResults.Ok("category done");
             }
             else
@@ -320,20 +310,19 @@ public class UserRoutes
         {
             return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
         }
+        }else{
+            return TypedResults.BadRequest("Session not existing/authentication failed");
+        }
     }
 
 
-    public record PutUserDTO(string Name, string Email);
-    public static async Task<IResult> EditUser(int id, PutUserDTO user, NpgsqlDataSource db ,HttpContext ctx)
+    public record PutAdminDTO(string Name, string Email);
+    public static async Task<IResult> EditAdmin(int id, PutAdminDTO user, NpgsqlDataSource db ,HttpContext ctx)
     {    
 
-     if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt != UserRole.Service_agent ){
+     if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt == UserRole.super_admin ){
         
-            var role_nullable= ctx.Session.GetInt32("role");
-            if(!role_nullable.HasValue){
-                return TypedResults.BadRequest("Error in loading Session variables"); 
-            }
-            int role =role_nullable.Value;   
+         
             try
             {
             using var cmd = db.CreateCommand(
@@ -362,26 +351,20 @@ public class UserRoutes
     }
 
 
-    public record PutAgentDTO(string Name, string Email, string Password, Dictionary<int, bool> Categories);
-    public static async Task<IResult> EditAgent(int id, PutAgentDTO agent, NpgsqlDataSource db)
+    public record PutAgentDTO(string Name, string Email, Dictionary<int, bool> Categories);
+    public static async Task<IResult> EditAgent(int id, PutAgentDTO agent, NpgsqlDataSource db, HttpContext ctx)
     {
-
-
-        Console.WriteLine("HEJ HEJ HEJ");
-        foreach (var value in agent.Categories)
-        {
-            Console.WriteLine($"ID: {value.Key} Value:  {value.Value}");
-        }
+ if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt == UserRole.Admin )
+ {
         try
         {
 
 
             using var cmd = db.CreateCommand(
-                "UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4 RETURNING id");
+                "UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING id");
 
             cmd.Parameters.AddWithValue(agent.Name);
             cmd.Parameters.AddWithValue(agent.Email);
-            cmd.Parameters.AddWithValue(agent.Password);
             cmd.Parameters.AddWithValue(id);
 
             var result = await cmd.ExecuteScalarAsync();
@@ -389,7 +372,6 @@ public class UserRoutes
             if (result != null)
             {
                 var agentid = Convert.ToInt32(result);
-                Console.WriteLine("ID: " + id);
 
                 string command = "";
                 foreach (var category in agent.Categories) {
@@ -409,7 +391,7 @@ public class UserRoutes
 
                     int results = await cmd2.ExecuteNonQueryAsync();
 
-                    Console.WriteLine("rows affected" + results);
+           
 
                 }
                 return TypedResults.Ok("Det funkade, hurra!");
@@ -425,7 +407,10 @@ public class UserRoutes
         {
             return TypedResults.BadRequest($"Error {ex.Message}");
         }
+    }else{
+        return TypedResults.BadRequest("Session invalid failed to authenticate"); 
     }
+}
 
 
 
