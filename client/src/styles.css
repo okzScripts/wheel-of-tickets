@@ -92,6 +92,19 @@ button {
   cursor: pointer;
   font-size: 100%;
 }
+
+.reset-button{
+   background-color: rgb(206, 147, 21);
+
+
+}
+
+.reset-button:disabled{
+  background-color: rgba(192, 158, 47, 0.295);
+  color: rgba(255, 255, 255, 0.295);
+
+
+}
 .small-button {
   height: 60%;
   width: 70px;
@@ -348,7 +361,7 @@ textarea {
   margin: 0;
   overflow-y: auto;
 }
-.chat-agent-message {
+.chat-right-message {
   display: flex;
   flex-direction: column;
   align-items: end;
@@ -366,7 +379,7 @@ textarea {
     text-align: right;
   }
 }
-.chat-customer-message {
+.chat-left-message {
   text-align: end;
   height: auto;
   width: auto;
@@ -405,7 +418,7 @@ textarea {
     align-self: normal;
   }
 }
-.message-holder-customer {
+.message-holder-left {
   padding: 15px;
   border-radius: 10px;
   width: fit-content;
@@ -415,7 +428,7 @@ textarea {
   font-size: 12px;
   margin: 0;
 }
-.message-holder-agent {
+.message-holder-right {
   width: fit-content;
   padding: 15px;
   border-radius: 10px;
@@ -425,4 +438,7 @@ textarea {
   max-width: 100%;
   font-size: 12px;
   margin: 0;
+}
+.category-list {
+  list-style: none;
 }

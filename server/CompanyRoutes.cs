@@ -22,7 +22,7 @@ public class CompanyRoutes
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM companies WHERE id != 5 ORDER BY id ASC ");
+            using var cmd = db.CreateCommand("SELECT id,name,email,phone,description,domain,active FROM companies WHERE id != 1 ORDER BY id ASC ");
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -50,15 +50,30 @@ public class CompanyRoutes
 
 
 
-    public static async Task<Results<Ok<List<Category>>, BadRequest<string>>> GetCategories(NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<Category>>, BadRequest<string>>> GetCategories(NpgsqlDataSource db, int companyId, HttpContext ctx)
     {
         var categories = new List<Category>();
 
         try
         {
             using var cmd = db.CreateCommand(
-                "SELECT id, category_name FROM ticket_categories ORDER BY id ASC"
+                "SELECT id, category_name FROM ticket_categories WHERE company = $1 ORDER BY id ASC"
             );
+
+            if (ctx.Session.IsAvailable )
+            {
+                int? companySessionIdNullable = ctx.Session.GetInt32("company");
+                
+                if(!companySessionIdNullable.HasValue ){
+                    return TypedResults.BadRequest("Error loading session variables"); 
+                }
+                int companySessionId= companySessionIdNullable.Value; 
+                cmd.Parameters.AddWithValue(companySessionId);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue(companyId);
+            }
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())

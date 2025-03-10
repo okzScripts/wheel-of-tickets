@@ -188,7 +188,7 @@ export function TicketInfoView() {
 <section className="chat-message-box">
 <form  className="chat-message-form" onSubmit={PostMessage} method="POST" >
                     <textarea value={messageText} onChange={(e) => setMessageText(e.target.value)} name="text" type="textarea" className="text-area"></textarea>
-                    <input className="small-button" type="submit" value="Send" disabled={!messageText}></input>
+                    <input className="small-button" type="submit" value="Send" disabled={!messageText|| ticket.status>2 }></input>
                 </form>
                 <button className="small-button" onClick={ChangeStatus}>{ticket.status < 3 ? "Close Ticket" : "Open Ticket"}</button>
 </section>
@@ -196,8 +196,8 @@ export function TicketInfoView() {
     );
 
     function MessageCard(message) {
-        const messageSender = message.customer ? "chat-customer-message" : "chat-agent-message"
-        const messageholder = message.customer? "message-holder-customer" : "message-holder-agent"
+        const messageSender = message.customer ? "chat-left-message" : "chat-right-message"
+        const messageholder = message.customer? "message-holder-left" : "message-holder-right"
         return <li key={message.id} className={messageSender}><p className={messageholder}>{message.text}</p><p>{message.time}</p></li>
     }
 }

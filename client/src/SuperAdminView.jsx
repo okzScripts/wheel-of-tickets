@@ -37,7 +37,7 @@ export function SuperAdminCompanyView() {
             })
     }
 
-    useEffect(GetCompanies);
+    useEffect(GetCompanies,[]);
 
     return <main className="role-specific-main">
         <NavigationBar back={"/super-admin"}/>
@@ -146,7 +146,7 @@ export function SuperAdminEditCompanyView() {
 
     useEffect(() => {
         fetch("/api/companies/" + id).then(response => response.json()).then(data => { setCompany(data) })
-    })
+    },[])
 
     function updateCompany(e) {
         e.preventDefault();
@@ -255,7 +255,7 @@ export function SuperAdminAdminView() {
             })
     }
 
-    useEffect(GetAdmins);
+    useEffect(GetAdmins, []);
 
     return <main className="role-specific-main">
         <NavigationBar back={"/super-admin"}/>
@@ -338,16 +338,6 @@ export function SuperAdminAddAdminView() {
                             required
                         />
                     </label>
-
-                    <label>
-                        Password:
-                        <input
-                            name="password"
-                            type="password"
-                            required
-                        />
-                    </label>
-
                     <label>
                         Company:
                         <select
@@ -366,10 +356,37 @@ export function SuperAdminAddAdminView() {
         </main>
     );
 }
+
+
 export function SuperAdminEditAdminView() {
     const { id } = useParams()
     const [companies, setCompanies] = useState([]);
     const [admin, setAdmin] = useState(null);
+    const [disabled, setDisabled] = useState(false);
+  
+    function ResetPassword(e)
+    {
+     e.preventDefault();
+    setDisabled(true);
+    setTimeout(() => {
+        setDisabled(false);
+    }, 2000)
+    
+        fetch("/api/users/password/" + id, {
+            headers: { "Content-Type": "application/json" },
+            method: "PUT",
+            body: JSON.stringify({})
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("Password has been reset")
+                } else {
+                    alert("An error occured when reseting the password.")
+                }
+            }
+            )
+    }
+
 
 
     useEffect(() => {
@@ -385,7 +402,7 @@ export function SuperAdminEditAdminView() {
             .then(data => { setAdmin(data) })
             .catch(error => console.error("Error fetching user:", error));
 
-    })
+    },[])
 
 
     function updateUser(e) {
@@ -433,17 +450,6 @@ export function SuperAdminEditAdminView() {
                             required
                         />
                     </label>
-
-                    <label>
-                        Password:
-                        <input
-                            name="password"
-                            defaultValue={admin?.password}
-                            type="password"
-                            required
-                        />
-                    </label>
-
                     <label>
                         Company:
                         <select
@@ -460,7 +466,7 @@ export function SuperAdminEditAdminView() {
                         </select>
                     </label>
                 </div>
-                <input type="submit" value="Save" className="middle-button"></input>
+                <input type="submit" value="Save" className="middle-button"></input>  <button disabled={disabled} className="middle-button reset-button" onClick={ResetPassword} >Reset Password</button>
             </form>
         </main>
     );
