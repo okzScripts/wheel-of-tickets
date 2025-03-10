@@ -34,11 +34,12 @@ app.MapPut("/api/users/block/{id}/{active}", UserRoutes.BlockUser);
 app.MapPost("/api/users", UserRoutes.AddUser);
 app.MapPost("/api/users/agent", UserRoutes.AddAgent);
 app.MapPut("/api/users/password/", UserRoutes.ChangePassword);
-app.MapGet("/api/categories/{id}", CategoryRoutes.GetCategoriesByUserId);
 app.MapPut("/api/users/agent/{id}", UserRoutes.EditAgent);
-
+app.MapPut("/api/users/password/{id}",UserRoutes.ResetPassword);
 
 app.MapPost("/api/login", LoginRoutes.LoginByRole);
+
+app.MapGet("/api/categories/{id}", CategoryRoutes.GetCategoriesByUserId);
 
 app.MapGet("/api/products/company/", ProductRoutes.GetProducts);
 app.MapGet("/api/products/{ProductId}", ProductRoutes.GetProduct);

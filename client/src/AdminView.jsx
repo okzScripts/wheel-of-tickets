@@ -295,6 +295,7 @@ export function AdminEditSupportView() {
     const [agent, setAgent] = useState({});
     const [categories, setCategories] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState([{}]);
+    const [disabled, setDisabled] = useState(false);
 
     // Fetch categories assigned to this user
     useEffect(() => {
@@ -328,6 +329,31 @@ export function AdminEditSupportView() {
                 : [...prev, categoryId] // Check
         );
     }
+
+
+    function ResetPassword(e) {
+       
+        e.preventDefault();
+        setDisabled(true);
+        setTimeout(() => {
+            setDisabled(false);
+        }, 2000)
+
+    e.preventDefault(); 
+    fetch("/api/users/password/"+id,{
+        headers: { "Content-Type": "application/json" },
+        method: "PUT",
+        body: JSON.stringify({})
+    } )
+    .then(response=> {
+        if(response.ok){
+            alert("Password has been reset")
+        }else{
+            alert("An error occured when reseting the password.")    
+        }
+        }
+    ) 
+   }
 
     // Update user data, including selected categories
     function updateUser(e) {
@@ -399,8 +425,9 @@ export function AdminEditSupportView() {
                         </ul>
                     </label>
                 </div>
-                <input type="submit" value="Save" className="middle-button" />
+                <input type="submit" value="Save" className="middle-button"></input>     <button disabled={disabled} className="middle-button reset-button" onClick={ResetPassword} >Reset Password</button>
             </form>
+
         </main>
     );
 }
@@ -429,7 +456,7 @@ export function AdminAddSupportView() {
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
         dataObject.selectedCategories = selectedCategories;
-        dataObject.company = null;
+        dataObject.company = -1;
         dataObject.role = "service_agent";
         let dataJson = JSON.stringify(dataObject);
         console.log(dataJson)
