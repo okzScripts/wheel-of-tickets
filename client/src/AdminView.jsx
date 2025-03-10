@@ -9,6 +9,7 @@ export function AdminView() {
         <div className="big-button-container">
             <NavLink to="/products"><button className="big-button">Products</button></NavLink>
             <NavLink to="/agents"><button className="big-button">Support Agents</button></NavLink>
+            <NavLink to="/categories"><button className="big-button">Categories</button></NavLink>
         </div>
     </main>
 
@@ -332,28 +333,28 @@ export function AdminEditSupportView() {
 
 
     function ResetPassword(e) {
-       
+
         e.preventDefault();
         setDisabled(true);
         setTimeout(() => {
             setDisabled(false);
         }, 2000)
 
-    e.preventDefault(); 
-    fetch("/api/users/password/"+id,{
-        headers: { "Content-Type": "application/json" },
-        method: "PUT",
-        body: JSON.stringify({})
-    } )
-    .then(response=> {
-        if(response.ok){
-            alert("Password has been reset")
-        }else{
-            alert("An error occured when reseting the password.")    
-        }
-        }
-    ) 
-   }
+        e.preventDefault();
+        fetch("/api/users/password/" + id, {
+            headers: { "Content-Type": "application/json" },
+            method: "PUT",
+            body: JSON.stringify({})
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("Password has been reset")
+                } else {
+                    alert("An error occured when reseting the password.")
+                }
+            }
+            )
+    }
 
     // Update user data, including selected categories
     function updateUser(e) {
@@ -522,3 +523,58 @@ export function AdminAddSupportView() {
         </li>
     }
 }
+
+function AdminCategoryView() {
+
+    const [categories, setCategories] = useState([]);
+
+    function fetchCategories() {
+        fetch(`/api/tickets/categories/company`)
+            .then((response) => response.json())
+            .then((data) => setCategories(data))
+            .catch((error) => console.error("Ånej inte ett error!", error));
+    }
+
+
+    return <main>
+        <h1>Category Page!</h1>
+
+
+
+    </main>
+
+    function CategoryCard2(category) {
+
+        return <li key={category.id}>Name: {category.name}<button id={category.id} className="small-button" value="Delete" onClick={HandleDeleteCategeory}></button></li>
+
+
+    }
+
+    function HandleDeleteCategory(e) {
+        const button = e.target;
+
+        e.preventDefault();
+
+
+        fetch(`/api/categories/delete/${button.id}`, {
+            headers: { "Content-Type": "application/json" },
+            method: "PUT",
+            body: 
+    }).then(response => {
+                if (response.ok) {
+                    alert(`Du lade till   `);
+                } else {
+                    alert("Något gick fel ");
+
+
+
+
+
+
+                }
+
+            }
+
+
+
+
