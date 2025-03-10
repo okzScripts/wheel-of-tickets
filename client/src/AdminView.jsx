@@ -524,31 +524,51 @@ export function AdminAddSupportView() {
     }
 }
 
-function AdminCategoryView() {
+export function AdminCategoryView() {
 
     const [activeCategories, setActiveCategories] = useState([]);
     const [inactiveCategories, setInactiveCategories] = useState([]);
 
     function fetchActiveCategories() {
-        fetch(`/api/tickets/categories/company/?active=true`)
-            .then((response) => response.json())
-            .then((data) => setActiveCategories(data))
-            .catch((error) => console.error("Ånej inte ett error!", error));
+        fetch(`/api/categories/company/?active=true`)
+            .then(response => response.json())
+            .then(data => setActiveCategories(data))
+            .catch(error => console.error("Ånej inte ett error!", error));
     }
         
     function fetchInactiveCategories() {
-        fetch(`/api/tickets/categories/company/?active=false`)
-            .then((response) => response.json())
-            .then((data) => setInactiveCategories(data))
-            .catch((error) => console.error("Ånej inte ett error!", error));
+        fetch(`/api/categories/company/?active=false`)
+            .then(response => response.json())
+            .then(data => setInactiveCategories(data))
+            .catch(error => console.error("Ånej inte ett error!", error));
+    }
+
+    function AddCategory(e) {
+        e.preventDefault();
+        const form = e.target;
+        let formData = new FormData(form);
+        let dataObject = Object.fromEntries(formData);
+        let dataJson = JSON.stringify(dataObject);
+        fetch(form.action, {
+            headers: { "Content-Type": "application/json" },
+            method: form.method,
+            body: dataJson
+        }).then(response => {
+            if (response.ok) {
+                alert(`Du lade till en kategori`);
+            } else {
+                alert("Något gick fel ");
+            }
+        });
     }
 
     useEffect(fetchActiveCategories,[]); 
-    useEffect(fetchInactiveCategories,[]); 
+    useEffect(fetchInactiveCategories,[]);
 
     return <main>
         <h1>Category Page!</h1>
         <h2>Active categories</h2>
+        <div>
         <ul> 
          {activeCategories.map(CategoryCard2)}   
         </ul>
@@ -556,23 +576,25 @@ function AdminCategoryView() {
         <ul> 
             {inactiveCategories.map(CategoryCard2)}
         </ul>
-        <> </>
-
-
+        </div>
+        <div>
+            <form onSubmit={AddCategory} action={"/api/categories"} method={"POST"}>
+            <input name="categoryName" type="text" placeholder="Category Name.."/>
+                <input type="submit" value={"Add Category"}/>
+            </form>
+        </div>
     </main>
 
     function CategoryCard2(category) {
 
-        return <li key={category.id}>Name: {category.name}<button  className="small-button" value={category.active? "Delete":"Activate" } onClick={(e) => HandleCategoryStatus(e,category) }></button></li>
+        return <li key={category.id}>Name: {category.category_name}<button  className="small-button" value={category.active? "Delete":"Activate" } onClick={(e) => HandleCategoryStatus(e,category) }></button></li>
 
 
     }
 
     function HandleCategoryStatus(e,category) {
         e.preventDefault();
-
-
-        fetch(`/api/categories/active/`, {
+        fetch(`/api/categories/status/`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
             body: JSON.stringify({id:category.id,active:category.active}) 
