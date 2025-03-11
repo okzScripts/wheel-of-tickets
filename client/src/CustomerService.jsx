@@ -2,7 +2,7 @@ import "./styles.css"
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation, useParams } from "react-router";
 import { NavigationBar } from "./components/Navbar";
-
+import logo from './assets/logo.png';
 export function CustomerServiceView() {
     //const [ticket, setTicket] = useState(null);
     const [unassignedTickets, setUnassignedTickets] = useState([]);
@@ -93,7 +93,7 @@ export function CustomerServiceView() {
     function TicketCard(ticket) {
         return<li key={ticket.id} className="ticket-list-item"><NavLink to={"/customer-service/"+ticket.id+"/ticket-info"} >
             
-            <h2>{ticket.customer_url}</h2>
+            <h2>{ticket.description}</h2>
             <div className="ticket-info">
                 <p>Ticket id: {ticket.id}</p>
             </div></NavLink> 
@@ -102,7 +102,7 @@ export function CustomerServiceView() {
     function UnassignedTicketCard(ticket) {
         return<li key={ticket.id} className="ticket-list-item"><a>
             
-            <h2>{ticket.customer_url}</h2>
+            <h2>{ticket.description}</h2>
             <div className="ticket-info">
                 <p>Ticket id: {ticket.id}</p>
             </div></a>
