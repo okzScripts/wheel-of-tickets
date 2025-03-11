@@ -1,6 +1,7 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
+using Microsoft.VisualBasic;
 namespace server;
 
 public class TicketRoutes
@@ -103,17 +104,38 @@ public class TicketRoutes
     }
 
 
-    public static async Task<Results<Ok<string>, BadRequest<string>>> AssignTicket(int id, NpgsqlDataSource db, HttpContext ctx)
+    public static async Task<Results<Ok<string>, BadRequest<string>>> AssignTicket( NpgsqlDataSource db, HttpContext ctx)
     {
+
         try
         {
-            if (ctx.Session.IsAvailable)
-            {
+            if (ctx.Session.IsAvailable && ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt == UserRole.Service_agent  )
+            {   
+                int id; 
                 var agent = ctx.Session.GetInt32("id");
-                if (agent == null)
-                {
-                    return TypedResults.BadRequest("Session not exisiting");
+                if(!agent.HasValue){
+                    return TypedResults.BadRequest("Session not available"); 
                 }
+
+                await using var conn = await db.OpenConnectionAsync();
+                await using var transaction = await conn.BeginTransactionAsync();
+
+              using var cmdRandomSelect = db.CreateCommand( @"select id from tickets  join customer_agentsxticket_category as caXtc 
+              on tickets.ticket_category = caXtc.ticket_category
+              where caXtc.customer_agent=$1 and tickets.customer_agent is null 
+              order by random() 
+              limit 1;"); 
+             
+              cmdRandomSelect.Parameters.AddWithValue(agent); 
+              var reader =  await cmdRandomSelect.ExecuteReaderAsync(); 
+                if(await reader.ReadAsync()){
+                    id=reader.GetInt32(0); 
+                }else{
+                    transaction.Commit(); 
+                    return TypedResults.BadRequest("Failed to select a ticket"); 
+                }
+
+              
                 using var cmd = db.CreateCommand("UPDATE tickets SET customer_agent = $2, status = 2 WHERE id = $1");
 
                 cmd.Parameters.AddWithValue(id);
@@ -121,11 +143,13 @@ public class TicketRoutes
 
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
                 if (rowsAffected > 0)
-                {
+                {   
+                    await transaction.CommitAsync(); 
                     return TypedResults.Ok("Ticket assigned successfully.");
                 }
                 else
-                {
+                {   
+                    await transaction.RollbackAsync(); 
                     return TypedResults.BadRequest("Ticket assignment failed. Ticket ID or customer agent might be invalid.");
                 }
             }
