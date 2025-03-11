@@ -17,11 +17,18 @@ export function SuperAdminView() {
 
 export function SuperAdminCompanyView() {
     const [companies, setCompanies] = useState([]);
+    const [InactiveCompanies, setInactiveCompanies] = useState([]);
+    const [showInactive, setShowInactive] = useState(false);
 
     function GetCompanies() {
-        fetch("/api/companies").then(response =>
+        fetch("/api/companies/?active=true").then(response =>
             response.json())
             .then(data => setCompanies(data));
+    }
+    function GetInactiveCompanies() {
+        fetch("/api/companies/?active=false").then(response =>
+            response.json())
+            .then(data => setInactiveCompanies(data));
     }
 
 
@@ -33,18 +40,31 @@ export function SuperAdminCompanyView() {
             body: JSON.stringify(id, active),
         })
             .then(response => {
-                if (response.ok) { console.log("Det Funkade Igen"), GetCompanies() }
+                if (response.ok) { console.log("Det Funkade Igen"), GetCompanies(), GetInactiveCompanies() }
             })
     }
 
-    useEffect(GetCompanies,[]);
+    useEffect(GetCompanies, []);
+    useEffect(GetInactiveCompanies,[]);
 
     return <main className="role-specific-main">
         <NavigationBar back={"/super-admin"}/>
         <section className="header-section"><h1>All Companies</h1></section>
+        <div className="list-content-box">
         <ul className="list">
             {companies.map(CompanyCard)}
         </ul>
+            <section className="statusBox">
+                    <button onClick={() => setShowInactive(prevState => !prevState)} className="toggle-inactive-btn">
+                        {showInactive ? "Hide Inactive Companies" : "Show Inactive Companies"}
+                    </button>
+                    {showInactive && (
+                        <ul className="inactive-list">
+                            {InactiveCompanies.map(InactiveCompanyCard)}
+                        </ul>
+                    )}
+                </section>
+        </div>
         <section className="content-box">
             <NavLink to="/companies/add"><button className="middle-button">Add Company</button></NavLink></section>
     </main>;
@@ -58,8 +78,14 @@ export function SuperAdminCompanyView() {
             </div>
             <div className="card-buttons">
                 <NavLink to={"/companies/" + company.id + "/edit"}><button>Edit</button></NavLink>
-                <button className="small-button" onClick={() => BlockCompanyById(company.id, company.active)}>{company.active ? "block" : "un-block"}</button>
+                <button className="small-button" onClick={() => BlockCompanyById(company.id, company.active)}>block</button>
             </div>
+        </li>
+    }
+
+    function InactiveCompanyCard(company) {
+        return <li className="inactive-list-item" key={company.id}>
+            <p>{company.name}</p><button onClick={() => BlockCompanyById(company.id, company.active)}>Activate</button>
         </li>
     }
 }
@@ -231,15 +257,18 @@ export function SuperAdminEditCompanyView() {
 
 export function SuperAdminAdminView() {
     const [admins, setAdmins] = useState([]);
-
-
-
-
+    const [InactiveAdmins, setInactiveAdmins] = useState([]);
+    const [showInactive, setShowInactive] = useState(false);
 
     function GetAdmins() {
-        fetch("/api/roles/users/admin").then(response =>
+        fetch("/api/roles/users/admin/?active=true").then(response =>
             response.json())
             .then(data => setAdmins(data));
+    }
+    function GetInactiveAdmins() {
+        fetch("/api/roles/users/admin/?active=false").then(response =>
+            response.json())
+            .then(data => setInactiveAdmins(data));
     }
 
 
@@ -251,18 +280,31 @@ export function SuperAdminAdminView() {
             body: JSON.stringify(id, active),
         })
             .then(response => {
-                if (response.ok) { console.log("Det Funkade Igen"), GetAdmins() }
+                if (response.ok) { console.log("Det Funkade Igen"), GetAdmins(), GetInactiveAdmins() }
             })
     }
 
     useEffect(GetAdmins, []);
+    useEffect(GetInactiveAdmins, []);
 
     return <main className="role-specific-main">
         <NavigationBar back={"/super-admin"}/>
         <section className="header-section"><h1>All Admins</h1></section>
+        <div className="list-content-box">
         <ul className="list">
             {admins.map(AdminCard)}
         </ul>
+        <section className="statusBox">
+                    <button onClick={() => setShowInactive(prevState => !prevState)} className="toggle-inactive-btn">
+                        {showInactive ? "Hide Inactive Admins" : "Show Inactive Admins"}
+                    </button>
+                    {showInactive && (
+                        <ul className="inactive-list">
+                            {InactiveAdmins.map(InactiveAdminCard)}
+                        </ul>
+                    )}
+            </section>
+        </div>
         <section className="content-box">
             <NavLink to="/admins/add"><button className="middle-button">Add Admin</button></NavLink>
         </section>
@@ -279,9 +321,13 @@ export function SuperAdminAdminView() {
             </div>
             <div className="card-buttons">
                 <NavLink to={"/users/" + admin.id + "/edit"}><button>Edit</button></NavLink>
-                <button className="small-button" onClick={() => BlockAdminById(admin.id, admin.active)}>{admin.active ? "block" : "un-block"}</button>
+                <button className="small-button" onClick={() => BlockAdminById(admin.id, admin.active)}>block</button>
             </div></li>
-
+    }
+    function InactiveAdminCard(admin) {
+        return <li className="inactive-list-item" key={admin.id}>
+            <p>{admin.email}</p><button onClick={() => BlockAdminById(admin.id, admin.active)}>Activate</button>
+        </li>
     }
 }
 export function SuperAdminAddAdminView() {
