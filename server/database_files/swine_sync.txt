@@ -53,7 +53,8 @@ create table ticket_categories
     category_name text not null,
     company int not null 
         constraint FK_ticket_categories_companies
-        references companies
+        references companies,
+    active bool default true not null
 );
 alter table ticket_categories
     owner to postgres;
