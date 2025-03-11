@@ -9,7 +9,7 @@ public class TicketRoutes
 
     public record NewTicket(int productId, int categoryId, string message, string email);
 
-    public record TicketRatingDTO(int id, int rating);
+    public record TicketRatingDTO(int id, float rating);
 
 
     public static async Task<Results<Ok<Ticket>, BadRequest<string>>> GetTicket(int id, NpgsqlDataSource db)
