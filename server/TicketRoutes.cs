@@ -11,8 +11,10 @@ public class TicketRoutes
 
     public record TicketRatingDTO(int id, float rating);
 
+    public record GetTicketDTO(int id, int status, string customer_email, int product_id, int ticket_category, decimal? rating);
 
-    public static async Task<Results<Ok<Ticket>, BadRequest<string>>> GetTicket(int id, NpgsqlDataSource db)
+
+    public static async Task<Results<Ok<GetTicketDTO>, BadRequest<string>>> GetTicket(int id, NpgsqlDataSource db)
     {
         using var cmd = db.CreateCommand(@"
     SELECT 
@@ -20,7 +22,8 @@ public class TicketRoutes
         t.status,
         t.customer_email,
         t.product_id,
-        t.ticket_category
+        t.ticket_category,
+        t.rating
     FROM 
         tickets AS t 
     WHERE 
@@ -29,12 +32,13 @@ public class TicketRoutes
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            var ticket = new Ticket(
+            var ticket = new GetTicketDTO(
                         reader.GetInt32(0),
                         reader.GetInt32(1),
                         reader.GetString(2),
                         reader.GetInt32(3),
-                        reader.GetInt32(4)
+                        reader.GetInt32(4),
+                        await reader.IsDBNullAsync(5) ? null : reader.GetDecimal(5)
                     );
             return TypedResults.Ok(ticket);
         }
@@ -272,23 +276,30 @@ public class TicketRoutes
     public static async Task<Results<Ok<int>, BadRequest<string>>> TicketRating(int id, TicketRatingDTO ticketRating,
         NpgsqlDataSource db)
     {
-        
+
         try
         {
-            
-            
-            using var cmd = db.CreateCommand("UPDATE tickets SET rating=$2 WHERE id=$1 AND status=3 ");
+
+
+            using var cmd = db.CreateCommand("UPDATE tickets SET rating=$2 WHERE id=$1 AND status=3 AND rating is null");
 
             cmd.Parameters.AddWithValue(id);
             cmd.Parameters.AddWithValue(ticketRating.rating);
+    
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
-            await cmd.ExecuteNonQueryAsync();
-
-            return TypedResults.Ok(id);
+            if (rowsAffected > 0)
+            {
+                return TypedResults.Ok(id);
+            }
+            else
+            {
+                return TypedResults.BadRequest("Already rated!");
+            }
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest("fan är det för fel");
+            return TypedResults.BadRequest("fan är det för fel " + ex.Message);
         }
         
         

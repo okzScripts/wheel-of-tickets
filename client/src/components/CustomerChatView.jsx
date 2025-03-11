@@ -70,9 +70,14 @@ export function CustomerChatView() {
              
             })
     }
+
+    useEffect(() => {
+        const intervalId = setInterval(GetTicket, 5000);
+        return () => clearInterval(intervalId);
+    }, []);
   
     useEffect(() => {
-        if (ticket.status === 3) {
+        if (ticket.status === 3 && ticket.rating === null) {
             let rating;
             while (true) {
                 rating = prompt("Please rate the support (1-5):", '');
@@ -104,7 +109,7 @@ export function CustomerChatView() {
         return (
             <main className="chat-main">
                 <nav className="navbar"><img src={logo}></img></nav>
-                <section className="chat-header"><h1>Chat about your Ticket</h1></section>
+                <section className="chat-header"><h1>Chat about your ticket</h1></section>
                 <section className="chat">
                     <ul className="chat-ul"> {messages.map(MessageCard)}
                     </ul>
