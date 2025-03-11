@@ -3,7 +3,7 @@ using server;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=1234;Port=5432");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=portedinme;Port=5432");
 dataSourceBuilder.MapEnum<UserRole>();
 var db = dataSourceBuilder.Build();
 
@@ -29,12 +29,20 @@ app.MapGet("/api/roles/users/{role}", UserRoutes.GetUsers);
 
 app.MapGet("/api/users/company/{role}", UserRoutes.GetUsersFromCompany);
 app.MapGet("/api/users/{id}", UserRoutes.GetUser);
-app.MapPut("/api/users/{id}", UserRoutes.EditUser);
+app.MapPut("/api/users/{id}", UserRoutes.EditAdmin);
 app.MapPut("/api/users/block/{id}/{active}", UserRoutes.BlockUser);
-app.MapPost("/api/users", UserRoutes.AddUser);
+app.MapPost("/api/users", UserRoutes.AddAdmin);
+app.MapPost("/api/users/agent", UserRoutes.AddAgent);
 app.MapPut("/api/users/password/", UserRoutes.ChangePassword);
+app.MapPut("/api/users/agent/{id}", UserRoutes.EditAgent);
+app.MapPut("/api/users/password/{id}", UserRoutes.ResetPassword);
 
 app.MapPost("/api/login", LoginRoutes.LoginByRole);
+
+app.MapPost("/api/categories", CategoryRoutes.AddCategory);
+app.MapPut("/api/categories/status/", CategoryRoutes.ChangeStatus);
+app.MapGet("/api/categories/{id}", CategoryRoutes.GetCategoriesByUserId);
+app.MapGet("/api/categories/company/", CategoryRoutes.GetCategoriesByCompany);
 
 app.MapGet("/api/products/company/", ProductRoutes.GetProducts);
 app.MapGet("/api/products/{ProductId}", ProductRoutes.GetProduct);
@@ -50,6 +58,9 @@ app.MapPut("/api/tickets/status/{id}", TicketRoutes.ChangeStatus);
 app.MapGet("/api/tickets/assigned", TicketRoutes.GetAssignedTickets);
 app.MapPost("/api/tickets", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
+
+
+
 
 app.MapGet("/api/messages/{id}", MessageRoutes.GetTicketMessages);
 app.MapPost("/api/messages/", MessageRoutes.AddMessage);

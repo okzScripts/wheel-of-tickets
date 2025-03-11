@@ -7,14 +7,14 @@ VALUES ('Swine Sync','Knorre_von_Bacon@pig.com','+1-800-345699','A software ente
 ('Global Ventures', 'info@globalventures.com', '+1-800-345678', 'A multinational company involved in various industries.', 'globalventures.com');
 
 INSERT INTO public.products ( product_name, product_description, price, product_category, company)
-VALUES ( '1 ton Pig Feed', 'Comprehensive IT support including troubleshooting and system maintenance.', 200, 'Service', 2),
-( 'Trough five meeters', 'Cloud-based storage solution for businesses of all sizes.', 500, 'Service', 2),
-('Mud Bath', 'Eco-friendly packaging made from biodegradable materials.', 50, 'Product', 3),
-('Trotter Pedicure', 'A clothing line made from 100% sustainable materials.', 80, 'Product', 3), 
-('Swine Flue Vaccine', 'Professional consultation to develop a unique brand identity.', 350, 'Service', 4),
-('Pig Retirment Home', 'Custom website design services including setup and optimization.', 1000, 'Service', 4),
-( 'Knife Sharpening', 'Consulting services for global business expansion and strategy.', 700, 'Service', 5),
-('Logistics Management Software', 'Software solution to optimize global logistics and supply chain management.', 1200, 'Product', 5);
+VALUES ( '1 ton Pig Feed', 'The best food a pig could wish for', 200, 'Service', 2),
+( 'Trough five meters', 'High quality eating trough, only the best for our customer', 500, 'Service', 2),
+('Mud Bath', 'We are the leading company in the creating mud baths, and for a small fee we will create the correct pit at your stable.', 50, 'Product', 3),
+('Trotter Pedicure', 'A royal treatment for your Trotters for the working So', 80, 'Product', 3), 
+('Swine Flue Vaccine', 'High quality medicin', 350, 'Service', 4),
+('Pig Retirment Home', 'Retirment home for the best, greates pigs in the world', 1000, 'Service', 4),
+( 'Knife Sharpening', 'All you need for the pigs going away in the truck', 700, 'Service', 5),
+('Logistics Management Software', 'The latest software to keep track of your trucks takeing away swines', 1200, 'Product', 5);
 
 
 INSERT INTO public.ticket_categories (category_name,company)
@@ -26,7 +26,7 @@ VALUES
 ( 'Account Management',3),
 ( 'Shipping and Delivery',4),
 ( 'Warranty Claims',4),
-( 'Software Bugs',5),
+( 'Product Feedback',5),
 ( 'Security Issues',5);
 
 
@@ -64,18 +64,18 @@ VALUES
 
 
 
-INSERT INTO public.tickets ( status, customer_url, product_id, customer_agent, ticket_category)
+INSERT INTO public.tickets (description, status, customer_email, product_id, customer_agent, ticket_category)
 VALUES
-(  1, 'http://something', 1, NULL, 1),
-(  1, 'http://something', 2, NULL, 2),
-(  1, 'http://something', 3, NULL, 3),
-(  1, 'http://something', 4, NULL, 5), 
-( 1, 'http://something',4,NULL,4 ),
-( 1, 'http://something',3,NULL,4 ),
-(1,'http://something' ,5, NULL , 6),
-( 1, 'http://something', 7,NULL, 8  ),
-(1,'http://something',8,NULL,9 ), 
-(1,'http://something',2,NULL,2); 
+( 'Ill tasting Feed', 1, 'svine-lisa@stia.com', 1, NULL, 1),
+( 'Billed for 5ms tough the trough is only 4.99 m ', 1, 'pelle-gris@host.com', 2, NULL, 2),
+( 'Problem with mudbath', 1, 'galter@trynet.com', 3, NULL, 4),
+(  'improvements to the pedicure',1, 'sofina@stia.com', 4, NULL, 5), 
+( 'Missing Vaccines',1, 'nasse.kultinggren@trynet.com',5,NULL,6),
+( 'Glue disolved after mud bath',1, 'nuffer@svinmail.com',3,NULL,4 ),
+('Shoes at Retirment home not good enough',1,'kurt.kulting@fakemail.se' ,6, NULL , 7),
+( 'Knife not sharp enough',1, 'griselda.lergrop@svinmail.com', 7,NULL, 8  ),
+('Missing Truck',1,'orne.lera@stia.com',8,NULL,9 ), 
+('mudbath control system error',1,'tryne.enuff@fakemail.se',3,NULL,4); 
 
   
 
@@ -85,14 +85,14 @@ VALUES (1,1),(2,2),(3,3),(4,8),(4,9),(5,12), (6,10),(7,13),(8,11),(9,16);
 
 Insert INTO public.messages(text,time,ticket,customer)
 VALUES 
-('I am facing issues with my internet connection.',current_timestamp, 1 ,true),
-('There seems to be a mistake in my latest bill.',current_timestamp, 2 ,true),
-('I would like to suggest improvements for the user interface of your product.',current_timestamp, 3 ,true),
-('My recent order hasn’t been delivered yet.',current_timestamp, 4 ,true),
-('My pig is going is not rolling in the deep mudpit', current_timestamp, 5 ,true),
-('Donald is losing his toupee even after using your biodegradable glue',current_timestamp, 6 ,true),
-('Platform shoes to low does not allow me to see over the pig sty',current_timestamp, 7,true),
-('Only got 2 shoes instead of one for each trotter',current_timestamp, 8 ,true),
-('Mud temperature control system not working',current_timestamp, 9 ,true),
-('Missing pig after putting him in cloud storage',current_timestamp, 10 ,true);
+('The high quality food I bought is not as tasty as advertised',current_timestamp, 1 ,true),
+('There seems to be a mistake in my latest bill, The trough i got is only 4.99m not 5m I refuse to pay full price since the length is not correct.',current_timestamp, 2 ,true),
+('My pig is going is not rolling in the deep mudpit',current_timestamp, 3 ,true),
+('The pedicure could be improved by adding nailpolish to the procedure, when will your company be able to supply this service?',current_timestamp, 4 ,true),
+('Our Vaccine have not arrived and seems to gone missing during Shipping', current_timestamp, 5 ,true),
+('Donald is losing his toupee after taking a bath in your mud bath that disolved the glue this is unacceptiable!',current_timestamp, 6 ,true),
+('The platform shoes to low does not allow me to see over the pig sty',current_timestamp, 7,true),
+('The knife i sent to Sharpening is still not sharp enuough and causes uneccessary suffering',current_timestamp, 8 ,true),
+('A truck is missing from the software system,We need help so we can locate it',current_timestamp, 9 ,true),
+('Mud temperature control system not working',current_timestamp, 10 ,true);
 

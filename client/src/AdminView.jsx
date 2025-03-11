@@ -1,17 +1,18 @@
 import { BrowserRouter, NavLink, useFetcher, useNavigate, useLocation, useParams } from "react-router";
 import "./adminViewStyle.css";
 import { createContext, useEffect, useState, use } from "react";
-import logo from './assets/logo.png';
+import { NavigationBar } from "./components/Navbar";
 
 export function AdminView() {
- 
+
     return <main className="option-main">
         <div className="big-button-container">
             <NavLink to="/products"><button className="big-button">Products</button></NavLink>
             <NavLink to="/agents"><button className="big-button">Support Agents</button></NavLink>
+            <NavLink to="/categories"><button className="big-button">Categories</button></NavLink>
         </div>
     </main>
-    
+
 }
 
 
@@ -24,7 +25,7 @@ export function ProductView() {
         fetch(`/api/products/block/${id}/${active}`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify({id, active}),
+            body: JSON.stringify({ id, active }),
         })
             .then(response => {
                 if (response.ok) { console.log("Det Funkade Igen") }
@@ -46,7 +47,7 @@ export function ProductView() {
 
 
     return <main>
-        <nav className="navbar"><img src={logo}></img> <NavLink to="/admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+        <NavigationBar back={"/admin"}/>
         <section className="header-section"><h1>All Products</h1></section>
         <ul className="list">
             {products.map(ProductCard)}
@@ -106,7 +107,7 @@ export function SupportView() {
         fetchUsers
         , []);
     return <main>
-        <nav className="navbar"><img src={logo}></img> <NavLink to="/admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+        <NavigationBar back={"/admin"}/>
         <section className="header-section"><h1>All Service Agents</h1></section>
         <ul className="list">
             {supports.map(AgentCard)}
@@ -158,7 +159,7 @@ export function AdminAddProductView() {
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/products"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <NavigationBar back={"/products"}/>
             <form className="data-form" onSubmit={PostProduct} action={`/api/products`} method="POST">
                 <div className="form-box">
                     <label>
@@ -242,7 +243,7 @@ export function AdminEditProductView() {
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/products"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <NavigationBar back={"/products"}/>
             <form className="data-form" onSubmit={updateProduct} action={`/api/products`} method="PUT">
                 <div className="form-box">
                     <label>
@@ -293,97 +294,158 @@ export function AdminEditProductView() {
 export function AdminEditSupportView() {
     const { id } = useParams();
     const [agent, setAgent] = useState({});
+    const [categories, setCategories] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState([{}]);
+    const [disabled, setDisabled] = useState(false);
 
-
+    // Fetch categories assigned to this user
     useEffect(() => {
+        fetch(`/api/categories/${id}`)
+            .then((res) => res.json())
+            .then(setSelectedCategories)
+            .catch((err) => console.error("Error fetching categories:", err));
+    }, [id]);
 
+    // Fetch all available categories
+    useEffect(() => {
+        fetch(`/api/tickets/categories?companyId=1337`)
+            .then((res) => res.json())
+            .then(setCategories)
+            .catch((err) => console.error("Error fetching categories:", err));
+    }, []);
+
+    // Fetch user details
+    useEffect(() => {
         fetch(`/api/users/${id}`)
-            .then(response => response.json())
-            .then(data => {setAgent(data)})
-            .then(()=> console.log(agent.role));
-            
-            
+            .then((res) => res.json())
+            .then(setAgent)
+            .catch((err) => console.error("Error fetching user:", err));
+    }, [id]);
 
-    },[]);
+    // Toggle category selection
+    function handleCategoryToggle(categoryId) {
+        setSelectedCategories((prev) =>
+            prev.includes(categoryId)
+                ? prev.filter((id) => id !== categoryId) // Uncheck
+                : [...prev, categoryId] // Check
+        );
+    }
 
-   
 
-    function updateUser(e) {
+    function ResetPassword(e) {
+
         e.preventDefault();
-        const form = e.target;
+        setDisabled(true);
+        setTimeout(() => {
+            setDisabled(false);
+        }, 2000)
 
-        let formData = new FormData(form);
-        let dataObject = Object.fromEntries(formData);
-        let dataJson = JSON.stringify(dataObject);
-        fetch(form.action, {
+        e.preventDefault();
+        fetch("/api/users/password/" + id, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: dataJson
-        }).then(response => {
-            if (response.ok) {
-                alert(`Du updaterade ${dataObject.name} `);
-            } else {
-                alert("Något gick fel ");
-            }
+            body: JSON.stringify({})
         })
+            .then(response => {
+                if (response.ok) {
+                    alert("Password has been reset")
+                } else {
+                    alert("An error occured when reseting the password.")
+                }
+            }
+            )
+    }
+
+    // Update user data, including selected categories
+    function updateUser(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        let dataObject = Object.fromEntries(formData.entries());
+
+        // Convert selectedCategories into { id: true/false }
+        let categoriesObject = {};
+        categories.forEach((category) => {
+            categoriesObject[category.id] = selectedCategories.includes(category.id);
+        });
+
+        dataObject.categories = categoriesObject; // Attach formatted categories
+        console.log(JSON.stringify(dataObject));
+        fetch(e.target.action, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dataObject),
+        })
+            .then((res) => {
+                if (res.ok) alert(`Updated ${dataObject.name}`);
+                else alert("Something went wrong");
+            })
+            .catch((err) => console.error("Update failed", err));
     }
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/agents"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <NavigationBar back={"/agents"}/>
             <form className="data-form" onSubmit={updateUser} action={`/api/users/${agent?.id}`} method="PUT">
                 <div className="form-box">
                     <label>
                         Name:
-                        <input
-                            name="name"
-                            defaultValue={agent?.name}
-                            type="text"
-                            required
-                        />
+                        <input name="name" defaultValue={agent?.name} type="text" required />
                     </label>
-
                     <label>
                         Email:
-                        <input
-                            name="email"
-                            defaultValue={agent?.email}
-                            type="email"
-                            required
-                        />
+                        <input name="email" defaultValue={agent?.email} type="email" required />
                     </label>
-
                     <label>
-                        Password:
-                        <input
-                            name="password"
-                            defaultValue={agent?.password}
-                            type="password"
-                            required
-                        />
+                        Categories:
+                        <ul className="category-list">
+                            {categories.map((category) => (
+                                <li key={category.id}>
+                                    <input
+                                        type="checkbox"
+                                        id={category.id} name={category.id}
+                                        checked={selectedCategories.includes(category.id)}
+                                        onChange={() => handleCategoryToggle(category.id)}
+                                    />
+                                    <label htmlFor={category.id}>{category.category_name}</label>
+                                </li>
+                            ))}
+                        </ul>
                     </label>
                 </div>
-                <input type="submit" value="Save" className="middle-button"></input>
+                <input type="submit" value="Save" className="middle-button"></input>     <button disabled={disabled} className="middle-button reset-button" onClick={ResetPassword} >Reset Password</button>
             </form>
+
         </main>
     );
 }
 
+
+
+///////////////ADD ADMIN/////////////
+
+
+
 export function AdminAddSupportView() {
-   
+    const [categories, setCategories] = useState([]);
+    const selectedCategories = []
+
+    useEffect(() => {
+
+        fetch(`/api/tickets/categories?companyId=1337`)
+            .then((response) => response.json())
+            .then((data) => setCategories(data))
+            .catch((error) => console.error("Error fetching categories:", error));
+    }, []);
 
     function postUser(e) {
         e.preventDefault();
         const form = e.target;
-
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData);
-        dataObject.company = null;
+        dataObject.selectedCategories = selectedCategories;
         dataObject.role = "service_agent";
-
-
         let dataJson = JSON.stringify(dataObject);
-
+        console.log(dataJson)
         fetch(form.action, {
             headers: { "Content-Type": "application/json" },
             method: form.method,
@@ -397,10 +459,22 @@ export function AdminAddSupportView() {
         });
     }
 
+    function HandleCategories(categoryId) {
+        const index = selectedCategories.indexOf(categoryId);
+        if (index !== -1) {
+            selectedCategories.splice(index, 1);
+            console.log(selectedCategories)
+        } else {
+            selectedCategories.push(categoryId);
+            console.log(selectedCategories)
+        }
+
+    }
+
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/agents"><button className="back-button">⬅️ Back</button></NavLink></nav>
-            <form className="data-form" onSubmit={postUser} action="/api/users" method="POST">
+            <NavigationBar back={"/agents"}/>
+            <form className="data-form" onSubmit={postUser} action="/api/users/agent" method="POST">
                 <div className="form-box">
                     <label>
                         Name:
@@ -419,19 +493,110 @@ export function AdminAddSupportView() {
                             required
                         />
                     </label>
-
                     <label>
-                        Password:
-                        <input
-                            name="password"
-                            type="password"
-                            required
-                        />
-                    </label>
+                        Categories:
+                        <ul className="category-list">
+                            {categories.map(CategoryCard)}
+                        </ul>
 
+                    </label>
                 </div>
                 <input type="submit" value="Save" className="middle-button"></input>
             </form>
         </main>
+
+
     );
+    function CategoryCard(category) {
+        return <li key={category.id}><input onChange={() => HandleCategories(category.id)} id={category.id} type="checkbox" />
+            <label htmlFor={category.id}>{category.category_name} </label>
+        </li>
+    }
+}
+
+export function AdminCategoryView() {
+
+    const [activeCategories, setActiveCategories] = useState([]);
+    const [inactiveCategories, setInactiveCategories] = useState([]);
+
+    function fetchActiveCategories() {
+        fetch(`/api/categories/company/?active=true`)
+            .then(response => response.json())
+            .then(data => setActiveCategories(data))
+            .catch(error => console.error("Ånej inte ett error!", error));
+    }
+        
+    function fetchInactiveCategories() {
+        fetch(`/api/categories/company/?active=false`)
+            .then(response => response.json())
+            .then(data => setInactiveCategories(data))
+            .catch(error => console.error("Ånej inte ett error!", error));
+    }
+
+    function AddCategory(e) {
+        e.preventDefault();
+        const form = e.target;
+        let formData = new FormData(form);
+        let dataObject = Object.fromEntries(formData);
+        let dataJson = JSON.stringify(dataObject);
+        fetch(form.action, {
+            headers: { "Content-Type": "application/json" },
+            method: form.method,
+            body: dataJson
+        }).then(response => {
+            if (response.ok) {
+                alert(`Du lade till en kategori`);
+            } else {
+                alert("Något gick fel ");
+            }
+        });
+    }
+
+    useEffect(fetchActiveCategories,[]); 
+    useEffect(fetchInactiveCategories,[]);
+
+    return <main>
+        <h1>Category Page!</h1>
+        <h2>Active categories</h2>
+        <div>
+        <ul> 
+         {activeCategories.map(CategoryCard2)}   
+        </ul>
+        <h2>Inactive categories </h2>
+        <ul> 
+            {inactiveCategories.map(CategoryCard2)}
+        </ul>
+        </div>
+        <div>
+            <form onSubmit={AddCategory} action={"/api/categories"} method={"POST"}>
+            <input name="categoryName" type="text" placeholder="Category Name.."/>
+                <input type="submit" value={"Add Category"}/>
+            </form>
+        </div>
+    </main>
+
+    function CategoryCard2(category) {
+
+        return <li key={category.id}>Name: {category.category_name}<button  className="small-button" value={category.active? "Delete":"Activate" } onClick={(e) => HandleCategoryStatus(e,category) }></button></li>
+
+
+    }
+
+    function HandleCategoryStatus(e,category) {
+        e.preventDefault();
+        fetch(`/api/categories/status/`, {
+            headers: { "Content-Type": "application/json" },
+            method: "PUT",
+            body: JSON.stringify({id:category.id,active:category.active}) 
+    }).then(response => {
+                if (response.ok) {
+                    alert(`Du lade till   `);
+                } else {
+                    alert("Något gick fel "); }
+
+            }
+        )
+        fetchActiveCategories();
+        fetchInactiveCategories();
+    }
 }
