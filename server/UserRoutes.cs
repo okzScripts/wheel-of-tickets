@@ -1,11 +1,8 @@
 
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
-using System.Data.Common;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
-using Microsoft.AspNetCore.Identity;
-using System.Runtime.InteropServices;
+
 namespace server;
 public enum UserRole
 {
@@ -178,32 +175,15 @@ public class UserRoutes
         }
     }
 
-    public record PostUserDTO(string Name, string Email, int Company, string Role);
+    public record PostAdminDTO(string Name, string Email, int Company, string Role);
 
-    public static async Task<IResult> AddUser(PostUserDTO user, NpgsqlDataSource db, HttpContext ctx)
+    public static async Task<IResult> AddAdmin(PostAdminDTO user, NpgsqlDataSource db, HttpContext ctx)
     {
-        if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt != UserRole.Service_agent ){
+        if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt == UserRole.super_admin ){
             try
             {   string password;
-                int? companyId;
-                var role_nullable= ctx.Session.GetInt32("role");
-                if(!role_nullable.HasValue){
-                    return TypedResults.BadRequest("Error in loading Session variables"); 
-                }
-                int role =role_nullable.Value;   
                 Enum.TryParse<UserRole>(user.Role, true, out var userRole);           
-                companyId = ctx.Session.GetInt32("company");
-                if((UserRole)role== UserRole.super_admin ){
-                    companyId=user.Company; 
-                }
-                if (companyId == null){  
-                        return TypedResults.BadRequest("Session error variable not existing");
-                }
-
-
-
-                 
-                
+    
                 password= GeneratePassword(8);  
                 
                 using var cmd = db.CreateCommand(
@@ -212,7 +192,7 @@ public class UserRoutes
                 cmd.Parameters.AddWithValue(user.Name);
                 cmd.Parameters.AddWithValue(user.Email);
                 cmd.Parameters.AddWithValue(password);
-                cmd.Parameters.AddWithValue(companyId);
+                cmd.Parameters.AddWithValue(user.Company);
                 cmd.Parameters.AddWithValue(userRole);
                 cmd.Parameters.AddWithValue(true);
 
@@ -247,18 +227,102 @@ public class UserRoutes
         }
     }
 
+    public record PostAgentDTO(string Name, string Email, List<int> SelectedCategories, string Role);
 
-    public record PutUserDTO(string Name, string Email);
-    public static async Task<IResult> EditUser(int id, PutUserDTO user, NpgsqlDataSource db ,HttpContext ctx)
+    public static async Task<IResult> AddAgent(PostAgentDTO agent, NpgsqlDataSource db, HttpContext ctx)
+    {
+        if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt == UserRole.super_admin )
+        {
+        await using var conn = await db.OpenConnectionAsync();
+        await using var transaction = await conn.BeginTransactionAsync();
+
+        //var categoryList = agent.SelectedCategories?.Select(Convert.ToInt32).ToList() ?? new List<int>();
+
+        List<int> categorylist = agent.SelectedCategories;
+
+        try
+        {
+            int? companyIdNullable ;
+            int companyId=-1; 
+            string password= GeneratePassword(8);  
+            Enum.TryParse<UserRole>(agent.Role, true, out var userRole);
+            
+          
+            companyIdNullable = ctx.Session.GetInt32("company");
+            if (!companyIdNullable.HasValue)
+            {
+                return TypedResults.BadRequest("Session not existing");
+            }else{
+                companyId=companyIdNullable.Value; 
+            }
+            
+            
+
+            // Första insert: användare
+            using var cmd = db.CreateCommand(
+                "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
+
+            cmd.Parameters.AddWithValue(agent.Name);
+            cmd.Parameters.AddWithValue(agent.Email);
+            cmd.Parameters.AddWithValue(password);
+            cmd.Parameters.AddWithValue(companyId);
+            cmd.Parameters.AddWithValue(userRole);
+            cmd.Parameters.AddWithValue(true);
+
+            var result = await cmd.ExecuteScalarAsync();
+     
+            if (result != null)
+            {
+                var id = Convert.ToInt32(result);
+       
+
+                foreach (int category in categorylist)
+                {
+             
+                    using var cmd2 = db.CreateCommand(
+                        "INSERT INTO customer_agentsxticket_category (ticket_category, customer_agent) VALUES ($1, $2);");
+
+                    // Använd rätt kommandon och parametrar för cmd2
+                    cmd2.Parameters.AddWithValue(category);
+                    cmd2.Parameters.AddWithValue(id);
+
+                    int rowsaffected = await cmd2.ExecuteNonQueryAsync();
+
+                 
+                }
+
+                string subject = "Account created";
+                string message = "Hi "+agent.Name +"\nyour account has now been created for " +agent.Email +
+                "\nwith the temporary password: "+password +"\nBest regards Swine Sync";
+                MailService.SendMail(agent.Email, subject, message);    
+                return TypedResults.Ok("category done");
+            }
+            else
+            {
+                return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
+            }
+        }
+        catch (PostgresException ex) when (ex.SqlState == "23505")
+        {
+            return TypedResults.BadRequest("Email-adressen är redan registrerad!");
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
+        }
+        }else{
+            return TypedResults.BadRequest("Session not existing/authentication failed");
+        }
+    }
+
+
+    public record PutAdminDTO(string Name, string Email);
+    public static async Task<IResult> EditAdmin(int id, PutAdminDTO user, NpgsqlDataSource db ,HttpContext ctx)
     {    
 
-     if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt != UserRole.Service_agent ){
+     if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt == UserRole.super_admin ){
         
-            var role_nullable= ctx.Session.GetInt32("role");
-            if(!role_nullable.HasValue){
-                return TypedResults.BadRequest("Error in loading Session variables"); 
-            }
-            int role =role_nullable.Value;   
+         
             try
             {
             using var cmd = db.CreateCommand(
@@ -287,53 +351,130 @@ public class UserRoutes
     }
 
 
-
-    public record PasswordDTO( string OldPassword, string Password, string RepeatPassword );
-    public static async Task<Results<Ok<string>, BadRequest<string>>> ChangePassword(PasswordDTO passwords,NpgsqlDataSource db, HttpContext ctx)
+    public record PutAgentDTO(string Name, string Email, Dictionary<int, bool> Categories);
+    public static async Task<IResult> EditAgent(int id, PutAgentDTO agent, NpgsqlDataSource db, HttpContext ctx)
     {
-        if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) ){
-            
-                var Id = ctx.Session.GetInt32("id");
-                if (Id == null)
-                {
-                    return TypedResults.BadRequest("Session not exisiting");
-                }else{
-                      using var cmd = db.CreateCommand(
-                     "select password from  users WHERE id = $1");
-                     cmd.Parameters.AddWithValue(Id);
-
-                     using var reader = await  cmd.ExecuteReaderAsync(); 
-                      
-                     if(await reader.ReadAsync() ){
-                        var oldPassword= reader.GetString(0); 
+ if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt == UserRole.Admin )
+ {
+        try
+        {
 
 
-                        if(oldPassword!=passwords.OldPassword){
-                            return TypedResults.BadRequest("password does not match old password");
-                        }else{
-                            if(passwords.Password==passwords.RepeatPassword){
-                            using var cmdPut =  db.CreateCommand("Update users set password=$1 where id=$2 ");
-                            cmdPut.Parameters.AddWithValue(passwords.Password); 
-                            cmdPut.Parameters.AddWithValue(Id); 
+            using var cmd = db.CreateCommand(
+                "UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING id");
 
-                             var rows= await cmdPut.ExecuteNonQueryAsync(); 
-                            if(rows>0){
-                                return TypedResults.Ok("Password changed"); 
-                            }else{
-                                return TypedResults.BadRequest("No rows affected by password change"); 
-                            }
+            cmd.Parameters.AddWithValue(agent.Name);
+            cmd.Parameters.AddWithValue(agent.Email);
+            cmd.Parameters.AddWithValue(id);
 
-                            }else{
-                                return TypedResults.BadRequest("new passwords do not match"); 
-                            }
-                        
-                        }
-                     }else{return TypedResults.BadRequest("No data found");}
+            var result = await cmd.ExecuteScalarAsync();
+
+            if (result != null)
+            {
+                var agentid = Convert.ToInt32(result);
+
+                string command = "";
+                foreach (var category in agent.Categories) {
+                    if (category.Value == true)
+                    {
+                        command = "INSERT INTO customer_agentsxticket_category (ticket_category, customer_agent) VALUES($1,$2) ON CONFLICT DO NOTHING ";
+
+                    }
+                    else
+                    {
+                        command = "DELETE FROM customer_agentsxticket_category WHERE ticket_category = $1 and customer_agent=$2";
+                    }
+
+                    using var cmd2 = db.CreateCommand(command);
+                    cmd2.Parameters.AddWithValue(category.Key);
+                    cmd2.Parameters.AddWithValue(id);
+
+                    int results = await cmd2.ExecuteNonQueryAsync();
+
+           
 
                 }
-            }else{
-                return TypedResults.BadRequest("Session does not exist"); 
+                return TypedResults.Ok("Det funkade, hurra!");
+
             }
+            else
+            {
+                return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
+            }
+
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"Error {ex.Message}");
+        }
+    }else{
+        return TypedResults.BadRequest("Session invalid failed to authenticate"); 
+    }
+}
+
+
+
+    public record PasswordDTO(string OldPassword, string Password, string RepeatPassword);
+    public static async Task<Results<Ok<string>, BadRequest<string>>> ChangePassword(PasswordDTO passwords, NpgsqlDataSource db, HttpContext ctx)
+    {
+        if (ctx.Session.IsAvailable)
+        {
+            var Id = ctx.Session.GetInt32("id");
+            if (Id == null)
+            {
+                return TypedResults.BadRequest("Session not exisiting");
+            }
+            else
+            {
+                using var cmd = db.CreateCommand(
+               "select password from  users WHERE id = $1");
+                cmd.Parameters.AddWithValue(Id);
+
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    var oldPassword = reader.GetString(0);
+
+
+                    if (oldPassword != passwords.OldPassword)
+                    {
+                        return TypedResults.BadRequest("password does not match old password");
+                    }
+                    else
+                    {
+                        if (passwords.Password == passwords.RepeatPassword)
+                        {
+                            using var cmdPut = db.CreateCommand("Update users set password=$1 where id=$2 ");
+                            cmdPut.Parameters.AddWithValue(passwords.Password);
+                            cmdPut.Parameters.AddWithValue(Id);
+
+                            var rows = await cmdPut.ExecuteNonQueryAsync();
+                            if (rows > 0)
+                            {
+                                return TypedResults.Ok("Password changed");
+                            }
+                            else
+                            {
+                                return TypedResults.BadRequest("No rows affected by password change");
+                            }
+
+                        }
+                        else
+                        {
+                            return TypedResults.BadRequest("new passwords do not match");
+                        }
+
+                    }
+                }
+                else { return TypedResults.BadRequest("No data found"); }
+
+            }
+        }
+        else
+        {
+            return TypedResults.BadRequest("Session does not exist");
+        }
     }
 
 public static string GeneratePassword(int length){

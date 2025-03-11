@@ -5,7 +5,7 @@ namespace server;
 
 public class TicketRoutes
 {
-    public record Ticket(int id, int status, string customer_email, int product_id, int ticket_category);
+    public record Ticket(int id, int status, string description, int product_id, int ticket_category);
 
     public record NewTicket(int productId, int categoryId, string message, string email);
 
@@ -20,7 +20,7 @@ public class TicketRoutes
     SELECT 
         t.id,
         t.status,
-        t.customer_email,
+        t.description,
         t.product_id,
         t.ticket_category,
         t.rating
@@ -62,7 +62,7 @@ public class TicketRoutes
     SELECT 
         t.id,
         t.status,
-        t.customer_email,
+        t.description,
         t.product_id,
         t.ticket_category
     FROM 
@@ -157,7 +157,7 @@ public class TicketRoutes
                     return TypedResults.BadRequest("Session not exisiting");
                 }
                 using var cmd = db.CreateCommand(@"
-                SELECT  t.id, t.status, t.customer_email,t.product_id, t.ticket_category
+                SELECT  t.id, t.status, t.description,t.product_id, t.ticket_category
                 FROM tickets t 
                 WHERE t.customer_agent = $1 ");
 
@@ -203,7 +203,7 @@ public class TicketRoutes
             int ticketId; 
 
 
-            var sql1 = "INSERT INTO tickets (status, customer_email, product_id, ticket_category) VALUES ($1, $2, $3, $4) RETURNING id";
+            var sql1 = "INSERT INTO tickets (status, description, product_id, ticket_category) VALUES ($1, $2, $3, $4) RETURNING id";
             using (var cmd1 = new NpgsqlCommand(sql1, conn, transaction))
             {
                 cmd1.Parameters.AddWithValue(status);
@@ -276,32 +276,39 @@ public class TicketRoutes
     public static async Task<Results<Ok<int>, BadRequest<string>>> TicketRating(int id, TicketRatingDTO ticketRating,
         NpgsqlDataSource db)
     {
-
-        try
+        if (ticketRating.rating >= 1 && ticketRating.rating <= 5)
         {
 
-
-            using var cmd = db.CreateCommand("UPDATE tickets SET rating=$2 WHERE id=$1 AND status=3 AND rating is null");
-
-            cmd.Parameters.AddWithValue(id);
-            cmd.Parameters.AddWithValue(ticketRating.rating);
-    
-            int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-            if (rowsAffected > 0)
+            try
             {
-                return TypedResults.Ok(id);
+
+
+                using var cmd = db.CreateCommand("UPDATE tickets SET rating=$2 WHERE id=$1 AND status=3 AND rating is null");
+
+                cmd.Parameters.AddWithValue(id);
+                cmd.Parameters.AddWithValue(ticketRating.rating);
+
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                if (rowsAffected > 0)
+                {
+                    return TypedResults.Ok(id);
+                }
+                else
+                {
+                    return TypedResults.BadRequest("Already rated!");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return TypedResults.BadRequest("Already rated!");
+                return TypedResults.BadRequest("fan är det för fel " + ex.Message);
             }
+
         }
-        catch (Exception ex)
+        else
         {
-            return TypedResults.BadRequest("fan är det för fel " + ex.Message);
+            return TypedResults.BadRequest("Invalid rating");
         }
-        
         
     }
 

@@ -53,7 +53,8 @@ create table ticket_categories
     category_name text not null,
     company int not null 
         constraint FK_ticket_categories_companies
-        references companies
+        references companies,
+    active bool default true not null
 );
 alter table ticket_categories
     owner to postgres;
@@ -105,7 +106,7 @@ create table tickets
     status          integer not null
         constraint tickets_ticket_status_id_fk
             references ticket_status,
-    customer_url       text  not null,
+    customer_email       text  not null,
     product_id      integer not null 
         constraint tickets_products_id_fk
             references products,
@@ -114,7 +115,9 @@ create table tickets
             references users,
     ticket_category integer not null
         constraint tickets_ticket_categories_id_fk
-            references ticket_categories
+            references ticket_categories,
+    description text, 
+    rating numeric(2,1)
 );
 
 alter table tickets
@@ -130,7 +133,9 @@ create table customer_agentsxticket_category
             references ticket_categories,
     customer_agent  integer not null
         constraint customer_agentsxticket_category_users_id_fk
-            references users
+            references users,
+    constraint customer_agentsxticket_category_pk
+        primary key (customer_agent, ticket_category)   
 );
 
 alter table customer_agentsxticket_category

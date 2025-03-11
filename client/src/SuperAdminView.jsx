@@ -1,7 +1,7 @@
 import { NavLink, useNavigate, useLocation, useParams } from "react-router";
 import "./styles.css"
 import { useEffect, useState } from "react";
-import logo from './assets/logo.png';
+import { NavigationBar } from "./components/Navbar";
 
 
 
@@ -40,7 +40,7 @@ export function SuperAdminCompanyView() {
     useEffect(GetCompanies,[]);
 
     return <main className="role-specific-main">
-        <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+        <NavigationBar back={"/super-admin"}/>
         <section className="header-section"><h1>All Companies</h1></section>
         <ul className="list">
             {companies.map(CompanyCard)}
@@ -87,7 +87,7 @@ export function SuperAdminAddCompanyView() {
 
     return (
         <main className="form-main">
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/companies"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <NavigationBar back={"/companies"}/>
             <form className="data-form" onSubmit={postCompany} action="/api/companies" method="POST">
                 <div className="form-box">
                     <label>
@@ -170,7 +170,7 @@ export function SuperAdminEditCompanyView() {
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <NavigationBar back={"/super-admin"}/>
             <form className="data-form" onSubmit={updateCompany} action={`/api/companies/${id}`} method="PUT">
                 <div className="form-box">
                     <label>
@@ -258,7 +258,7 @@ export function SuperAdminAdminView() {
     useEffect(GetAdmins, []);
 
     return <main className="role-specific-main">
-        <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+        <NavigationBar back={"/super-admin"}/>
         <section className="header-section"><h1>All Admins</h1></section>
         <ul className="list">
             {admins.map(AdminCard)}
@@ -318,7 +318,7 @@ export function SuperAdminAddAdminView() {
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <NavigationBar back={"/super-admin"}/>
             <form className="data-form" onSubmit={postUser} action="/api/users" method="POST">
                 <div className="form-box">
                     <label>
@@ -428,7 +428,7 @@ export function SuperAdminEditAdminView() {
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/super-admin"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <NavigationBar back={"/super-admin"}/>
             <form className="data-form" onSubmit={updateUser} action={`/api/users/${id}`} method="PUT">
                 <div className="form-box">
                     <label>
