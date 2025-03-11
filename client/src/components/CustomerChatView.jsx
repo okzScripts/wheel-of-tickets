@@ -71,18 +71,34 @@ export function CustomerChatView() {
             })
     }
   
-        useEffect(() => {
-            if (ticket.status === 3) {
-                const rating = prompt("Please rate the support (1-5):", ''); if (rating && rating >= 1 && rating <= 5)
-                {
-                    alert(`Thank you for rating us ${rating}/5!`); fetch("/api/tickets/rating/" + id, {
-                        headers: { "Content-Type": "application/json" },
-                        method: "PUT",
-                        body: JSON.stringify({ rating }),
-                    }).then(response => { if (!response.ok) { alert("Failed to submit rating."); } });
-                } else if (rating !== null) { alert("Invalid rating. Please enter a number between 1 and 5."); }
+    useEffect(() => {
+        if (ticket.status === 3) {
+            let rating;
+            while (true) {
+                rating = prompt("Please rate the support (1-5):", '');
+                if (rating === null) return; 
+
+                rating = parseFloat(rating);
+                if (rating >= 1 && rating <= 5) break;
+
+                alert("Invalid rating. Please enter a number between 1 and 5.");
             }
-        }, [ticket.status]);
+
+            alert(`Thank you for rating us ${rating}/5!`);
+
+            fetch(`/api/tickets/rating/${id}`, {
+                headers: { "Content-Type": "application/json" },
+                method: "PUT",
+                body: JSON.stringify({ rating }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        alert("Failed to submit rating.");
+                    }
+                })
+                .catch(() => alert("An error occurred while submitting the rating."));
+        }
+    }, [ticket.status]);
 
 
         return (
