@@ -54,14 +54,14 @@ public class UserRoutes
 
     //?????public record GetUserByRoleDTO(UserRole Role)
 
-    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(string role, NpgsqlDataSource db, HttpContext ctx)
+    public static async Task<Results<Ok<List<User>>, BadRequest<string>>> GetUsersFromCompany(string role, bool active, NpgsqlDataSource db, HttpContext ctx)
     {
 
         List<User> users = new List<User>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,active,role FROM users WHERE role = $1 AND company=$2  ORDER BY id ASC");
+            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,active,role FROM users WHERE role = $1 AND company=$2 AND active = $3  ORDER BY id ASC");
 
             Enum.TryParse<UserRole>(role, true, out var userrole);
 
@@ -76,6 +76,7 @@ public class UserRoutes
 
                 cmd.Parameters.AddWithValue(userrole);
                 cmd.Parameters.AddWithValue(companyId);
+                cmd.Parameters.AddWithValue(active);
 
                 using var reader = await cmd.ExecuteReaderAsync();
 
