@@ -582,6 +582,7 @@ export function AdminCategoryView() {
 
     const [activeCategories, setActiveCategories] = useState([]);
     const [inactiveCategories, setInactiveCategories] = useState([]);
+    const [showInactive, setShowInactive] = useState(false);
 
     function fetchActiveCategories() {
         fetch(`/api/categories/company/?active=true`)
@@ -616,36 +617,6 @@ export function AdminCategoryView() {
         });
     }
 
-    useEffect(fetchActiveCategories, []);
-    useEffect(fetchInactiveCategories, []);
-
-    return <main>
-        <h1>Category Page!</h1>
-        <h2>Active categories</h2>
-        <div>
-            <ul>
-                {activeCategories.map(CategoryCard2)}
-            </ul>
-            <h2>Inactive categories </h2>
-            <ul>
-                {inactiveCategories.map(CategoryCard2)}
-            </ul>
-        </div>
-        <div>
-            <form onSubmit={AddCategory} action={"/api/categories"} method={"POST"}>
-                <input name="categoryName" type="text" placeholder="Category Name.." />
-                <input type="submit" value={"Add Category"} />
-            </form>
-        </div>
-    </main>
-
-    function CategoryCard2(category) {
-
-        return <li key={category.id}>Name: {category.category_name}<button className="small-button" value={category.active ? "Delete" : "Activate"} onClick={(e) => HandleCategoryStatus(e, category)}></button></li>
-
-
-    }
-
     function HandleCategoryStatus(e, category) {
         e.preventDefault();
         fetch(`/api/categories/status/`, {
@@ -654,14 +625,55 @@ export function AdminCategoryView() {
             body: JSON.stringify({ id: category.id, active: category.active })
         }).then(response => {
             if (response.ok) {
-                alert(`Du lade till   `);
+                fetchActiveCategories();
+                fetchInactiveCategories();
             } else {
                 alert("Något gick fel ");
             }
-
         }
         )
-        fetchActiveCategories();
-        fetchInactiveCategories();
+    }
+
+    useEffect(fetchActiveCategories, []);
+    useEffect(fetchInactiveCategories, []);
+
+    return <main>
+        <h1 className="category-header">Category Page!</h1>
+        <section className="section-divider">
+            <div className="categories-list">
+                <h2>Active categories</h2>
+                <ul>
+                    {activeCategories.map(CategoryCard2)}
+                </ul>
+            </div>
+            <div className="categries-statusBox">
+                <div className="inactive-categories-holder">
+                <button onClick={() => setShowInactive(prevState => !prevState)} className="toggle-inactive-btn">
+                    {showInactive ? "Hide Inactive Categories" : "Show Inactive Categories"}
+                </button>
+                {showInactive && (
+                    <ul className="inactive-list">
+                        {inactiveCategories.map(InactiveCategoriesCard)}
+                    </ul>
+                )}
+                </div>
+            </div>
+        </section>
+        <section className="add-categories-section">
+        <form className="add-categories-form" onSubmit={AddCategory} action={"/api/categories"} method={"POST"}>
+                <input className="add-category-input" name="categoryName" type="text" placeholder="Category Name.." />
+                <input className="add-category-button" type="submit" value={"Add Category"} />
+            </form>
+        </section>
+    </main>
+
+    function CategoryCard2(category) {
+        return <li className="li-categories" key={category.id}>Name: {category.category_name}<button className="category-button" onClick={(e) => HandleCategoryStatus(e, category)}>Inactivate</button></li>
+    }
+
+    function InactiveCategoriesCard(category) {
+        return <li className="inactive-list-item" key={category.id}>
+            <p>{category.category_name}</p><button onClick={(e) => HandleCategoryStatus(e, category)}>Activate</button>
+        </li>
     }
 }
