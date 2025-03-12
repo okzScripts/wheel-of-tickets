@@ -29,24 +29,16 @@ export function CustomerServiceView() {
 
 
     async function randomiser() {
-    if (unassignedTickets.length === 0) {
-        console.error("No unassigned tickets available.");
-        return;
-    }
-
-    const randomTicket = unassignedTickets[Math.floor(Math.random() * unassignedTickets.length)];
-
-    if (!randomTicket) {
-        console.error("Failed to select a random ticket.");
-        return;
-    }
 
     try {
-        const response = await fetch(`/api/tickets/${randomTicket.id}`, {
+       var respons= await fetch(`/api/tickets`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-        });
-        const result = await response.text();
+        })
+        if(!respons.ok){
+             alert("unable to assign a new ticket")
+        }
+     
     
         GetUnassignedTickets();
         GetAssignedTickets();
