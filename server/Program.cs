@@ -1,5 +1,6 @@
 using Npgsql;
 using server;
+using Microsoft.AspNetCore.Identity; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ var db = dataSourceBuilder.Build();
 
 
 builder.Services.AddSingleton<NpgsqlDataSource>(db);
+builder.Services.AddSingleton<PasswordHasher<string>>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options => { options.Cookie.IsEssential = true; });
 

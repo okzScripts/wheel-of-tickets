@@ -2,7 +2,7 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Text;
-
+using Microsoft.AspNetCore.Identity; 
 namespace server;
 public enum UserRole
 {
@@ -177,7 +177,7 @@ public class UserRoutes
 
     public record PostAdminDTO(string Name, string Email, int Company, string Role);
 
-    public static async Task<IResult> AddAdmin(PostAdminDTO user, NpgsqlDataSource db, HttpContext ctx)
+    public static async Task<IResult> AddAdmin(PostAdminDTO user, NpgsqlDataSource db, HttpContext ctx, PasswordHasher<string> hasher)
     {
         if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt == UserRole.super_admin ){
             try
@@ -185,13 +185,14 @@ public class UserRoutes
                 Enum.TryParse<UserRole>(user.Role, true, out var userRole);           
     
                 password= GeneratePassword(8);  
+                string hashedPassword = hasher.HashPassword("", password);
                 
                 using var cmd = db.CreateCommand(
                     "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
 
                 cmd.Parameters.AddWithValue(user.Name);
                 cmd.Parameters.AddWithValue(user.Email);
-                cmd.Parameters.AddWithValue(password);
+                cmd.Parameters.AddWithValue(hashedPassword);
                 cmd.Parameters.AddWithValue(user.Company);
                 cmd.Parameters.AddWithValue(userRole);
                 cmd.Parameters.AddWithValue(true);
