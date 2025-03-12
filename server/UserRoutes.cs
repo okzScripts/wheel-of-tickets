@@ -61,7 +61,7 @@ public class UserRoutes
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,active,role FROM users WHERE role = $1 AND company=$2 AND active = $3  ORDER BY id ASC");
+            using var cmd = db.CreateCommand("SELECT id,name,email,password,company,active,role FROM users WHERE role = $1 AND company=$2 AND active = $3 ORDER BY id ASC");
 
             Enum.TryParse<UserRole>(role, true, out var userrole);
 

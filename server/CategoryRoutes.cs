@@ -129,7 +129,7 @@ public class CategoryRoutes
 
                 using var cmd = db.CreateCommand("UPDATE ticket_categories SET active = $1 WHERE id = $2");
 
-                cmd.Parameters.AddWithValue(status.active);
+                cmd.Parameters.AddWithValue(status.active ? false : true);
                 cmd.Parameters.AddWithValue(status.id);
 
 
