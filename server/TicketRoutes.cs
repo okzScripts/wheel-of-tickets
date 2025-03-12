@@ -104,38 +104,42 @@ public class TicketRoutes
     }
 
 
-    public static async Task<Results<Ok<string>, BadRequest<string>>> AssignTicket( NpgsqlDataSource db, HttpContext ctx)
+    public static async Task<Results<Ok<string>, BadRequest<string>>> AssignTicket(NpgsqlDataSource db, HttpContext ctx)
     {
 
         try
         {
-            if (ctx.Session.IsAvailable && ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt == UserRole.Service_agent  )
-            {   
-                int id; 
+            if (ctx.Session.IsAvailable && ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.Service_agent)
+            {
+                int id;
                 var agent = ctx.Session.GetInt32("id");
-                if(!agent.HasValue){
-                    return TypedResults.BadRequest("Session not available"); 
+                if (!agent.HasValue)
+                {
+                    return TypedResults.BadRequest("Session not available");
                 }
 
                 await using var conn = await db.OpenConnectionAsync();
                 await using var transaction = await conn.BeginTransactionAsync();
 
-              using var cmdRandomSelect = db.CreateCommand( @"select id from tickets  join customer_agentsxticket_category as caXtc 
+                using var cmdRandomSelect = db.CreateCommand(@"select id from tickets  join customer_agentsxticket_category as caXtc 
               on tickets.ticket_category = caXtc.ticket_category
               where caXtc.customer_agent=$1 and tickets.customer_agent is null 
               order by random() 
-              limit 1;"); 
-             
-              cmdRandomSelect.Parameters.AddWithValue(agent); 
-              var reader =  await cmdRandomSelect.ExecuteReaderAsync(); 
-                if(await reader.ReadAsync()){
-                    id=reader.GetInt32(0); 
-                }else{
-                    transaction.Commit(); 
-                    return TypedResults.BadRequest("Failed to select a ticket"); 
+              limit 1;");
+
+                cmdRandomSelect.Parameters.AddWithValue(agent);
+                var reader = await cmdRandomSelect.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    id = reader.GetInt32(0);
+                }
+                else
+                {
+                    transaction.Commit();
+                    return TypedResults.BadRequest("Failed to select a ticket");
                 }
 
-              
+
                 using var cmd = db.CreateCommand("UPDATE tickets SET customer_agent = $2, status = 2 WHERE id = $1");
 
                 cmd.Parameters.AddWithValue(id);
@@ -143,13 +147,13 @@ public class TicketRoutes
 
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
                 if (rowsAffected > 0)
-                {   
-                    await transaction.CommitAsync(); 
+                {
+                    await transaction.CommitAsync();
                     return TypedResults.Ok("Ticket assigned successfully.");
                 }
                 else
-                {   
-                    await transaction.RollbackAsync(); 
+                {
+                    await transaction.RollbackAsync();
                     return TypedResults.BadRequest("Ticket assignment failed. Ticket ID or customer agent might be invalid.");
                 }
             }
@@ -183,7 +187,7 @@ public class TicketRoutes
                 using var cmd = db.CreateCommand(@"
                 SELECT  t.id, t.status, t.description,t.product_id, t.ticket_category
                 FROM tickets t 
-                WHERE t.customer_agent = $1 ");
+                WHERE t.customer_agent = $1 AND t.status != 3");
 
                 cmd.Parameters.AddWithValue(id);
 
@@ -224,7 +228,7 @@ public class TicketRoutes
 
             int status = 1;
             int? ticketIdNullable;
-            int ticketId; 
+            int ticketId;
 
 
             var sql1 = "INSERT INTO tickets (status, description, product_id, ticket_category) VALUES ($1, $2, $3, $4) RETURNING id";
@@ -236,11 +240,14 @@ public class TicketRoutes
                 cmd1.Parameters.AddWithValue(ticket.categoryId);
 
                 ticketIdNullable = (int?)await cmd1.ExecuteScalarAsync();
-                if(!ticketIdNullable.HasValue){
+                if (!ticketIdNullable.HasValue)
+                {
                     await transaction.DisposeAsync();
-                    return TypedResults.BadRequest("Failed to create ticket");  
-                }else{
-                    ticketId=ticketIdNullable.Value; 
+                    return TypedResults.BadRequest("Failed to create ticket");
+                }
+                else
+                {
+                    ticketId = ticketIdNullable.Value;
                 }
             }
 
@@ -333,7 +340,49 @@ public class TicketRoutes
         {
             return TypedResults.BadRequest("Invalid rating");
         }
-        
+
+    }
+
+    public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetClosedTicketsByUserId(NpgsqlDataSource db, HttpContext ctx)
+    {
+
+        int? agentId = ctx.Session.GetInt32("id");
+        List<Ticket> closedTicketlist = new();
+
+        try
+        {
+
+            using var cmd = db.CreateCommand("SELECT id, status, customer_email, product_id, ticket_category,description FROM tickets WHERE status = 3 AND customer_agent = $1");
+            if (agentId != null)
+            {
+                cmd.Parameters.AddWithValue(agentId);
+
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    closedTicketlist.Add(new Ticket(
+                        reader.GetInt32(0),
+                        reader.GetInt32(1),
+                        reader.GetString(5),
+                        reader.GetInt32(3),
+                        reader.GetInt32(4)
+                    ));
+                }
+                return TypedResults.Ok(closedTicketlist);
+
+
+
+
+            }
+            return TypedResults.BadRequest("agentID kan ej vara null. Logga in som en customer_agent!!!");
+
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest(ex.Message);
+        }
+
     }
 
 }
