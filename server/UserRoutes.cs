@@ -230,7 +230,7 @@ public class UserRoutes
 
     public record PostAgentDTO(string Name, string Email, List<int> SelectedCategories, string Role);
 
-    public static async Task<IResult> AddAgent(PostAgentDTO agent, NpgsqlDataSource db, HttpContext ctx)
+    public static async Task<IResult> AddAgent(PostAgentDTO agent, NpgsqlDataSource db, HttpContext ctx, PasswordHasher<string> hasher)
     {
         if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt == UserRole.super_admin )
         {
@@ -245,7 +245,8 @@ public class UserRoutes
         {
             int? companyIdNullable ;
             int companyId=-1; 
-            string password= GeneratePassword(8);  
+            string password= GeneratePassword(8);
+            string hashedPassword = hasher.HashPassword("", password);   
             Enum.TryParse<UserRole>(agent.Role, true, out var userRole);
             
           
@@ -265,7 +266,7 @@ public class UserRoutes
 
             cmd.Parameters.AddWithValue(agent.Name);
             cmd.Parameters.AddWithValue(agent.Email);
-            cmd.Parameters.AddWithValue(password);
+            cmd.Parameters.AddWithValue(hashedPassword);
             cmd.Parameters.AddWithValue(companyId);
             cmd.Parameters.AddWithValue(userRole);
             cmd.Parameters.AddWithValue(true);
