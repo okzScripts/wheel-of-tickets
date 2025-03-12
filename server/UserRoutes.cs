@@ -417,7 +417,7 @@ public class UserRoutes
 
 
     public record PasswordDTO(string OldPassword, string Password, string RepeatPassword);
-    public static async Task<Results<Ok<string>, BadRequest<string>>> ChangePassword(PasswordDTO passwords, NpgsqlDataSource db, HttpContext ctx)
+    public static async Task<Results<Ok<string>, BadRequest<string>>> ChangePassword(PasswordDTO passwords, NpgsqlDataSource db, HttpContext ctx, PasswordHasher<string>hasher)
     {
         if (ctx.Session.IsAvailable)
         {
@@ -431,24 +431,29 @@ public class UserRoutes
                 using var cmd = db.CreateCommand(
                "select password from  users WHERE id = $1");
                 cmd.Parameters.AddWithValue(Id);
+                
 
                 using var reader = await cmd.ExecuteReaderAsync();
 
                 if (await reader.ReadAsync())
                 {
-                    var oldPassword = reader.GetString(0);
+                    var oldHashedPassword = reader.GetString(0);
+
+                    var verificationResult = hasher.VerifyHashedPassword("", oldHashedPassword, passwords.OldPassword);
 
 
-                    if (oldPassword != passwords.OldPassword)
+                    if (verificationResult == PasswordVerificationResult.Failed)
                     {
                         return TypedResults.BadRequest("password does not match old password");
                     }
-                    else
-                    {
+                    
+                    
                         if (passwords.Password == passwords.RepeatPassword)
                         {
+                            string hashedPassword = hasher.HashPassword("", passwords.Password);
+                            
                             using var cmdPut = db.CreateCommand("Update users set password=$1 where id=$2 ");
-                            cmdPut.Parameters.AddWithValue(passwords.Password);
+                            cmdPut.Parameters.AddWithValue(hashedPassword);
                             cmdPut.Parameters.AddWithValue(Id);
 
                             var rows = await cmdPut.ExecuteNonQueryAsync();
@@ -467,7 +472,7 @@ public class UserRoutes
                             return TypedResults.BadRequest("new passwords do not match");
                         }
 
-                    }
+                    
                 }
                 else { return TypedResults.BadRequest("No data found"); }
 
@@ -497,7 +502,7 @@ public static string GeneratePassword(int length){
 
 
 
-    public static async Task<Results<Ok<string>, BadRequest<string>>> ResetPassword(int id, NpgsqlDataSource db, HttpContext ctx)
+    public static async Task<Results<Ok<string>, BadRequest<string>>> ResetPassword(int id, NpgsqlDataSource db, HttpContext ctx, PasswordHasher<string>hasher)
     {
         if(ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt  && Enum.IsDefined(typeof(UserRole), roleInt) &&  (UserRole)roleInt != UserRole.Service_agent ){
         
@@ -510,6 +515,7 @@ public static string GeneratePassword(int length){
 
             string password = GeneratePassword(8);
             string email = "";
+            string hashedPassword = hasher.HashPassword("", password);
 
             if (role == UserRole.Service_agent)
             {
@@ -540,7 +546,7 @@ public static string GeneratePassword(int length){
                 using (var cmd2 = new NpgsqlCommand(sql2, conn, transaction))
                 {
 
-                    cmd2.Parameters.AddWithValue(password);
+                    cmd2.Parameters.AddWithValue(hashedPassword);
                     cmd2.Parameters.AddWithValue(id);
 
                     var rows = await cmd2.ExecuteNonQueryAsync();
