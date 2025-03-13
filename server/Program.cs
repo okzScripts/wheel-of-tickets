@@ -3,7 +3,7 @@ using server;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=admin132;Port=5432");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=Playa717;Port=5432");
 dataSourceBuilder.MapEnum<UserRole>();
 var db = dataSourceBuilder.Build();
 
@@ -51,7 +51,7 @@ app.MapPut("/api/products", ProductRoutes.EditProduct);
 app.MapPut("/api/products/block/{id}/{active}", ProductRoutes.BlockProductById);
 app.MapGet("/api/products/customer-ticket/", ProductRoutes.GetProductsForTicket);
 
-app.MapGet("/api/tickets/{id}", TicketRoutes.GetTicket);
+app.MapGet("/api/tickets/{slug}", TicketRoutes.GetTicket);
 app.MapGet("/api/tickets/unassigned", TicketRoutes.GetUnassignedTickets);
 app.MapPut("/api/tickets", TicketRoutes.AssignTicket);
 app.MapPut("/api/tickets/status/{id}", TicketRoutes.ChangeStatus);
@@ -63,7 +63,7 @@ app.MapGet("/api/tickets/closed", TicketRoutes.GetClosedTicketsByUserId);
 
 
 
-app.MapGet("/api/messages/{id}", MessageRoutes.GetTicketMessages);
+app.MapGet("/api/messages/{slug}", MessageRoutes.GetTicketMessages);
 app.MapPost("/api/messages/", MessageRoutes.AddMessage);
 
 
