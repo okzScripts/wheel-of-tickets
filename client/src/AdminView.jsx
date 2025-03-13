@@ -610,7 +610,8 @@ export function AdminCategoryView() {
             body: dataJson
         }).then(response => {
             if (response.ok) {
-                alert(`Du lade till en kategori`);
+                fetchActiveCategories();
+                fetchInactiveCategories();
             } else {
                 alert("Något gick fel ");
             }

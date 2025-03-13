@@ -7,7 +7,7 @@ import { React, useEffect, useState } from "react";
 
 export default function TechSolutions()
 {
-    const companyId = 1;
+    const companyId = 2;
     
     
 

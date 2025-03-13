@@ -12,6 +12,7 @@ main {
 }
 button {
   font-family: Arial, Helvetica, sans-serif;
+  cursor: pointer;
 }
 .navbar {
   display: flex;
@@ -95,11 +96,13 @@ button {
 
 .reset-button {
   background-color: rgb(206, 147, 21);
+  cursor: pointer;
 }
 
 .reset-button:disabled {
   background-color: rgba(192, 158, 47, 0.295);
   color: rgba(255, 255, 255, 0.295);
+  cursor: pointer;
 }
 .small-button {
   height: 60%;
@@ -266,7 +269,7 @@ button {
 }
 .tickets-left {
   width: 45%;
-  > h2 {
+  > div h2 {
     font-size: 18px;
     color: white;
     text-align: center;
@@ -278,6 +281,34 @@ button {
     font-size: 18px;
     color: white;
     text-align: center;
+  }
+}
+.closed-tickets-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  margin-top: 10%;
+}
+.closed-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+.closed-ticket-list-item {
+  border: 1px solid rgb(27, 27, 27);
+  width: 80%;
+  cursor: pointer;
+  > a {
+    text-decoration: none;
+  }
+  > a p {
+    text-align: center;
+    color: rgb(128, 128, 128);
   }
 }
 .ticket-list {
@@ -565,6 +596,7 @@ textarea {
   border-radius: 10px;
   padding: 10px;
   color: white;
+  cursor: pointer;
 }
 .categries-statusBox {
   display: flex;

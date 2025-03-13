@@ -58,12 +58,11 @@ public class CompanyRoutes
         try
         {
             using var cmd = db.CreateCommand(
-                "SELECT id, category_name FROM ticket_categories WHERE company = $1 ORDER BY id ASC"
+                "SELECT id, category_name FROM ticket_categories WHERE company = $1 AND active IS NOT false ORDER BY id ASC"
             );
-
-            if (ctx.Session.IsAvailable)
+            int? companySessionIdNullable = ctx.Session.GetInt32("company");
+            if (companySessionIdNullable.HasValue)
             {
-                int? companySessionIdNullable = ctx.Session.GetInt32("company");
 
                 if (!companySessionIdNullable.HasValue)
                 {

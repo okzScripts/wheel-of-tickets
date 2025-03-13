@@ -11,6 +11,7 @@ export default function CustomerTicketView() {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [email, setEmail] = useState([]);
+    const [description, setDescription] = useState([]);
    
 
 
@@ -43,6 +44,7 @@ export default function CustomerTicketView() {
             categoryId: categoryPick,
             message: message,
             email: email,
+            description: description
         };
 
         fetch("/api/tickets", {
@@ -101,6 +103,17 @@ export default function CustomerTicketView() {
                             value={email}
                             onChange={e=> setEmail(e.target.value)}
                             placeholder="Enter email"
+                            className="ticket-input"
+                            
+                        />
+                        {<h4 className="ticket-selection-tag">Title</h4>}
+                        <input
+                            disabled={!categoryPick}
+                            type="text"
+                            name="description"
+                            value={description}
+                            onChange={e=> setDescription(e.target.value)}
+                            placeholder="Enter Title"
                             className="ticket-input"
                             
                         />

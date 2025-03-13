@@ -8,8 +8,6 @@ public class TicketRoutes
 {
     public record Ticket(int id, int status, string description, int product_id, int ticket_category);
 
-    public record NewTicket(int productId, int categoryId, string message, string email);
-
     public record TicketRatingDTO(int id, float rating);
 
     public record GetTicketDTO(int id, int status, string customer_email, int product_id, int ticket_category, decimal? rating);
@@ -218,6 +216,7 @@ public class TicketRoutes
         }
     }
 
+    public record NewTicket(int productId, int categoryId, string message, string email, string description);
     public static async Task<Results<Ok<string>, BadRequest<string>>> CreateTicket(NewTicket ticket, NpgsqlDataSource db)
     {
         try
@@ -231,10 +230,11 @@ public class TicketRoutes
             int ticketId;
 
 
-            var sql1 = "INSERT INTO tickets (status, description, product_id, ticket_category) VALUES ($1, $2, $3, $4) RETURNING id";
+            var sql1 = "INSERT INTO tickets (status, description, customer_email, product_id, ticket_category) VALUES ($1, $2, $3, $4, $5) RETURNING id";
             using (var cmd1 = new NpgsqlCommand(sql1, conn, transaction))
             {
                 cmd1.Parameters.AddWithValue(status);
+                cmd1.Parameters.AddWithValue(ticket.description);
                 cmd1.Parameters.AddWithValue(ticket.email);
                 cmd1.Parameters.AddWithValue(ticket.productId);
                 cmd1.Parameters.AddWithValue(ticket.categoryId);
