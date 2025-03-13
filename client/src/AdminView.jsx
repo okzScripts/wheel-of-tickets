@@ -639,6 +639,7 @@ export function AdminCategoryView() {
     useEffect(fetchInactiveCategories, []);
 
     return <main>
+        <NavigationBar back={"/admin"}/>
         <h1 className="category-header">Category Page!</h1>
         <section className="section-divider">
             <div className="categories-list">
