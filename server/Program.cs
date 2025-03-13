@@ -1,14 +1,16 @@
 using Npgsql;
 using server;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=admin132;Port=5432");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=portedinme;Port=5432");
 dataSourceBuilder.MapEnum<UserRole>();
 var db = dataSourceBuilder.Build();
 
 
 builder.Services.AddSingleton<NpgsqlDataSource>(db);
+builder.Services.AddSingleton<PasswordHasher<string>>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options => { options.Cookie.IsEssential = true; });
 
@@ -51,7 +53,7 @@ app.MapPut("/api/products", ProductRoutes.EditProduct);
 app.MapPut("/api/products/block/{id}/{active}", ProductRoutes.BlockProductById);
 app.MapGet("/api/products/customer-ticket/", ProductRoutes.GetProductsForTicket);
 
-app.MapGet("/api/tickets/{id}", TicketRoutes.GetTicket);
+app.MapGet("/api/tickets/{slug}", TicketRoutes.GetTicket);
 app.MapGet("/api/tickets/unassigned", TicketRoutes.GetUnassignedTickets);
 app.MapPut("/api/tickets", TicketRoutes.AssignTicket);
 app.MapPut("/api/tickets/status/{id}", TicketRoutes.ChangeStatus);
@@ -60,10 +62,12 @@ app.MapPost("/api/tickets", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
 app.MapGet("/api/tickets/closed", TicketRoutes.GetClosedTicketsByUserId);
 
+//ANVÄNDS BARA 1 GÅNG!!!
+app.MapPost("/api/password/mockhash/", MockHasher.HashMockPasswords);
+app.MapPost("api/password/mockreset/",MockHasher.ResetMockPasswords); 
+//ANVÄNDS BARA 1 GÅNG!!!
 
-
-
-app.MapGet("/api/messages/{id}", MessageRoutes.GetTicketMessages);
+app.MapGet("/api/messages/{slug}", MessageRoutes.GetTicketMessages);
 app.MapPost("/api/messages/", MessageRoutes.AddMessage);
 
 

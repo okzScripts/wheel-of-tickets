@@ -27,7 +27,7 @@ public class CategoryRoutes
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest("nej de gick inte");
+            return TypedResults.BadRequest("nej de gick inte"+ex.Message);
         }
 
     }

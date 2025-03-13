@@ -1,5 +1,6 @@
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Text;
 using System.Data.Common;
 using Microsoft.VisualBasic;
 namespace server;
@@ -10,24 +11,17 @@ public class TicketRoutes
 
     public record TicketRatingDTO(int id, float rating);
 
-    public record GetTicketDTO(int id, int status, string customer_email, int product_id, int ticket_category, decimal? rating);
+    public record GetTicketDTO(int id, int status, string customer_email, int product_id, int ticket_category, decimal? rating, string slug);
 
 
-    public static async Task<Results<Ok<GetTicketDTO>, BadRequest<string>>> GetTicket(int id, NpgsqlDataSource db)
+    public static async Task<Results<Ok<GetTicketDTO>, BadRequest<string>>> GetTicket(string slug, NpgsqlDataSource db)
     {
         using var cmd = db.CreateCommand(@"
     SELECT 
-        t.id,
-        t.status,
-        t.description,
-        t.product_id,
-        t.ticket_category,
-        t.rating
-    FROM 
-        tickets AS t 
-    WHERE 
-        id = $1");
-        cmd.Parameters.AddWithValue(id);
+        t.id, t.status, t.description, t.product_id, t.ticket_category, t.rating, t.slug FROM tickets AS t 
+        WHERE slug = $1");
+        
+        cmd.Parameters.AddWithValue(slug);
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
@@ -37,7 +31,8 @@ public class TicketRoutes
                         reader.GetString(2),
                         reader.GetInt32(3),
                         reader.GetInt32(4),
-                        await reader.IsDBNullAsync(5) ? null : reader.GetDecimal(5)
+                        await reader.IsDBNullAsync(5) ? null : reader.GetDecimal(5),
+                        reader.GetString(6)
                     );
             return TypedResults.Ok(ticket);
         }
@@ -215,6 +210,23 @@ public class TicketRoutes
             return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
         }
     }
+    
+    public static string GenerateSlugs(int length)
+    {
+        const string capitalLetters = "QWERTYUIOPASDFGHJKLZXCVBNM";
+        const string smallLetters = "qwertyuiopasdfghjklzxcvbnm";
+        const string digits = "0123456789";
+        const string allChars = capitalLetters + smallLetters + digits;
+        StringBuilder password = new StringBuilder();
+        Random rnd = new Random();
+        while (0 < length--)
+        {
+            password.Append(allChars[rnd.Next(allChars.Length)]);
+        }
+        return password.ToString();
+    }
+
+    
 
     public record NewTicket(int productId, int categoryId, string message, string email, string description);
     public static async Task<Results<Ok<string>, BadRequest<string>>> CreateTicket(NewTicket ticket, NpgsqlDataSource db)
@@ -228,9 +240,9 @@ public class TicketRoutes
             int status = 1;
             int? ticketIdNullable;
             int ticketId;
+            string slug = GenerateSlugs(16);
 
-
-            var sql1 = "INSERT INTO tickets (status, description, customer_email, product_id, ticket_category) VALUES ($1, $2, $3, $4, $5) RETURNING id";
+            var sql1 = "INSERT INTO tickets (status, description, customer_email, product_id, ticket_category, slug) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
             using (var cmd1 = new NpgsqlCommand(sql1, conn, transaction))
             {
                 cmd1.Parameters.AddWithValue(status);
@@ -238,6 +250,7 @@ public class TicketRoutes
                 cmd1.Parameters.AddWithValue(ticket.email);
                 cmd1.Parameters.AddWithValue(ticket.productId);
                 cmd1.Parameters.AddWithValue(ticket.categoryId);
+                cmd1.Parameters.AddWithValue(slug);
 
                 ticketIdNullable = (int?)await cmd1.ExecuteScalarAsync();
                 if (!ticketIdNullable.HasValue)
@@ -265,7 +278,7 @@ public class TicketRoutes
 
             await transaction.CommitAsync();
 
-            string url = "http://localhost:5173/customer/" + ticketId + "/chat";
+            string url = "http://localhost:5173/customer/" + slug + "/chat";
             string subject = "Ticket on Produkt" + ticket.productId;
             string message = "Hej, Vi kommer svara på din ticket så fort vi kan! Här är en länk till chatten. " + url;
             MailService.SendMail(ticket.email, subject, message);

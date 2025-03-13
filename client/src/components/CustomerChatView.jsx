@@ -5,13 +5,13 @@ import logo from './../assets/logo.png';
 
 
 export function CustomerChatView() {
-    const { id } = useParams()
+    const { slug } = useParams()
     const [messageText, setMessageText] = useState("");
     const [messages, setMessages] = useState([]);
     const [ticket, setTicket] = useState({});
     
     function GetTicketMessages() {
-        fetch(`/api/messages/${id}`).then(response => response.json()).then(data => { setMessages(data) })
+        fetch(`/api/messages/${slug}`).then(response => response.json()).then(data => { setMessages(data) })
     }
     useEffect(GetTicketMessages, [])
 
@@ -51,7 +51,7 @@ export function CustomerChatView() {
     useEffect(GetTicket, [])
 
     function GetTicket() {
-        fetch("/api/tickets/" + id).then(response => response.json()).then(data => setTicket(data))
+        fetch("/api/tickets/" + slug).then(response => response.json()).then(data => setTicket(data))
     }
 
     function ChangeStatus() {
