@@ -1,6 +1,6 @@
 using Npgsql;
 using server;
-using Microsoft.AspNetCore.Identity; 
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,8 +62,9 @@ app.MapPost("/api/tickets", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
 app.MapPut("/api/tickets/rating/{id}", TicketRoutes.TicketRating);
 
-
-
+//ANVÄNDS BARA 1 GÅNG!!!
+app.MapPost("/api/password/mockhash/", MockHasher.HashMockPasswords);
+//ANVÄNDS BARA 1 GÅNG!!!
 
 app.MapGet("/api/messages/{id}", MessageRoutes.GetTicketMessages);
 app.MapPost("/api/messages/", MessageRoutes.AddMessage);
