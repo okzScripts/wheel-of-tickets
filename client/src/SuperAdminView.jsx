@@ -334,7 +334,7 @@ export function SuperAdminAddAdminView() {
     const [companies, setCompanies] = useState([]);
 
     useEffect(() => {
-        fetch("/api/companies")
+        fetch("/api/companies?active=true")
             .then(response => response.json())
             .then(data => setCompanies(data))
             .catch(error => console.error("Error fetching companies:", error));

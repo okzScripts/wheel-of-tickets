@@ -255,11 +255,10 @@ public class UserRoutes
             companyIdNullable = ctx.Session.GetInt32("company");
             if (!companyIdNullable.HasValue)
             {
-                int? companyIdNullable;
-                int companyId = -1;
-                string password = GeneratePassword(8);
-                Enum.TryParse<UserRole>(agent.Role, true, out var userRole);
-
+                return TypedResults.BadRequest("Session does not exist");
+            }else{
+                companyId=companyIdNullable.Value; 
+            }
 
 
                 // Första insert: användare
@@ -305,6 +304,7 @@ public class UserRoutes
                 {
                     return TypedResults.BadRequest("Ajsing bajsing, det funkade ej att lägga till admin");
                 }
+            
             }
             catch (PostgresException ex) when (ex.SqlState == "23505")
             {
@@ -320,7 +320,7 @@ public class UserRoutes
             return TypedResults.BadRequest("Session not existing/authentication failed");
         }
     }
-
+    
 
     public record PutAdminDTO(string Name, string Email);
     public static async Task<IResult> EditAdmin(int id, PutAdminDTO user, NpgsqlDataSource db, HttpContext ctx)
