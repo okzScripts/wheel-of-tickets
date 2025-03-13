@@ -7,7 +7,7 @@ import { React, useEffect, useState } from "react";
 
 export default function EcoEnterprises()
 {
-    const companyId = 2;
+    const companyId = 3;
 
 
 

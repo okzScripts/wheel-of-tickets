@@ -16,13 +16,14 @@ public class CompanyRoutes
 
     public record Product(int id, string product_name);
 
-    public static async Task<Results<Ok<List<Company>>, BadRequest<string>>> GetCompanies(NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<Company>>, BadRequest<string>>> GetCompanies(NpgsqlDataSource db, bool active)
     {
         List<Company> companies = new List<Company>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT id,name,email,phone,description,domain,active FROM companies WHERE id != 1 ORDER BY id ASC ");
+            using var cmd = db.CreateCommand("SELECT id,name,email,phone,description,domain,active FROM companies WHERE id != 1 AND active = $1 ORDER BY id ASC ");
+            cmd.Parameters.AddWithValue(active);
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -57,17 +58,17 @@ public class CompanyRoutes
         try
         {
             using var cmd = db.CreateCommand(
-                "SELECT id, category_name FROM ticket_categories WHERE company = $1 ORDER BY id ASC"
+                "SELECT id, category_name FROM ticket_categories WHERE company = $1 AND active IS NOT false ORDER BY id ASC"
             );
-
-            if (ctx.Session.IsAvailable )
+            int? companySessionIdNullable = ctx.Session.GetInt32("company");
+            if (companySessionIdNullable.HasValue)
             {
-                int? companySessionIdNullable = ctx.Session.GetInt32("company");
-                
-                if(!companySessionIdNullable.HasValue ){
-                    return TypedResults.BadRequest("Error loading session variables"); 
+
+                if (!companySessionIdNullable.HasValue)
+                {
+                    return TypedResults.BadRequest("Error loading session variables");
                 }
-                int companySessionId= companySessionIdNullable.Value; 
+                int companySessionId = companySessionIdNullable.Value;
                 cmd.Parameters.AddWithValue(companySessionId);
             }
             else
