@@ -31,12 +31,16 @@ export default function LoginPage() {
 
     }
 
-    return <main>
+    return <main className="login-main">
+        <section className="main-page-content"></section>
+        <section className="loginSection">
+            <h2>Swine-Sync</h2>
+            <p>Logga in med din grisiga Epost och Lösenord</p>
         <form name="login-form" onSubmit={login} action="/api/login" method="POST">
-            <input type="email" name="email" placeholder="Skriv din grisiga mailadress"></input>
-            <input type="password" name="password" placeholder="Skriv ditt sviniga lösenord"></input>
+            <input type="email" name="email" placeholder="Email.."></input>
+            <input type="password" name="password" placeholder="Password.."></input>
             <input type="submit" value="login!"></input>
-
-        </form>
+            </form>
+        </section>
     </main>
 }

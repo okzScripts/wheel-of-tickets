@@ -10,8 +10,8 @@ export default function CustomerTicketView() {
     const [message, setMessage] = useState("");   
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [email, setEmail] = useState([]);
-    const [description, setDescription] = useState([]);
+    const [email, setEmail] = useState("");
+    const [description, setDescription] = useState("");
    
 
 
@@ -64,9 +64,8 @@ export default function CustomerTicketView() {
     return (
         <>
             <main className="ticket-main">
-                <div className="ticket-form-container">
-                    <form className="ticket-form" onSubmit={handleOnSubmit}>
-                        <h4 className="ticket-selection-tag">Select Product</h4>
+                <form className="ticket-form" onSubmit={handleOnSubmit}>
+                    <div className="mobile-ticket-field">
                         <select
                             name="product"
                             disabled={!setEmail}
@@ -80,8 +79,8 @@ export default function CustomerTicketView() {
                                 </option>
                             ))}
                         </select>
-
-                        <h4 className="ticket-selection-tag">Select Ticket Category</h4>
+                    </div>
+                    <div className="mobile-ticket-field">
                         <select
                             name="category"
                             disabled={!productPick}
@@ -95,45 +94,47 @@ export default function CustomerTicketView() {
                                 </option>
                             ))}
                         </select>
-                        {<h4 className="ticket-selection-tag">Email</h4>}
+                    </div>
+                    <div className="mobile-ticket-field">
                         <input
                             disabled={!categoryPick}
                             type="email"
                             name="email"
                             value={email}
-                            onChange={e=> setEmail(e.target.value)}
-                            placeholder="Enter email"
+                            onChange={e => setEmail(e.target.value)}
+                            placeholder="Enter your email.."
                             className="ticket-input"
                             
-                        />
-                        {<h4 className="ticket-selection-tag">Title</h4>}
+                    />
+                    </div>
+                    <div className="mobile-ticket-field">
                         <input
-                            disabled={!categoryPick}
+                            disabled={email.trim() === ""}
                             type="text"
                             name="description"
                             value={description}
                             onChange={e=> setDescription(e.target.value)}
-                            placeholder="Enter Title"
+                            placeholder="Enter title.."
                             className="ticket-input"
                             
                         />
-                        <div className="ticket-message-container">
-                            <p className="ticket-message-label">Message</p>
+                    </div>
+                    <div className="mobile-ticket-field">
                             <textarea
-                                disabled={!categoryPick}
+                                disabled={description.trim() === ""}
                                 name="postTicket"
                                 rows={10}
                                 cols={25}
-                                value={message}
+                            value={message}
+                            placeholder="Enter message.."
                                 onChange={(e) => setMessage(e.target.value)}
                                 className="ticket-message-textarea"
                                 required
                             />
-                        </div>
+                    </div>
 
                         <input disabled={!message} type="submit" className="ticket-submit-button" value='Create Ticket'/>
                     </form>
-                </div>
             </main>
         </>
 
