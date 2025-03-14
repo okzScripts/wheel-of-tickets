@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=portedinme;Port=5432");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Database=swine_sync;Username=postgres;Password=1234;Port=5432");
 dataSourceBuilder.MapEnum<UserRole>();
 var db = dataSourceBuilder.Build();
 
@@ -64,7 +64,7 @@ app.MapGet("/api/tickets/closed", TicketRoutes.GetClosedTicketsByUserId);
 
 //ANVÄNDS BARA 1 GÅNG!!!
 app.MapPost("/api/password/mockhash/", MockHasher.HashMockPasswords);
-app.MapPost("api/password/mockreset/",MockHasher.ResetMockPasswords); 
+app.MapPost("api/password/mockreset/", MockHasher.ResetMockPasswords);
 //ANVÄNDS BARA 1 GÅNG!!!
 
 app.MapGet("/api/messages/{slug}", MessageRoutes.GetTicketMessages);

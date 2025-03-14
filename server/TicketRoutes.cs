@@ -7,7 +7,7 @@ namespace server;
 
 public class TicketRoutes
 {
-    public record Ticket(int id, int status, string description, int product_id, int ticket_category);
+    public record Ticket(int id, int status, string description, int product_id, int ticket_category, string slug);
 
     public record TicketRatingDTO(int id, float rating);
 
@@ -20,7 +20,7 @@ public class TicketRoutes
     SELECT 
         t.id, t.status, t.description, t.product_id, t.ticket_category, t.rating, t.slug FROM tickets AS t 
         WHERE slug = $1");
-        
+
         cmd.Parameters.AddWithValue(slug);
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
@@ -58,7 +58,8 @@ public class TicketRoutes
         t.status,
         t.description,
         t.product_id,
-        t.ticket_category
+        t.ticket_category,
+        t.slug
     FROM 
         tickets AS t 
     JOIN 
@@ -79,7 +80,8 @@ public class TicketRoutes
                         reader.GetInt32(1),
                         reader.GetString(2),
                         reader.GetInt32(3),
-                        reader.GetInt32(4)
+                        reader.GetInt32(4),
+                        reader.GetString(5)
                     );
                     tickets.Add(ticket);
                 }
@@ -178,7 +180,7 @@ public class TicketRoutes
                     return TypedResults.BadRequest("Session not exisiting");
                 }
                 using var cmd = db.CreateCommand(@"
-                SELECT  t.id, t.status, t.description,t.product_id, t.ticket_category
+                SELECT  t.id, t.status, t.description,t.product_id, t.ticket_category, t.slug
                 FROM tickets t 
                 WHERE t.customer_agent = $1 AND t.status != 3");
 
@@ -194,7 +196,8 @@ public class TicketRoutes
                     reader.GetInt32(1),
                     reader.GetString(2),
                     reader.GetInt32(3),
-                    reader.GetInt32(4)
+                    reader.GetInt32(4),
+                    reader.GetString(5)
                     ));
                 }
 
@@ -210,7 +213,7 @@ public class TicketRoutes
             return TypedResults.BadRequest($"Ett fel inträffade: {ex.Message}");
         }
     }
-    
+
     public static string GenerateSlugs(int length)
     {
         const string capitalLetters = "QWERTYUIOPASDFGHJKLZXCVBNM";
@@ -226,7 +229,7 @@ public class TicketRoutes
         return password.ToString();
     }
 
-    
+
 
     public record NewTicket(int productId, int categoryId, string message, string email, string description);
     public static async Task<Results<Ok<string>, BadRequest<string>>> CreateTicket(NewTicket ticket, NpgsqlDataSource db)
@@ -365,7 +368,7 @@ public class TicketRoutes
         try
         {
 
-            using var cmd = db.CreateCommand("SELECT id, status, customer_email, product_id, ticket_category,description FROM tickets WHERE status = 3 AND customer_agent = $1");
+            using var cmd = db.CreateCommand("SELECT id, status, customer_email, product_id, ticket_category,description, slug FROM tickets WHERE status = 3 AND customer_agent = $1");
             if (agentId != null)
             {
                 cmd.Parameters.AddWithValue(agentId);
@@ -379,7 +382,8 @@ public class TicketRoutes
                         reader.GetInt32(1),
                         reader.GetString(5),
                         reader.GetInt32(3),
-                        reader.GetInt32(4)
+                        reader.GetInt32(4),
+                        reader.GetString(5)
                     ));
                 }
                 return TypedResults.Ok(closedTicketlist);
