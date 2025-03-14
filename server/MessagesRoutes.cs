@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Npgsql;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 
 namespace server;
 
@@ -14,7 +15,7 @@ public static class MessageRoutes
 
         try
         {
-           
+
             await using var conn = await db.OpenConnectionAsync();
             await using var transaction = await conn.BeginTransactionAsync();
 
@@ -25,7 +26,7 @@ public static class MessageRoutes
             {
                 cmd1.Parameters.AddWithValue(slug);
                 result = (int?)await cmd1.ExecuteScalarAsync();
-                
+
                 if (!result.HasValue)
                 {
                     await transaction.DisposeAsync();
@@ -36,13 +37,13 @@ public static class MessageRoutes
                     ticketId = result.Value;
                 }
             }
-            
+
             var sql2 = "SELECT m.id, m.text, m.time, m.ticket, m.customer FROM messages m WHERE m.ticket = $1 ";
             using (var cmd2 = new NpgsqlCommand(sql2, conn, transaction))
             {
                 cmd2.Parameters.AddWithValue(ticketId);
                 using var reader = await cmd2.ExecuteReaderAsync();
-                
+
                 while (await reader.ReadAsync())
                 {
 
@@ -67,11 +68,43 @@ public static class MessageRoutes
         }
     }
 
+    public static async Task<int?> GetIdBySlug(NpgsqlDataSource db, string slug)
+    {
 
-    public record MessageDTO2(string text, int ticket, bool customer);
+        int? result;
+
+        try
+        {
+            using var cmd = db.CreateCommand("SELECT id FROM tickets WHERE slug = $1");
+            cmd.Parameters.AddWithValue(slug);
+
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            if (await reader.ReadAsync())
+            {
+                result = reader.GetInt32(0);
+                return result;
+            }
+            return null;
+        }
+        catch
+        {
+            return null;
+        }
+
+    }
+
+
+
+
+    public record MessageDTO2(string text, string slug, bool customer);
     public static async Task<Results<Ok<string>, BadRequest<string>>> AddMessage(MessageDTO2 message, NpgsqlDataSource db)
     {
 
+        int? ticketId = await GetIdBySlug(db, message.slug);
+        if(!ticketId.HasValue){
+            return TypedResults.BadRequest("Failed to get ticket id from slug");
+        }
 
         try
         {
@@ -79,7 +112,7 @@ public static class MessageRoutes
                                             values ($1,$2,$3,$4) ");
             cmd.Parameters.AddWithValue(message.text);
             cmd.Parameters.AddWithValue(DateTime.Now);
-            cmd.Parameters.AddWithValue(message.ticket);
+            cmd.Parameters.AddWithValue(ticketId.Value);
             cmd.Parameters.AddWithValue(message.customer);
 
             var result = await cmd.ExecuteNonQueryAsync();

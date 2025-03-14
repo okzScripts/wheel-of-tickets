@@ -66,14 +66,14 @@ export function CustomerServiceView() {
             <section className="lower-section">
                 <div className="tickets-left">
                     <div>
-                    <h2>YOUR TICKETS:</h2>
-                    {assignedTickets.length > 0 ? (
-                        <ul className="ticket-list">
-                            {assignedTickets.map(TicketCard)}
-                        </ul>
+                        <h2>YOUR TICKETS:</h2>
+                        {assignedTickets.length > 0 ? (
+                            <ul className="ticket-list">
+                                {assignedTickets.map(TicketCard)}
+                            </ul>
 
-                    ) : (
-                        <ul className="ticket-list"><li className="ticket-list-item" key={"emptyassigned"}><div className="ticket-info"><p>Inga tickets</p></div></li></ul>
+                        ) : (
+                            <ul className="ticket-list"><li className="ticket-list-item" key={"emptyassigned"}><div className="ticket-info"><p>Inga tickets</p></div></li></ul>
                         )}
                     </div>
                     <section className="closed-tickets-box">
@@ -102,7 +102,7 @@ export function CustomerServiceView() {
         </main>
     );
     function TicketCard(ticket) {
-        return <li key={ticket.id} className="ticket-list-item"><NavLink to={"/customer-service/" + ticket.id + "/ticket-info"} >
+        return <li key={ticket.id} className="ticket-list-item"><NavLink to={"/customer-service/" + ticket.slug + "/ticket-info"} >
 
             <h2>{ticket.description}</h2>
             <div className="ticket-info">
@@ -121,9 +121,9 @@ export function CustomerServiceView() {
     }
 
     function ClosedTicketCard(ticket) {
-        return <li key={ticket.id} className="closed-ticket-list-item"><NavLink to={"/customer-service/" + ticket.id + "/ticket-info"}>
+        return <li key={ticket.id} className="closed-ticket-list-item"><NavLink to={"/customer-service/" + ticket.slug + "/ticket-info"}>
             <p>{ticket.description}</p>
-            </NavLink>
+        </NavLink>
         </li>
     }
 
@@ -131,13 +131,13 @@ export function CustomerServiceView() {
 
 
 export function TicketInfoView() {
-    const { id } = useParams()
+    const { slug } = useParams()
     const [messageText, setMessageText] = useState("");
     const [messages, setMessages] = useState([])
-    const [ticket, setTicket] = useState(1)
+    const [ticket, setTicket] = useState("")
 
     function GetTicketMessages() {
-        fetch(`/api/messages/${id}`).then(response => response.json()).then(data => { setMessages(data) })
+        fetch(`/api/messages/${slug}`).then(response => response.json()).then(data => { setMessages(data) })
     }
     useEffect(GetTicketMessages, [])
 
@@ -153,12 +153,12 @@ export function TicketInfoView() {
         const form = e.target;
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData)
-        dataObject.ticket = id;
+        dataObject.slug = slug;
         dataObject.customer = false;
 
         let dataJson = JSON.stringify(dataObject);
         console.log(dataJson);
-        fetch("/api/messages",
+        fetch("/api/messages/",
             {
                 headers: { "Content-Type": "application/json" },
                 method: "POST",
@@ -177,11 +177,11 @@ export function TicketInfoView() {
     useEffect(GetTicket, [])
 
     function GetTicket() {
-        fetch("/api/tickets/" + id).then(response => response.json()).then(data => setTicket(data))
+        fetch("/api/tickets/" + slug).then(response => response.json()).then(data => setTicket(data))
     }
 
     function ChangeStatus() {
-        fetch("/api/tickets/status/" + id,
+        fetch("/api/tickets/status/" + slug,
             {
                 headers: { "Content-Type": "application/json" },
                 method: "PUT",

@@ -449,7 +449,7 @@ export function AdminEditSupportView() {
     return (
         <main>
             <NavigationBar back={"/agents"} />
-            <form className="data-form" onSubmit={updateUser} action={`/api/users/${agent?.id}`} method="PUT">
+            <form className="data-form" onSubmit={updateUser} action={`/api/users/agent/${agent?.id}`} method="PUT">
                 <div className="form-box">
                     <label>
                         Name:

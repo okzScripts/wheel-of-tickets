@@ -267,7 +267,7 @@ public class UserRoutes
 
                 cmd.Parameters.AddWithValue(agent.Name);
                 cmd.Parameters.AddWithValue(agent.Email);
-                cmd.Parameters.AddWithValue(password);
+                cmd.Parameters.AddWithValue(hashedPassword);
                 cmd.Parameters.AddWithValue(companyId);
                 cmd.Parameters.AddWithValue(userRole);
                 cmd.Parameters.AddWithValue(true);
@@ -522,7 +522,7 @@ public class UserRoutes
             var role_nullable = ctx.Session.GetInt32("role");
             if (!role_nullable.HasValue)
             {
-                return TypedResults.BadRequest("Error in loading Session variables");
+                return TypedResults.BadRequest("Error in loading Session variables" );
             }
             var role = (UserRole)role_nullable.Value;
 

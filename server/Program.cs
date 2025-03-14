@@ -56,15 +56,16 @@ app.MapGet("/api/products/customer-ticket/", ProductRoutes.GetProductsForTicket)
 app.MapGet("/api/tickets/{slug}", TicketRoutes.GetTicket);
 app.MapGet("/api/tickets/unassigned", TicketRoutes.GetUnassignedTickets);
 app.MapPut("/api/tickets", TicketRoutes.AssignTicket);
-app.MapPut("/api/tickets/status/{id}", TicketRoutes.ChangeStatus);
+app.MapPut("/api/tickets/status/{slug}", TicketRoutes.ChangeStatus);
 app.MapGet("/api/tickets/assigned", TicketRoutes.GetAssignedTickets);
 app.MapPost("/api/tickets", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
 app.MapGet("/api/tickets/closed", TicketRoutes.GetClosedTicketsByUserId);
+app.MapPut("/api/tickets/rating/{slug}",TicketRoutes.TicketRating );
 
 //ANVÄNDS BARA 1 GÅNG!!!
 app.MapPost("/api/password/mockhash/", MockHasher.HashMockPasswords);
-app.MapPost("api/password/mockreset/",MockHasher.ResetMockPasswords); 
+app.MapPost("api/password/mockreset/", MockHasher.ResetMockPasswords);
 //ANVÄNDS BARA 1 GÅNG!!!
 
 app.MapGet("/api/messages/{slug}", MessageRoutes.GetTicketMessages);

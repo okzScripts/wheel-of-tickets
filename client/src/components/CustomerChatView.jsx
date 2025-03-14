@@ -20,14 +20,13 @@ export function CustomerChatView() {
         return () => clearInterval(intervalId);
     }, []);
 
-    useEffect(() => console.log("hej"), []);
 
     function PostMessage(e) {
         e.preventDefault();
         const form = e.target;
         let formData = new FormData(form);
         let dataObject = Object.fromEntries(formData)
-        dataObject.ticket = id;
+        dataObject.slug = slug;
         dataObject.customer = true;
         
         let dataJson = JSON.stringify(dataObject);
@@ -55,7 +54,7 @@ export function CustomerChatView() {
     }
 
     function ChangeStatus() {
-        fetch("/api/tickets/status/" + id,
+        fetch("/api/tickets/status/" + slug,
             {
                 headers: { "Content-Type": "application/json" },
                 method: "PUT",
@@ -91,7 +90,7 @@ export function CustomerChatView() {
 
             alert(`Thank you for rating us ${rating}/5!`);
 
-            fetch(`/api/tickets/rating/${id}`, {
+            fetch(`/api/tickets/rating/${slug}`, {
                 headers: { "Content-Type": "application/json" },
                 method: "PUT",
                 body: JSON.stringify({ rating }),

@@ -114,7 +114,7 @@ export function SuperAdminAddCompanyView() {
     return (
         <main className="form-main">
             <NavigationBar back={"/companies"}/>
-            <form className="data-form" onSubmit={postCompany} action="/api/companies" method="POST">
+            <form className="data-form" onSubmit={postCompany} action="/api/companies?active=true" method="POST">
                 <div className="form-box">
                     <label>
                         Name:
@@ -196,7 +196,7 @@ export function SuperAdminEditCompanyView() {
 
     return (
         <main>
-            <NavigationBar back={"/super-admin"}/>
+            <NavigationBar back={"/companies"}/>
             <form className="data-form" onSubmit={updateCompany} action={`/api/companies/${id}`} method="PUT">
                 <div className="form-box">
                     <label>
@@ -364,7 +364,7 @@ export function SuperAdminAddAdminView() {
 
     return (
         <main>
-            <NavigationBar back={"/super-admin"}/>
+            <NavigationBar back={"/admins"}/>
             <form className="data-form" onSubmit={postUser} action="/api/users" method="POST">
                 <div className="form-box">
                     <label>
@@ -406,7 +406,6 @@ export function SuperAdminAddAdminView() {
 
 export function SuperAdminEditAdminView() {
     const { id } = useParams()
-    const [companies, setCompanies] = useState([]);
     const [admin, setAdmin] = useState(null);
     const [disabled, setDisabled] = useState(false);
   
@@ -433,14 +432,6 @@ export function SuperAdminEditAdminView() {
             )
     }
 
-
-
-    useEffect(() => {
-        fetch("/api/companies")
-            .then(response => response.json())
-            .then(data => setCompanies(data))
-            .catch(error => console.error("Error fetching companies:", error));
-    }, []);
 
     useEffect(() => {
         fetch("/api/users/" + id)
@@ -474,7 +465,7 @@ export function SuperAdminEditAdminView() {
 
     return (
         <main>
-            <NavigationBar back={"/super-admin"}/>
+            <NavigationBar back={"/admins"}/>
             <form className="data-form" onSubmit={updateUser} action={`/api/users/${id}`} method="PUT">
                 <div className="form-box">
                     <label>
@@ -495,21 +486,6 @@ export function SuperAdminEditAdminView() {
                             type="email"
                             required
                         />
-                    </label>
-                    <label>
-                        Company:
-                        <select
-                            name="company"
-                            defaultValue={admin?.company}
-                            required
-                        >
-                            <option value="" disabled hidden>Välj ett företag</option>
-                            {companies.map(c => (
-                                <option key={c.id} value={c.id}>
-                                    {c.name}
-                                </option>
-                            ))}
-                        </select>
                     </label>
                 </div>
                 <input type="submit" value="Save" className="middle-button"></input>  <button disabled={disabled} className="middle-button reset-button" onClick={ResetPassword} >Reset Password</button>
