@@ -100,36 +100,66 @@ public static class MessageRoutes
     public record MessageDTO2(string text, string slug, bool customer);
     public static async Task<Results<Ok<string>, BadRequest<string>>> AddMessage(MessageDTO2 message, NpgsqlDataSource db)
     {
-
-        int? ticketId = await GetIdBySlug(db, message.slug);
-        if(!ticketId.HasValue){
-            return TypedResults.BadRequest("Failed to get ticket id from slug");
-        }
+        await using var conn = await db.OpenConnectionAsync();
+        await using var transaction = await conn.BeginTransactionAsync();
 
         try
         {
-            using var cmd = db.CreateCommand(@"insert into messages (text,time,ticket,customer)
-                                            values ($1,$2,$3,$4) ");
-            cmd.Parameters.AddWithValue(message.text);
-            cmd.Parameters.AddWithValue(DateTime.Now);
-            cmd.Parameters.AddWithValue(ticketId.Value);
-            cmd.Parameters.AddWithValue(message.customer);
+            int? ticketId = null;
+            int ticketStatus = -1;
 
-            var result = await cmd.ExecuteNonQueryAsync();
-
-            if (result > 0)
+            var sql1 = "SELECT id, status FROM tickets WHERE slug = $1";
+            using (var cmd1 = new NpgsqlCommand(sql1, conn, transaction))
             {
-                return TypedResults.Ok("Message recived");
+                cmd1.Parameters.AddWithValue(message.slug);
+                using var reader = await cmd1.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    ticketId = reader.GetInt32(0);
+                    ticketStatus = reader.GetInt32(1);
+                }
             }
-            else
+
+            if (!ticketId.HasValue)
             {
-                return TypedResults.BadRequest("Failed to added");
+                await transaction.RollbackAsync();
+                return TypedResults.BadRequest("Finns ingen ticket med denna slug");
+            }
+
+            if (ticketStatus == 3)
+            {
+                await transaction.RollbackAsync();
+                return TypedResults.BadRequest("AJA BAJA, denna ticket är stängd");
+            }
+
+            var sql2 = @"INSERT INTO messages (text, time, ticket, customer)
+            values($1, $2, $3, $4)";
+
+            using (var cmd2 = new NpgsqlCommand(sql2, conn, transaction))
+            {
+                cmd2.Parameters.AddWithValue(message.text);
+                cmd2.Parameters.AddWithValue(DateTime.Now);
+                cmd2.Parameters.AddWithValue(ticketId.Value);
+                cmd2.Parameters.AddWithValue(message.customer);
+
+                var result = await cmd2.ExecuteNonQueryAsync();
+                if (result <= 0)
+                {
+                    await transaction.RollbackAsync();
+                    return TypedResults.BadRequest("Kunde inte lägga till meddelande");
+                }
+
+                await transaction.CommitAsync();
+                return TypedResults.Ok("La till meddelandet");
             }
         }
         catch (Exception ex)
         {
-            return TypedResults.BadRequest("Error accessing db" + ex);
+            await transaction.CommitAsync();
+            return TypedResults.BadRequest("error accessing DB: " + ex);
         }
+
     }
 
 }
