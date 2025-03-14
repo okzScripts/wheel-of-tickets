@@ -64,18 +64,18 @@ VALUES
 
 
 
-INSERT INTO public.tickets (description, status, customer_email, product_id, customer_agent, ticket_category)
+INSERT INTO public.tickets (description, status, customer_email, product_id, customer_agent, ticket_category,slug)
 VALUES
-( 'Ill tasting Feed', 1, 'svine-lisa@stia.com', 1, NULL, 1),
-( 'Billed for 5ms tough the trough is only 4.99 m ', 1, 'pelle-gris@host.com', 2, NULL, 2),
-( 'Problem with mudbath', 1, 'galter@trynet.com', 3, NULL, 4),
-(  'improvements to the pedicure',1, 'sofina@stia.com', 4, NULL, 5), 
-( 'Missing Vaccines',1, 'nasse.kultinggren@trynet.com',5,NULL,6),
-( 'Glue disolved after mud bath',1, 'nuffer@svinmail.com',3,NULL,4 ),
-('Shoes at Retirment home not good enough',1,'kurt.kulting@fakemail.se' ,6, NULL , 7),
-( 'Knife not sharp enough',1, 'griselda.lergrop@svinmail.com', 7,NULL, 8  ),
-('Missing Truck',1,'orne.lera@stia.com',8,NULL,9 ), 
-('mudbath control system error',1,'tryne.enuff@fakemail.se',3,NULL,4); 
+( 'Ill tasting Feed', 1, 'svine-lisa@stia.com', 1, NULL, 1,'aa'),
+( 'Billed for 5ms tough the trough is only 4.99 m ', 1, 'pelle-gris@host.com', 2, NULL, 2,'bb'),
+( 'Problem with mudbath', 1, 'galter@trynet.com', 3, NULL, 4,'cc'),
+(  'improvements to the pedicure',1, 'sofina@stia.com', 4, NULL, 5,'dd'), 
+( 'Missing Vaccines',1, 'nasse.kultinggren@trynet.com',5,NULL,6,'ee'),
+( 'Glue disolved after mud bath',1, 'nuffer@svinmail.com',3,NULL,4 ,'ff'),
+('Shoes at Retirment home not good enough',1,'kurt.kulting@fakemail.se' ,6, NULL , 7,'gg'),
+( 'Knife not sharp enough',1, 'griselda.lergrop@svinmail.com', 7,NULL, 8 ,'hh' ),
+('Missing Truck',1,'orne.lera@stia.com',8,NULL,9 ,'ii'), 
+('mudbath control system error',1,'tryne.enuff@fakemail.se',3,NULL,4,'jj'); 
 
   
 

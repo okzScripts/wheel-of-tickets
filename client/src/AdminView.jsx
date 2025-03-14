@@ -20,6 +20,8 @@ export function AdminView() {
 export function ProductView() {
 
     const [products, setProducts] = useState([]);
+    const [inactiveProducts, setInactiveProducts] = useState([]);
+    const [showInactive, setShowInactive] = useState(false);
 
     function BlockProductById(id, active) {
         fetch(`/api/products/block/${id}/${active}`, {
@@ -30,32 +32,62 @@ export function ProductView() {
             .then(response => {
                 if (response.ok) { console.log("Det Funkade Igen") }
                 fetchProducts();
+                fetchInactiveProducts();
             })
 
     };
 
     function fetchProducts() {
-        fetch(`/api/products/company`)
+        fetch(`/api/products/company/?active=true`)
             .then(response => response.json())
             .then(data => setProducts(data))
             .catch(error => console.error("Error fetching products:", error));
     }
 
+    function fetchInactiveProducts() {
+        fetch(`/api/products/company/?active=false`)
+            .then(response => response.json())
+            .then(data => setInactiveProducts(data))
+            .catch(error => console.error("Error fetching inactive products", error));
+    }
+
+
+
+
     // Hämta produkter vid första rendering
     useEffect(fetchProducts, []);
+    useEffect(fetchInactiveProducts, [])
 
 
 
     return <main>
-        <NavigationBar back={"/admin"}/>
+        <NavigationBar back={"/admin"} />
         <section className="header-section"><h1>All Products</h1></section>
-        <ul className="list">
-            {products.map(ProductCard)}
-        </ul>
+        <div className="list-content-box">
+            <ul className="list">
+                {products.map(ProductCard)}
+            </ul>
+            <section className="statusBox">
+                <button onClick={() => setShowInactive(prevState => !prevState)} className="toggle-inactive-btn">
+                    {showInactive ? "Hide Inactive Products" : "Show Inactive Products"}
+                </button>
+                {showInactive && (
+                    <ul className="inactive-list">
+                        {inactiveProducts.map(InactiveProductCard)}
+                    </ul>
+                )}
+            </section>
+        </div>
         <section className="content-box">
             <NavLink to={`/product/add`}><button className="middle-button">Add product</button> </NavLink>
         </section>
     </main>
+
+    function InactiveProductCard(product) {
+        return <li className="inactive-list-item" key={product.id}>
+            <p>{product.name}</p><button onClick={() => BlockProductById(product.id, product.active)}>Activate</button>
+        </li>
+    }
 
 
     function ProductCard(product) {
@@ -67,7 +99,7 @@ export function ProductView() {
             </div>
             <div className="card-buttons">
                 <NavLink to={"/product/" + product.id + "/edit"}><button>Edit</button></NavLink>
-                <button className="small-button" onClick={() => BlockProductById(product.id, product.active)}>{product.active ? "block" : "un-block"}</button>
+                <button className="small-button" onClick={() => BlockProductById(product.id, product.active)}>block</button>
             </div>
         </li>
     }
@@ -79,13 +111,22 @@ export function ProductView() {
 export function SupportView() {
 
     const [supports, setSupports] = useState([]);
+    const [inactiveSupports, setInactiveSupports] = useState([]);
+    const [showInactive, setShowInactive] = useState(false);
     const agent = "Service_agent"
 
     function fetchUsers() {
-        fetch(`/api/users/company/${agent}`)
+        fetch(`/api/users/company/${agent}/?active=true`)
             .then(response => response.json())
             .then(data => setSupports(data))
             .catch(error => console.error("Error fetching users:", error));
+    }
+
+    function fetchInactiveUsers() {
+        fetch(`/api/users/company/${agent}/?active=false`)
+            .then(response => response.json())
+            .then(data => setInactiveSupports(data))
+            .catch(error => console.error("Error fetching inactive users", error));
     }
 
     function BlockSupportById(id, active) {
@@ -98,6 +139,7 @@ export function SupportView() {
                 if (response.ok) {
                     console.log("User status updated");
                     fetchUsers();
+                    fetchInactiveUsers();
                 }
             })
             .catch(error => console.error("Error updating user:", error));
@@ -106,16 +148,33 @@ export function SupportView() {
     useEffect(
         fetchUsers
         , []);
+    useEffect(
+        fetchInactiveUsers, []);
+
     return <main>
-        <NavigationBar back={"/admin"}/>
+        <NavigationBar back={"/admin"} />
         <section className="header-section"><h1>All Service Agents</h1></section>
-        <ul className="list">
-            {supports.map(AgentCard)}
-        </ul>
+        <div className="list-content-box">
+            <ul className="list">
+                {supports.map(AgentCard)}
+            </ul>
+            <section className="statusBox">
+                <button onClick={() => setShowInactive(prevState => !prevState)} className="toggle-inactive-btn">
+                    {showInactive ? "Hide Inactive Agents" : "Show Inactive Agents"}
+                </button>
+                {showInactive && (
+                    <ul className="inactive-list">
+                        {inactiveSupports.map(InactiveAgentCard)}
+                    </ul>
+                )}
+            </section>
+        </div>
         <section className="content-box">
             <NavLink to={`/agents/add`}><button className="middle-button">Add Support Agent</button></NavLink>
         </section>
     </main>
+
+
     function AgentCard(support) {
 
         return <li className="list-item" key={support.id}>
@@ -125,8 +184,13 @@ export function SupportView() {
             </div>
             <div className="card-buttons">
                 <NavLink to={`/agents/${support.id}/edit`}><button>Edit</button></NavLink>
-                <button className="small-button" onClick={() => BlockSupportById(support.id, support.active)}>{support.active ? "block" : "un-block"}</button>
+                <button className="small-button" onClick={() => BlockSupportById(support.id, support.active)}>block</button>
             </div>
+        </li>
+    }
+    function InactiveAgentCard(support) {
+        return <li className="inactive-list-item" key={support.id}>
+            <p>{support.name}</p><button onClick={() => BlockSupportById(support.id, support.active)}>Activate</button>
         </li>
     }
 }
@@ -159,7 +223,7 @@ export function AdminAddProductView() {
 
     return (
         <main>
-            <NavigationBar back={"/products"}/>
+            <NavigationBar back={"/products"} />
             <form className="data-form" onSubmit={PostProduct} action={`/api/products`} method="POST">
                 <div className="form-box">
                     <label>
@@ -243,7 +307,7 @@ export function AdminEditProductView() {
 
     return (
         <main>
-            <NavigationBar back={"/products"}/>
+            <NavigationBar back={"/products"} />
             <form className="data-form" onSubmit={updateProduct} action={`/api/products`} method="PUT">
                 <div className="form-box">
                     <label>
@@ -384,7 +448,7 @@ export function AdminEditSupportView() {
 
     return (
         <main>
-            <NavigationBar back={"/agents"}/>
+            <NavigationBar back={"/agents"} />
             <form className="data-form" onSubmit={updateUser} action={`/api/users/${agent?.id}`} method="PUT">
                 <div className="form-box">
                     <label>
@@ -473,7 +537,7 @@ export function AdminAddSupportView() {
 
     return (
         <main>
-            <NavigationBar back={"/agents"}/>
+            <NavigationBar back={"/agents"} />
             <form className="data-form" onSubmit={postUser} action="/api/users/agent" method="POST">
                 <div className="form-box">
                     <label>
@@ -518,6 +582,7 @@ export function AdminCategoryView() {
 
     const [activeCategories, setActiveCategories] = useState([]);
     const [inactiveCategories, setInactiveCategories] = useState([]);
+    const [showInactive, setShowInactive] = useState(false);
 
     function fetchActiveCategories() {
         fetch(`/api/categories/company/?active=true`)
@@ -525,7 +590,7 @@ export function AdminCategoryView() {
             .then(data => setActiveCategories(data))
             .catch(error => console.error("Ånej inte ett error!", error));
     }
-        
+
     function fetchInactiveCategories() {
         fetch(`/api/categories/company/?active=false`)
             .then(response => response.json())
@@ -545,58 +610,72 @@ export function AdminCategoryView() {
             body: dataJson
         }).then(response => {
             if (response.ok) {
-                alert(`Du lade till en kategori`);
+                fetchActiveCategories();
+                fetchInactiveCategories();
             } else {
                 alert("Något gick fel ");
             }
         });
     }
 
-    useEffect(fetchActiveCategories,[]); 
-    useEffect(fetchInactiveCategories,[]);
-
-    return <main>
-        <h1>Category Page!</h1>
-        <h2>Active categories</h2>
-        <div>
-        <ul> 
-         {activeCategories.map(CategoryCard2)}   
-        </ul>
-        <h2>Inactive categories </h2>
-        <ul> 
-            {inactiveCategories.map(CategoryCard2)}
-        </ul>
-        </div>
-        <div>
-            <form onSubmit={AddCategory} action={"/api/categories"} method={"POST"}>
-            <input name="categoryName" type="text" placeholder="Category Name.."/>
-                <input type="submit" value={"Add Category"}/>
-            </form>
-        </div>
-    </main>
-
-    function CategoryCard2(category) {
-
-        return <li key={category.id}>Name: {category.category_name}<button  className="small-button" value={category.active? "Delete":"Activate" } onClick={(e) => HandleCategoryStatus(e,category) }></button></li>
-
-
-    }
-
-    function HandleCategoryStatus(e,category) {
+    function HandleCategoryStatus(e, category) {
         e.preventDefault();
         fetch(`/api/categories/status/`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify({id:category.id,active:category.active}) 
-    }).then(response => {
-                if (response.ok) {
-                    alert(`Du lade till   `);
-                } else {
-                    alert("Något gick fel "); }
-
+            body: JSON.stringify({ id: category.id, active: category.active })
+        }).then(response => {
+            if (response.ok) {
+                fetchActiveCategories();
+                fetchInactiveCategories();
+            } else {
+                alert("Något gick fel ");
             }
+        }
         )
-        fetchActiveCategories();
-        fetchInactiveCategories();
+    }
+
+    useEffect(fetchActiveCategories, []);
+    useEffect(fetchInactiveCategories, []);
+
+    return <main>
+        <NavigationBar back={"/admin"}/>
+        <h1 className="category-header">Category Page!</h1>
+        <section className="section-divider">
+            <div className="categories-list">
+                <h2>Active categories</h2>
+                <ul>
+                    {activeCategories.map(CategoryCard2)}
+                </ul>
+            </div>
+            <div className="categries-statusBox">
+                <div className="inactive-categories-holder">
+                <button onClick={() => setShowInactive(prevState => !prevState)} className="toggle-inactive-btn">
+                    {showInactive ? "Hide Inactive Categories" : "Show Inactive Categories"}
+                </button>
+                {showInactive && (
+                    <ul className="inactive-list">
+                        {inactiveCategories.map(InactiveCategoriesCard)}
+                    </ul>
+                )}
+                </div>
+            </div>
+        </section>
+        <section className="add-categories-section">
+        <form className="add-categories-form" onSubmit={AddCategory} action={"/api/categories"} method={"POST"}>
+                <input className="add-category-input" name="categoryName" type="text" placeholder="Category Name.." />
+                <input className="add-category-button" type="submit" value={"Add Category"} />
+            </form>
+        </section>
+    </main>
+
+    function CategoryCard2(category) {
+        return <li className="li-categories" key={category.id}>Name: {category.category_name}<button className="category-button" onClick={(e) => HandleCategoryStatus(e, category)}>Inactivate</button></li>
+    }
+
+    function InactiveCategoriesCard(category) {
+        return <li className="inactive-list-item" key={category.id}>
+            <p>{category.category_name}</p><button onClick={(e) => HandleCategoryStatus(e, category)}>Activate</button>
+        </li>
     }
 }
