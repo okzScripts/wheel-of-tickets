@@ -85,11 +85,11 @@ public static class MessageRoutes
                 result = reader.GetInt32(0);
                 return result;
             }
-            return -1;
+            return null;
         }
         catch
         {
-            return -1;
+            return null;
         }
 
     }
@@ -102,6 +102,9 @@ public static class MessageRoutes
     {
 
         int? ticketId = await GetIdBySlug(db, message.slug);
+        if(!ticketId.HasValue){
+            return TypedResults.BadRequest("Failed to get ticket id from slug");
+        }
 
         try
         {
@@ -109,7 +112,7 @@ public static class MessageRoutes
                                             values ($1,$2,$3,$4) ");
             cmd.Parameters.AddWithValue(message.text);
             cmd.Parameters.AddWithValue(DateTime.Now);
-            cmd.Parameters.AddWithValue(ticketId);
+            cmd.Parameters.AddWithValue(ticketId.Value);
             cmd.Parameters.AddWithValue(message.customer);
 
             var result = await cmd.ExecuteNonQueryAsync();

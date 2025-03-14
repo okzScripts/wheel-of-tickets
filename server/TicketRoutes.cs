@@ -9,7 +9,7 @@ public class TicketRoutes
 {
     public record Ticket(int id, int status, string description, int product_id, int ticket_category, string slug);
 
-    public record TicketRatingDTO(int id, float rating);
+    public record TicketRatingDTO(string slug, float rating);
 
     public record GetTicketDTO(int id, int status, string customer_email, int product_id, int ticket_category, decimal? rating, string slug);
 
@@ -297,10 +297,14 @@ public class TicketRoutes
 
 
     public record statusDTO(int status);
-    public static async Task<Results<Ok<string>, BadRequest<string>>> ChangeStatus(int id, statusDTO status, NpgsqlDataSource db)
+    public static async Task<Results<Ok<string>, BadRequest<string>>> ChangeStatus(string slug, statusDTO status, NpgsqlDataSource db)
     {
         try
-        {
+        {   int? idNullable = await MessageRoutes.GetIdBySlug(db,slug); 
+            if(!idNullable.HasValue){
+                return TypedResults.BadRequest("failed to get ticket id from slug");
+            }
+            int id = idNullable.Value; 
             using var cmd = db.CreateCommand(
                 @"UPDATE tickets SET status = $1 WHERE id = $2"
             );
@@ -320,7 +324,7 @@ public class TicketRoutes
         }
     }
 
-    public static async Task<Results<Ok<int>, BadRequest<string>>> TicketRating(int id, TicketRatingDTO ticketRating,
+    public static async Task<Results<Ok<int>, BadRequest<string>>> TicketRating(string slug, TicketRatingDTO ticketRating,
         NpgsqlDataSource db)
     {
         if (ticketRating.rating >= 1 && ticketRating.rating <= 5)
@@ -329,7 +333,11 @@ public class TicketRoutes
             try
             {
 
-
+                int? idNullable = await MessageRoutes.GetIdBySlug(db,slug); 
+                if(!idNullable.HasValue){
+                    return TypedResults.BadRequest("failed to get ticket id from slug");
+                }
+                int id = idNullable.Value; 
                 using var cmd = db.CreateCommand("UPDATE tickets SET rating=$2 WHERE id=$1 AND status=3 AND rating is null");
 
                 cmd.Parameters.AddWithValue(id);
@@ -358,7 +366,7 @@ public class TicketRoutes
         }
 
     }
-
+//    public record Ticket(int id, int status, string description, int product_id, int ticket_category, string slug);
     public static async Task<Results<Ok<List<Ticket>>, BadRequest<string>>> GetClosedTicketsByUserId(NpgsqlDataSource db, HttpContext ctx)
     {
 
@@ -368,7 +376,7 @@ public class TicketRoutes
         try
         {
 
-            using var cmd = db.CreateCommand("SELECT id, status, customer_email, product_id, ticket_category,description, slug FROM tickets WHERE status = 3 AND customer_agent = $1");
+            using var cmd = db.CreateCommand("SELECT id, status,description, product_id, ticket_category, slug FROM tickets WHERE status = 3 AND customer_agent = $1");
             if (agentId != null)
             {
                 cmd.Parameters.AddWithValue(agentId);
@@ -380,7 +388,7 @@ public class TicketRoutes
                     closedTicketlist.Add(new Ticket(
                         reader.GetInt32(0),
                         reader.GetInt32(1),
-                        reader.GetString(5),
+                        reader.GetString(2),
                         reader.GetInt32(3),
                         reader.GetInt32(4),
                         reader.GetString(5)
