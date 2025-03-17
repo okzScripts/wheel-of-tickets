@@ -299,5 +299,8 @@ VALUES
 ('The mud bath was not as described in the brochure, very disappointing', current_timestamp, 52, true),
 ('I was overcharged for the items in my mini bar, and the prices didn’t match the menu', current_timestamp, 53, true),
 ('I had an allergic reaction to one of the products used during my treatment, I need to speak with a doctor', current_timestamp, 54, true),
-('The spa was not as clean as expected, there was debris in the corners', current_timestamp, 55, true);
+('The spa was not as clean as expected, there was debris in the corners', current_timestamp, 55, true),
+('My pig tail is not curling like its use too after using this product', current_timestamp, 56, true),
+('Your product made a dog bit my ear', current_timestamp, 57, true),
+('This is the fourth time my piggy bank is empty after buying this product', current_timestamp, 58, true),
 
