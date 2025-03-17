@@ -7,6 +7,7 @@ import { NavigationBar } from "./components/Navbar";
 
 export function SuperAdminView() {
     return <main className="option-main">
+        <NavigationBar back={"/"} />
         <div className="big-button-container">
             <NavLink to="/companies"><button className="big-button">Companies</button></NavLink>
             <NavLink to="/admins"><button className="big-button">Admins</button></NavLink>

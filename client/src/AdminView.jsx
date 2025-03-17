@@ -6,6 +6,7 @@ import { NavigationBar } from "./components/Navbar";
 export function AdminView() {
 
     return <main className="option-main">
+        <NavigationBar back={"/"} />
         <div className="big-button-container">
             <NavLink to="/products"><button className="big-button">Products</button></NavLink>
             <NavLink to="/agents"><button className="big-button">Support Agents</button></NavLink>

@@ -40,6 +40,7 @@ app.MapPut("/api/users/agent/{id}", UserRoutes.EditAgent);
 app.MapPut("/api/users/password/{id}", UserRoutes.ResetPassword);
 
 app.MapPost("/api/login", LoginRoutes.LoginByRole);
+app.MapDelete("/api/login", LoginRoutes.LogOut);
 
 app.MapPost("/api/categories", CategoryRoutes.AddCategory);
 app.MapPut("/api/categories/status/", CategoryRoutes.ChangeStatus);
@@ -61,7 +62,7 @@ app.MapGet("/api/tickets/assigned", TicketRoutes.GetAssignedTickets);
 app.MapPost("/api/tickets", TicketRoutes.CreateTicket);
 app.MapGet("/api/tickets/categories", CompanyRoutes.GetCategories);
 app.MapGet("/api/tickets/closed", TicketRoutes.GetClosedTicketsByUserId);
-app.MapPut("/api/tickets/rating/{slug}",TicketRoutes.TicketRating );
+app.MapPut("/api/tickets/rating/{slug}", TicketRoutes.TicketRating);
 
 //ANVÄNDS BARA 1 GÅNG!!!
 app.MapPost("/api/password/mockhash/", MockHasher.HashMockPasswords);

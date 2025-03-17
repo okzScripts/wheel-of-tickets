@@ -89,6 +89,19 @@ public static class LoginRoutes
 
     }
 
+    public static Results<Ok<string>, BadRequest, BadRequest<string>> LogOut(HttpContext ctx)
+    {
+        ctx.Session.Clear();
+        if (ctx.Session.GetInt32("id").HasValue)
+        {
+            return TypedResults.BadRequest("Du får inte logga ut");
+        }
+        else
+        {
+            return TypedResults.Ok("Du har loggat ut");
+        }
+    }
+
 
 }
 

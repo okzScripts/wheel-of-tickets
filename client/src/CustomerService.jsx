@@ -57,7 +57,7 @@ export function CustomerServiceView() {
 
     return (
         <main className="form-main">
-            <nav className="navbar"><img src={logo}></img></nav>
+            <NavigationBar back={"/"} />
             <section className="upper-section">
                 <div className="rollToGetATicket">
                     <button onClick={randomiser} className="middle-button">Roll to get a ticket</button>
