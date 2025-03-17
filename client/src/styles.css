@@ -269,7 +269,7 @@ button {
 }
 .tickets-left {
   width: 45%;
-  > div h2 {
+  > h2 {
     font-size: 18px;
     color: white;
     text-align: center;
