@@ -17,6 +17,58 @@ VALUES ( '1 ton Pig Feed', 'The best food a pig could wish for', 200, 'Service',
 ('Logistics Management Software', 'The latest software to keep track of your trucks takeing away swines', 1200, 'Product', 5);
 
 
+INSERT INTO public.products (product_name, product_description, price, product_category, company)  
+                   VALUES  
+                   ('Premium Piglet Starter Feed', 'Nutritious feed to ensure healthy piglet growth', 150, 'Feed', 2),  
+                   ('Organic Swine Feed', 'A high-quality organic diet for pigs of all ages', 180, 'Feed', 3),  
+                   ('Heavy-Duty Pig Trough', 'Durable and spacious feeding trough for pigs', 75, 'Equipment', 4),  
+                   ('Automatic Water Dispenser', 'Ensures pigs have continuous access to fresh water', 120, 'Equipment', 5),  
+                   ('Swine Health Supplement', 'Boosts immunity and overall pig health', 90, 'Supplement', 2),  
+                   ('Breeding Consultation Service', 'Expert advice for optimizing pig breeding', 300, 'Service', 3),  
+                   ('Piglet Heat Lamp', 'Keeps newborn piglets warm and healthy', 50, 'Equipment', 4),  
+                   ('Hog Transportation Crate', 'Safe and secure transport for pigs', 250, 'Equipment', 5),  
+                   ('Pig Grooming Brush', 'Ideal for keeping pigs clean and comfortable', 25, 'Accessory', 2),  
+                   ('Swine Parasite Control', 'Effective treatment for pig parasites', 60, 'Medical', 3),  
+                   ('High-Protein Hog Feed', 'Fortified feed for muscle development', 200, 'Feed', 4),  
+                   ('Pig Hoof Trimmer', 'Essential tool for pig hoof care', 40, 'Accessory', 5),  
+                   ('Portable Pig Scale', 'Accurately measures pig weight', 350, 'Equipment', 2),  
+                   ('Farm-Grade Pig Fencing', 'Secure fencing to keep pigs safe', 500, 'Equipment', 3),  
+                   ('Vitamin-Enriched Pig Feed', 'Balanced nutrition for optimal pig growth', 220, 'Feed', 4),  
+                   ('Swine Artificial Insemination Kit', 'Complete kit for breeding management', 275, 'Medical', 5),  
+                   ('Pig Behavior Analysis Service', 'Expert insights to optimize pig welfare', 400, 'Service', 2),  
+                   ('Pig Manure Composting System', 'Efficient system for converting waste into fertilizer', 600, 'Equipment', 3),  
+                   ('Hog Cooling Sprinkler', 'Prevents heat stress in pigs', 150, 'Equipment', 4),  
+                   ('Swine Respiratory Health Formula', 'Supports respiratory health in pigs', 80, 'Medical', 5),  
+                   ('Pig Enrichment Toys', 'Keeps pigs entertained and stimulated', 35, 'Accessory', 2),  
+                   ('Industrial Pig Barn Fans', 'Maintains proper ventilation in pig barns', 450, 'Equipment', 3),  
+                   ('Large-Scale Swine Vaccination Kit', 'Essential vaccines for herd health', 500, 'Medical', 4),  
+                   ('Pig Tracking Ear Tags', 'Helps identify and track pigs', 30, 'Accessory', 5),  
+                   ('Automatic Pig Weighing System', 'Monitors pig growth accurately', 800, 'Equipment', 2),  
+                   ('Biosecure Swine Handling Gloves', 'Protects against disease transmission', 20, 'Accessory', 3),  
+                   ('Swine Reproductive Hormone Treatment', 'Enhances breeding efficiency', 300, 'Medical', 4),  
+                   ('Piglet Milk Replacer', 'Nutritional formula for orphaned piglets', 120, 'Feed', 5),  
+                   ('Hog Farm Waste Management System', 'Eco-friendly solution for waste disposal', 1000, 'Equipment', 2),  
+                   ('Swine Foot Bath Solution', 'Prevents hoof infections and diseases', 75, 'Medical', 3),  
+                   ('Commercial Pig Slaughter Equipment', 'Efficient and humane processing system', 5000, 'Equipment', 4),  
+                   ('Pig Training Whistle', 'Used for training and guiding pigs', 15, 'Accessory', 5),  
+                   ('Organic Hog Bedding', 'Comfortable and eco-friendly bedding material', 55, 'Accessory', 2),  
+                   ('Piglet Growth Booster', 'Speeds up healthy growth in young pigs', 90, 'Supplement', 3),  
+                   ('Electric Pig Fencing Kit', 'Keeps pigs within designated areas', 350, 'Equipment', 4),  
+                   ('Hog Transport Trailer', 'Designed for moving pigs safely', 7500, 'Equipment', 5),  
+                   ('Swine Biosecurity Mat', 'Sanitizes footwear to prevent disease', 100, 'Accessory', 2),  
+                   ('Pig Disease Diagnostic Kit', 'Rapid testing for common pig illnesses', 275, 'Medical', 3),  
+                   ('Automated Hog Feeding System', 'Reduces labor and ensures consistent feeding', 2500, 'Equipment', 4),  
+                   ('Antibiotic-Free Swine Growth Enhancer', 'Supports natural pig growth', 200, 'Supplement', 5),  
+                   ('Hog Farm Air Filtration System', 'Reduces odors and airborne pathogens', 3000, 'Equipment', 2),  
+                   ('Mobile Swine Ultrasound Machine', 'Used for pregnancy detection in pigs', 4500, 'Medical', 3),  
+                   ('Heat Detection Patches for Sows', 'Improves breeding success rates', 150, 'Medical', 4),  
+                   ('Swine Transport Insurance Plan', 'Covers risks during pig transportation', 500, 'Service', 5),  
+                   ('Pig Pen Disinfectant Spray', 'Eliminates bacteria and viruses', 80, 'Medical', 2),  
+                   ('Automated Swine Data Logger', 'Tracks pig health and growth metrics', 900, 'Equipment', 3),  
+                   ('Customizable Pig Ear Notching Kit', 'For identifying individual pigs', 45, 'Accessory', 4),  
+                   ('Farm-Grade Hog Shower System', 'Maintains hygiene in swine facilities', 600, 'Equipment', 5)
+
+
 INSERT INTO public.ticket_categories (category_name,company)
 VALUES
 ( 'Technical Support',2),
@@ -58,6 +110,63 @@ VALUES
 ('Kejsare Gris' ,'super_gris@mail.com','kung',1, 'super_admin'),
 ('Miriam Enuff','enuff@mail.com','123',5,'service_agent');
  
+INSERT INTO public.users(name, email, password, company, role)  
+VALUES  
+-- Admins for Company 2  
+('Boss Hog', 'boss-hog@company2.com', 'securepass123', 2, 'admin'),  
+('Piggy Overlord', 'overlord@company2.com', 'baconrules456', 2, 'admin'),  
+('Hammy Chief', 'hammy-chief@company2.com', 'snoutsecure789', 2, 'admin'),  
+('Oink Master', 'oinkmaster@company2.com', 'pigpower321', 2, 'admin'),  
+('Porky CEO', 'porky-ceo@company2.com', 'curlytail999', 2, 'admin'),  
+
+-- Service Agents for Company 2  
+('Snout Support', 'snout-support@company2.com', 'helpdesk123', 2, 'service_agent'),  
+('Curly Tail Rep', 'curly-rep@company2.com', 'agent456', 2, 'service_agent'),  
+('Trotter Helper', 'trotter-helper@company2.com', 'assistance789', 2, 'service_agent'),  
+('Oinker Service', 'oinker-service@company2.com', 'pigsupport321', 2, 'service_agent'),  
+('Hog Helper', 'hog-helper@company2.com', 'hoghog999', 2, 'service_agent'),  
+
+-- Admins for Company 3  
+('Sow Supervisor', 'sow-supervisor@company3.com', 'pigboss123', 3, 'admin'),  
+('Trough Manager', 'trough-manager@company3.com', 'feedme456', 3, 'admin'),  
+('Boar King', 'boarking@company3.com', 'mudlover789', 3, 'admin'),  
+('Swine Director', 'swinedirector@company3.com', 'oinkoink321', 3, 'admin'),  
+('Bacon Baron', 'baconbaron@company3.com', 'porkking999', 3, 'admin'),  
+
+-- Service Agents for Company 3  
+('Pig Pal', 'pig-pal@company3.com', 'support123', 3, 'service_agent'),  
+('Hog Handler', 'hog-handler@company3.com', 'customer456', 3, 'service_agent'),  
+('Snorter Help', 'snorter-help@company3.com', 'agent789', 3, 'service_agent'),  
+('Mud Mixer', 'mud-mixer@company3.com', 'helpdesk321', 3, 'service_agent'),  
+('Sty Service', 'sty-service@company3.com', 'swine999', 3, 'service_agent'),  
+
+-- Admins for Company 4  
+('Chief Trotter', 'chief-trotter@company4.com', 'baconsecure123', 4, 'admin'),  
+('Squeal Leader', 'squeal-leader@company4.com', 'pigpower456', 4, 'admin'),  
+('Barn Boss', 'barn-boss@company4.com', 'mudlife789', 4, 'admin'),  
+('Hog Emperor', 'hog-emperor@company4.com', 'oinksecure321', 4, 'admin'),  
+('Swine Strategist', 'swine-strategist@company4.com', 'trough999', 4, 'admin'),  
+
+-- Service Agents for Company 4  
+('Boar Buddy', 'boar-buddy@company4.com', 'service123', 4, 'service_agent'),  
+('Trough Helper', 'trough-helper@company4.com', 'help456', 4, 'service_agent'),  
+('Pig Sty Rep', 'pig-sty-rep@company4.com', 'agent789', 4, 'service_agent'),  
+('Mud Assistant', 'mud-assistant@company4.com', 'helpdesk321', 4, 'service_agent'),  
+('Squealer Service', 'squealer-service@company4.com', 'hogsupport999', 4, 'service_agent'),  
+
+-- Admins for Company 5  
+('Ham Commander', 'ham-commander@company5.com', 'securebacon123', 5, 'admin'),  
+('Trotter Chief', 'trotter-chief@company5.com', 'pigsty456', 5, 'admin'),  
+('Oink Director', 'oink-director@company5.com', 'mudpower789', 5, 'admin'),  
+('Sow Executive', 'sow-executive@company5.com', 'trough321', 5, 'admin'),  
+('Boar President', 'boar-president@company5.com', 'hoghog999', 5, 'admin'),  
+
+-- Service Agents for Company 5  
+('Piglet Pal', 'piglet-pal@company5.com', 'service123', 5, 'service_agent'),  
+('Hog Specialist', 'hog-specialist@company5.com', 'agent456', 5, 'service_agent'),  
+('Trough Support', 'trough-support@company5.com', 'help789', 5, 'service_agent'),  
+('Snout Assistant', 'snout-assistant@company5.com', 'helpdesk321', 5, 'service_agent'),  
+('Bacon Support', 'bacon-support@company5.com', 'oink999', 5, 'service_agent');  
 
  
   
@@ -76,6 +185,57 @@ VALUES
 ( 'Knife not sharp enough',1, 'griselda.lergrop@svinmail.com', 7,NULL, 8 ,'hh' ),
 ('Missing Truck',1,'orne.lera@stia.com',8,NULL,9 ,'ii'), 
 ('mudbath control system error',1,'tryne.enuff@fakemail.se',3,NULL,4,'jj'); 
+
+INSERT INTO public.tickets (description, status, customer_email, product_id, customer_agent, ticket_category, slug)  
+VALUES  
+('Ill tasting Feed', 1, 'svine-lisa@stia.com', 1, NULL, 1, 'ill-feed-001'),  
+('Water dispenser is leaking', 2, 'farmer-tom@hogheaven.com', 4, NULL, 2, 'leak-dispenser-002'),  
+('Trough arrived damaged', 3, 'porkylover88@swinefeed.com', 3, NULL, 3, 'damaged-trough-003'),  
+('Health supplement caused allergic reaction in pigs', 1, 'vet-susan@pigcare.com', 5, NULL, 1, 'allergic-supplement-004'),  
+('Feed quality seems lower than last batch', 2, 'organic-hogger@farmers.com', 2, NULL, 1, 'low-feed-quality-005'),  
+('Breeding service was not helpful', 3, 'john-the-pigman@hogfarm.com', 6, NULL, 4, 'bad-breeding-service-006'),  
+('Heat lamp stopped working after one week', 1, 'lisa-pigs@swinepro.com', 7, NULL, 2, 'faulty-heatlamp-007'),  
+('Transport crate is too small for my pigs', 2, 'big-hog-ranch@swine.com', 8, NULL, 3, 'small-crate-008'),  
+('Brush bristles fall out too easily', 3, 'clean-pigs@farmfresh.com', 9, NULL, 2, 'brush-issue-009'),  
+('Parasite control didn’t seem effective', 1, 'dr.hogwell@veterinary.com', 10, NULL, 1, 'ineffective-parasite-010'),  
+('High-protein feed caused digestive issues', 2, 'strong-pork@piggy.com', 11, NULL, 1, 'digestive-feed-011'),  
+('Hoof trimmer is dull and ineffective', 3, 'hoofsaver@pigcare.com', 12, NULL, 2, 'dull-hooftrimmer-012'),  
+('Scale readings are inconsistent', 1, 'farmerjoe@hogweights.com', 13, NULL, 3, 'scale-issue-013'),  
+('Fencing is not strong enough for large pigs', 2, 'secure-hogs@farmtech.com', 14, NULL, 3, 'weak-fence-014'),  
+('Pig feed was delivered late', 3, 'feedemfast@pigfood.com', 15, NULL, 4, 'late-delivery-feed-015'),  
+('AI kit missing key components', 1, 'breeder-mike@hogbreeds.com', 16, NULL, 1, 'missing-ai-kit-016'),  
+('Consultation service never called me back', 2, 'pig-master@swineconsult.com', 17, NULL, 4, 'no-callback-017'),  
+('Manure composting system instructions unclear', 3, 'greenfarm@ecohogs.com', 18, NULL, 3, 'unclear-manure-guide-018'),  
+('Cooling sprinkler not covering full area', 1, 'cool-pigs@farmassist.com', 19, NULL, 2, 'sprinkler-coverage-019'),  
+('Respiratory health formula didn’t work', 2, 'vet-laura@pigdoctor.com', 20, NULL, 1, 'ineffective-health-formula-020'),  
+('Toys are not durable, pigs destroy them fast', 3, 'happy-pigs@swinefun.com', 21, NULL, 2, 'weak-toys-021'),  
+('Barn fans are too noisy', 1, 'freshair@hogcomfort.com', 22, NULL, 3, 'noisy-fan-022'),  
+('Vaccination kit missing syringes', 2, 'vet-mark@hogmeds.com', 23, NULL, 1, 'missing-vaccine-kit-023'),  
+('Ear tags fall off too easily', 3, 'trackmypigs@farmtools.com', 24, NULL, 2, 'loose-ear-tags-024'),  
+('Weighing system software keeps crashing', 1, 'techpigs@farmsoft.com', 25, NULL, 3, 'crashing-scale-025'),  
+('Biosecure gloves ripped after one use', 2, 'cleanhands@farmers.com', 26, NULL, 2, 'ripped-gloves-026'),  
+('Hormone treatment results are inconsistent', 3, 'breeder-mary@piggenetics.com', 27, NULL, 1, 'bad-hormone-treatment-027'),  
+('Milk replacer too thick and clogs bottles', 1, 'piglet-saver@hogmilk.com', 28, NULL, 1, 'thick-milk-replacer-028'),  
+('Waste management system is too expensive', 2, 'savingswine@eco-farms.com', 29, NULL, 3, 'expensive-waste-system-029'),  
+('Foot bath solution caused irritation in pigs', 3, 'vet-tim@swinehealth.com', 30, NULL, 1, 'irritating-footbath-030'),  
+('Slaughter equipment not functioning properly', 1, 'butcher-bob@pigprocessing.com', 31, NULL, 4, 'faulty-slaughter-equip-031'),  
+('Training whistle sound is too weak', 2, 'trainmypigs@hogschool.com', 32, NULL, 2, 'weak-whistle-032'),  
+('Bedding gets too dusty', 3, 'cozy-pigs@swinebedding.com', 33, NULL, 2, 'dusty-bedding-033'),  
+('Growth booster didn’t show results', 1, 'biggerpigs@farmerboost.com', 34, NULL, 1, 'no-growth-booster-results-034'),  
+('Electric fence shock too strong', 2, 'securehogs@farmtech.com', 35, NULL, 3, 'strong-fence-shock-035'),  
+('Trailer is difficult to clean', 3, 'transportpigs@haul.com', 36, NULL, 3, 'uncleanable-trailer-036'),  
+('Biosecurity mat slides around', 1, 'safeentry@hoghygiene.com', 37, NULL, 2, 'slippery-mat-037'),  
+('Diagnostic kit gave false results', 2, 'vet-sarah@swineclinic.com', 38, NULL, 1, 'wrong-diagnostics-038'),  
+('Feeding system jams frequently', 3, 'automatedpigs@farmsoft.com', 39, NULL, 3, 'jamming-feeder-039'),  
+('Swine growth enhancer didn’t work', 1, 'naturalpork@farmorganic.com', 40, NULL, 1, 'no-effect-growth-040'),  
+('Air filtration system doesn’t reduce odor', 2, 'freshbarn@pigfarms.com', 41, NULL, 3, 'bad-air-filter-041'),  
+('Ultrasound machine difficult to operate', 3, 'pigscan@vettools.com', 42, NULL, 3, 'hard-ultrasound-042'),  
+('Heat detection patches fell off', 1, 'breeder-tom@swinehealth.com', 43, NULL, 1, 'fallen-patches-043'),  
+('Insurance plan didn’t cover transport damage', 2, 'safehogs@insurance.com', 44, NULL, 4, 'insurance-fail-044'),  
+('Pen disinfectant spray smells too strong', 3, 'cleanpens@farmhygiene.com', 45, NULL, 2, 'strong-smell-spray-045'),  
+('Swine data logger lost previous records', 1, 'techpigs@farmdata.com', 46, NULL, 3, 'data-loss-logger-046'),  
+('Ear notching kit missing guide', 2, 'identifyhogs@swinefarm.com', 47, NULL, 2, 'missing-ear-kit-047'),  
+('Shower system pressure too low', 3, 'cleanpigs@hygienefarm.com', 48, NULL, 4, 'low-pressure-shower-048');  
 
   
 
