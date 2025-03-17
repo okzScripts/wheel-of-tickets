@@ -70,6 +70,7 @@ public class MockHasher
 
 
 
+// deprecated.
     public static async Task<IResult> ResetMockPasswords(NpgsqlDataSource db)
     {
         List<string> originalPasswords =new(){

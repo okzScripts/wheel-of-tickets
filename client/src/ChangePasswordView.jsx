@@ -33,7 +33,7 @@ export function ChangePasswordView() {
 
     return (
         <main>
-            <nav className="navbar"><img src={logo}></img> <NavLink to="/"><button className="back-button">⬅️ Back</button></NavLink></nav>
+            <nav className="navbar"><img src={logo}></img> <NavLink to="/"><button className="back-button">⬅️ Sign Out</button></NavLink></nav>
             <form className="data-form" onSubmit={updatePassword} action={`/api/users/password/`} method="PUT">
                 <div className="form-box">
                         <input

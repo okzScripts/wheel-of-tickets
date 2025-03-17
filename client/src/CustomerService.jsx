@@ -65,7 +65,6 @@ export function CustomerServiceView() {
             </section>
             <section className="lower-section">
                 <div className="tickets-left">
-                    <div>
                         <h2>YOUR TICKETS:</h2>
                         {assignedTickets.length > 0 ? (
                             <ul className="ticket-list">
@@ -75,7 +74,6 @@ export function CustomerServiceView() {
                         ) : (
                             <ul className="ticket-list"><li className="ticket-list-item" key={"emptyassigned"}><div className="ticket-info"><p>Inga tickets</p></div></li></ul>
                         )}
-                    </div>
                     <section className="closed-tickets-box">
                         <button onClick={() => setShowClosed(prevState => !prevState)} className="toggle-inactive-btn">
                             {showClosed ? "Hide closed tickets" : "Show closed tickets"}
