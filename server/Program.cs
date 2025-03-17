@@ -66,7 +66,7 @@ app.MapPut("/api/tickets/rating/{slug}", TicketRoutes.TicketRating);
 
 //ANVÄNDS BARA 1 GÅNG!!!
 app.MapPost("/api/password/mockhash/", MockHasher.HashMockPasswords);
-app.MapPost("api/password/mockreset/", MockHasher.ResetMockPasswords);
+//app.MapPost("api/password/mockreset/", MockHasher.ResetMockPasswords); deprecated after more mockdata was created. 
 //ANVÄNDS BARA 1 GÅNG!!!
 
 app.MapGet("/api/messages/{slug}", MessageRoutes.GetTicketMessages);
