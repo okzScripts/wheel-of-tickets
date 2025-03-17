@@ -66,7 +66,7 @@ INSERT INTO public.products (product_name, product_description, price, product_c
                    ('Pig Pen Disinfectant Spray', 'Eliminates bacteria and viruses', 80, 'Medical', 2),  
                    ('Automated Swine Data Logger', 'Tracks pig health and growth metrics', 900, 'Equipment', 3),  
                    ('Customizable Pig Ear Notching Kit', 'For identifying individual pigs', 45, 'Accessory', 4),  
-                   ('Farm-Grade Hog Shower System', 'Maintains hygiene in swine facilities', 600, 'Equipment', 5)
+                   ('Farm-Grade Hog Shower System', 'Maintains hygiene in swine facilities', 600, 'Equipment', 5);
 
 
 INSERT INTO public.ticket_categories (category_name,company)
@@ -254,7 +254,7 @@ VALUES
 ('The platform shoes to low does not allow me to see over the pig sty',current_timestamp, 7,true),
 ('The knife i sent to Sharpening is still not sharp enuough and causes uneccessary suffering',current_timestamp, 8 ,true),
 ('A truck is missing from the software system,We need help so we can locate it',current_timestamp, 9 ,true),
-('Mud temperature control system not working',current_timestamp, 10 ,true);
+('Mud temperature control system not working',current_timestamp, 10 ,true),
 ('The hot tub water temperature was too low, it was not relaxing at all', current_timestamp, 11, true),
 ('My order of 10kg of mud arrived with a hole in the bag, causing a mess', current_timestamp, 12, true),
 ('The smell in the spa room is unbearable, there is an issue with the ventilation', current_timestamp, 13, true),
@@ -264,7 +264,7 @@ VALUES
 ('The jacuzzi was too crowded, and I couldn’t find a seat', current_timestamp, 17, true),
 ('My VIP membership benefits were not applied at checkout, please resolve this', current_timestamp, 18, true),
 ('The lighting in the spa was too dim, I couldn’t see properly during my treatment', current_timestamp, 19, true),
-('I received a damaged product from my order, it was cracked and unusable', current_timestamp, 20, true);
+('I received a damaged product from my order, it was cracked and unusable', current_timestamp, 20, true),
 ('The shower in my room was broken, no hot water available', current_timestamp, 21, true),
 ('My last order of mud masks was incomplete, some items were missing', current_timestamp, 22, true),
 ('The massage service was not as relaxing as I expected, I need a refund', current_timestamp, 23, true),
@@ -299,5 +299,8 @@ VALUES
 ('The mud bath was not as described in the brochure, very disappointing', current_timestamp, 52, true),
 ('I was overcharged for the items in my mini bar, and the prices didn’t match the menu', current_timestamp, 53, true),
 ('I had an allergic reaction to one of the products used during my treatment, I need to speak with a doctor', current_timestamp, 54, true),
-('The spa was not as clean as expected, there was debris in the corners', current_timestamp, 55, true);
+('The spa was not as clean as expected, there was debris in the corners', current_timestamp, 55, true),
+('My pig tail is not curling like its use too after using this product', current_timestamp, 56, true),
+('Your product made a dog bit my ear', current_timestamp, 57, true),
+('This is the fourth time my piggy bank is empty after buying this product', current_timestamp, 58, true);
 
