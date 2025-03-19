@@ -32,22 +32,159 @@ After entering a ticket and your mail you will receive an email with a link to t
 
 ### companies: 
 
-#### Method: Get
-  -  Route: /companies 
+#### Method: GET
+  -  Route: /companies   
     
-    Description: Retrieves the data for all companies using the swine sync CRM system. 
+    Description: 
+      Retrieves the data for either all active or all soft deleted companies using the swine sync CRM system . 
 
-    Parameters: path:- querystring: active(type:bool)  
+    Parameters: 
+    
+      path: 
+        - 
+      querystring: 
+        active(type:bool):
+           keeping tracked if the company is soft deleted 
+      
+      body:
+        -
 
     Response: 
+      Ok 200: list<company> 
+        record company(int id, string name, string email, string phone, string description, string domain, bool active)
+      
+      BadRequest 400: string 
+
+
+  -  Route: /companies/{id} 
+    
+    Description: 
+      Retrieves the data for a specific company specified by int32 id. 
+
+    Parameters: 
+      path: int32, id primary key 
+      
+      querystring: 
+        -
+      body:
+        -
+
+    Response: 
+      Ok 200: company 
+        record company(int id, string name, string email, string phone, string description, string domain, bool active)
+      
+      BadRequest 400: string 
+
+#### Method: PUT
+
+-  Route: /companies/{id} 
+
+    Description: 
+
+       Edits/updates the data of a company in the database. 
+
+    Parameters: 
+
+       path:
+         int32 id  specifying company to be edited.  
+
+       querystring: 
+
+         - 
+
+       body:
+
+         string Name | name of company  
+
+         string Email| email of company 
+
+         string Phone| phone for contacting company
+
+         string Description | description of the company
+
+         string Domain | domain of the company
+
+     Response: 
+
+       Ok 200: string 
+
+       BadRequest 400: string 
+
+- Route: /companies/block/{id}/{active}
+
+   Description: 
   
-  - Route: /companies{id}
+        Changes The active status of a specific company to either block or unblock the company.
+
+   Parameters: 
+
+      path: 
+
+       id int32 company id. 
+
+       active bool state to set the company active column to 
+
+      querystring: 
+      
+       - 
+    
+      body: 
+
+       -
+  
+
+   Response: 
+
+       Ok 200: string 
+
+       BadRequest 400: string 
+
+
+
+###  Method: POST 
+
+- Route: /companies
+
+    Description:
+      
+      Adds a company to the swine Sync database: 
+    
+    Parameters: 
+      
+      path: 
+       
+       - 
+
+      querystring:
+
+        -
+
+     body:
+
+         string Name | name of company  
+
+         string Email| email of company 
+
+         string Phone| phone for contacting company
+
+         string Description | description of the company
+
+         string Domain | domain of the company
+
+
+   Response: 
+
+       Ok 200: string 
+
+       BadRequest 400: string 
+
+
 
 ### users: 
 
 ### login: 
 
-## categories: 
+### categories: 
 
 ### products:
 
@@ -55,3 +192,31 @@ After entering a ticket and your mail you will receive an email with a link to t
 ### tickets: 
 
 ### password: 
+
+#### Method Post: 
+
+- Route:  /password/mockhash/ 
+
+    Description: 
+
+      Hashes the passwords from the mockdata to be used after importing mockdata
+
+    Parameters: 
+
+      path: 
+        
+        -
+
+      querystring: 
+
+        - 
+      
+      body: 
+
+        - 
+
+   Response: 
+
+       Ok 200: d
+       BadRequest 400: string 
+    
