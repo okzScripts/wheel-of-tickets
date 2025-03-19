@@ -93,35 +93,6 @@ public class CompanyRoutes
         }
     }
 
-    public static async Task<Results<Ok<List<Product>>, BadRequest<string>>> GetProducts(NpgsqlDataSource db)
-    {
-        var products = new List<Product>();
-
-        try
-        {
-            using var cmd = db.CreateCommand(
-                "SELECT id, product_name FROM products ORDER BY id ASC"
-            );
-            using var reader = await cmd.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                products.Add(new Product(
-                    reader.GetInt32(0),
-                    reader.GetString(1)
-                ));
-            }
-
-            return TypedResults.Ok(products);
-        }
-        catch (Exception ex)
-        {
-            return TypedResults.BadRequest($"An error occurred: {ex.Message}");
-        }
-    }
-
-
-
     public static async Task<Results<Ok<Company>, BadRequest<string>>> GetCompany(int id, NpgsqlDataSource db)
     {
         try
