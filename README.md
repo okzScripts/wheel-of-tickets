@@ -1,3 +1,10 @@
+#Oskar Krantz - okzScripts
+#Jonas Manni - Jmannicode
+#Srecko Radivojevic - momfy11
+#Viktor Thorsén - viktorthorsen
+#Jacob Westholm - huineith
+
+
 Instructions
 1. Download project
   Build Postgressql-db with queries in /server/databasefiles/swine_sync.txt
