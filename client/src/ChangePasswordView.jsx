@@ -23,7 +23,7 @@ export function ChangePasswordView() {
                 body: dataJson
             }).then(response => {
                 if (response.ok) {
-                    alert(`Du updaterade ${dataObject.name} `);
+                    alert(`Du updaterade lösenordet `);
                 } else {
                     alert("Var god ange korrekt nuvarande lösenord");
                 }

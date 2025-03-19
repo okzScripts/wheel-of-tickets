@@ -179,7 +179,7 @@ public class UserRoutes
 
     public static async Task<IResult> AddAdmin(PostAdminDTO user, NpgsqlDataSource db, HttpContext ctx, PasswordHasher<string> hasher)
     {
-        if (ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.super_admin)
+        if (ctx.Session.IsAvailable && ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.super_admin)
         {
             try
             {   string password;
@@ -234,8 +234,9 @@ public class UserRoutes
 
     public static async Task<IResult> AddAgent(PostAgentDTO agent, NpgsqlDataSource db, HttpContext ctx, PasswordHasher<string> hasher)
     {
-        if (ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.super_admin)
+        if (ctx.Session.IsAvailable && ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.Admin)
         {
+            
             await using var conn = await db.OpenConnectionAsync();
             await using var transaction = await conn.BeginTransactionAsync();
 
@@ -262,8 +263,8 @@ public class UserRoutes
 
 
                 // Första insert: användare
-                using var cmd = db.CreateCommand(
-                    "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id");
+                using var cmd =  new NpgsqlCommand(
+                    "INSERT INTO users (name, email, password, company, role, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",conn,transaction);
 
                 cmd.Parameters.AddWithValue(agent.Name);
                 cmd.Parameters.AddWithValue(agent.Email);
@@ -282,8 +283,8 @@ public class UserRoutes
                     foreach (int category in categorylist)
                     {
 
-                        using var cmd2 = db.CreateCommand(
-                            "INSERT INTO customer_agentsxticket_category (ticket_category, customer_agent) VALUES ($1, $2);");
+                        using var cmd2 =  new NpgsqlCommand(
+                            "INSERT INTO customer_agentsxticket_category (ticket_category, customer_agent) VALUES ($1, $2);",conn,transaction);
 
                         // Använd rätt kommandon och parametrar för cmd2
                         cmd2.Parameters.AddWithValue(category);
@@ -326,7 +327,7 @@ public class UserRoutes
     public static async Task<IResult> EditAdmin(int id, PutAdminDTO user, NpgsqlDataSource db, HttpContext ctx)
     {
 
-        if (ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.super_admin)
+        if (ctx.Session.IsAvailable && ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.super_admin)
         {
 
 
@@ -363,7 +364,7 @@ public class UserRoutes
     public record PutAgentDTO(string Name, string Email, Dictionary<int, bool> Categories);
     public static async Task<IResult> EditAgent(int id, PutAgentDTO agent, NpgsqlDataSource db, HttpContext ctx)
     {
-        if (ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.Admin)
+        if (ctx.Session.IsAvailable && ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.Admin)
         {
             try
             {
@@ -515,7 +516,7 @@ public class UserRoutes
 
     public static async Task<Results<Ok<string>, BadRequest<string>>> ResetPassword(int id, NpgsqlDataSource db, HttpContext ctx, PasswordHasher<string>hasher)
     {
-        if (ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt != UserRole.Service_agent)
+        if (ctx.Session.IsAvailable && ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt != UserRole.Service_agent)
         {
 
 
