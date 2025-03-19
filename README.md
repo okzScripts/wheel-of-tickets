@@ -348,6 +348,47 @@ After entering a ticket and your mail you will receive an email with a link to t
 
 ### tickets:
 
+#### Method: Get
+- Route : /tickets/{slug}
+  Description: Retrieve data for a specific ticket based on the slug input for customer chat.
+
+Parameters: path:- querystring: slug(type:string)
+
+Response: OK GetTicketDTO (int id,
+int status,
+string customer_email,
+int product_id,
+int ticket_category,
+decimal? rating,
+string slug))
+
+	Error:BadRequest (type:string)
+
+
+#### Method: Put
+- Route: /tickets
+  Descrition: Assign a random ticket to cutomer agent based on hes role and id and Company id.
+
+  Parameters: path:- httpcontext: ctx
+
+  Respone: OK (type:string)
+  .
+  Error:BadRequest (type:string)
+
+#### Method: Post
+- Route: /tickets
+  Desscription: Create a ticket from customer inputs
+
+  Parameters: path:- querystring: NewTicket(int productId,
+  int categoryId,
+  string message,
+  string email,
+  string description);
+
+  Response: OK (type:string)
+
+  Error:BadRequest (type:string)
+
 ### password:
 
 #### Method Post:
