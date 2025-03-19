@@ -1,419 +1,223 @@
-# Instructions
-
-## set-up:
-
-1. Download project
-   Build Postgressql-db with queries in /server/databasefiles/swine_sync.txt
-   Add mockdata from the queries in /server/databasefiles/mockdata.txt
-
-2. cd to folder
-3. cd /server/
-4. Open Program.cs and change the the database password to your own or use an environment variable.
-   dotnet build + dotnet run
-5. Open HttpPie or Postman, make a Post on "http://localhost:5000/api/mockhash" to hash the passwords.
-
-6. cd to /client:
-7. npm install
-8. npm run dev
-9. Click local link(http://localhost:5173/), log in as:
-   Super-admin: super_gris@mail.com /pw: kung
-   admin: grune@grymt.se /pw: hejhej
-   customer_agent: tryne@hotmail.com /pw: asd123
-
-To make a ticket:
-navigate to http://localhost:5173/tech-solutions to create a ticket for the Company Tech-Solution.
-Adjust window to mobile view-size
-After entering a ticket and your mail you will receive an email with a link to the chat with the company's customer_agent
-
-## api-documentation:
-
-### API-root Path:
-
-- http://localhost:5000/api
-
-### companies:
-
-#### Method: Get
-  
-- Route: /companies
-
-  Description:
-  Retrieves the data for either all active or all soft deleted companies using the swine sync CRM system .
-
-  Parameters:
-
-      path:
-        -
-      querystring:
-        active(type:bool):
-           keeping tracked if the company is soft deleted
-
-      body:
-        -
-
-  Response:
-  Ok 200: list<company>
-  record company(int id, string name, string email, string phone, string description, string domain, bool active)
-
-      BadRequest 400: string
-
-- Route: /companies/{id}
-
-  Description:
-  Retrieves the data for a specific company specified by int32 id.
-
-  Parameters:
-  path: int32, id primary key
-
-      querystring:
-        -
-      body:
-        -
-
-  Response:
-  Ok 200: company
-  record company(int id, string name, string email, string phone, string description, string domain, bool active)
-
-      BadRequest 400: string
-
-#### Method: PUT
-
-- Route: /companies/{id}
-
-  Description:
-
-      Edits/updates the data of a company in the database.
-
-  Parameters:
-
-      path:
-        int32 id  specifying company to be edited.
-
-      querystring:
-
-        -
-
-      body:
-
-        string Name | name of company
-
-        string Email| email of company
-
-        string Phone| phone for contacting company
-
-        string Description | description of the company
-
-        string Domain | domain of the company
-
-  Response:
-
-      Ok 200: string
-
-      BadRequest 400: string
-
-- Route: /companies/block/{id}/{active}
-
-  Description:
-
-        Changes The active status of a specific company to either block or unblock the company.
-
-  Parameters:
-
-      path:
-
-       id int32 company id.
-
-       active bool state to set the company active column to
-
-      querystring:
-
-       -
-
-      body:
-
-       -
-
-  Response:
-
-       Ok 200: string
-
-       BadRequest 400: string
-
-### Method: POST
-
-- Route: /companies
-
-  Description:
-
-      Adds a company to the swine Sync database:
-
-  Parameters:
-
-      path:
-
-       -
-
-      querystring:
-
-        -
-
-  body:
-
-         string Name | name of company
-
-         string Email| email of company
-
-         string Phone| phone for contacting company
-
-         string Description | description of the company
-
-         string Domain | domain of the company
-
-  Response:
-
-       Ok 200: string
-
-       BadRequest 400: string
-
-  Parameters: path:- querystring: active(type:bool)
-
-  Response:
-
-- Route: /companies{id}
-
-### users:
-
-#### Method: Get
-  -  Route: /users/company/{role}
-
-    Description: Retrieves all users by role in a specific company.
-
-    Parameters: Path: role(type:string) 
-                Querystring: active(type:bool)
-
-    Response: JSON object containing all user details(TypedResults.Ok(users))
-              TypedResults.BadRequest("Session not exisiting")
-              TypedResults.BadRequest("ICKE SA NICKE!");
-              TypedResults.BadRequest($"Error {ex.Message}");
-
-  -  Route: /users/{id}
-
-    Description: Retrieves a specific user based on their ID.
-
-    Parameters: Path: id(type:int)
-                Querystring:-
-    
-    Response: JSON object containing the users details(TypedResults.Ok(user))
-              TypedResults.BadRequest("Ingen admin hittades");
-              TypedResults.BadRequest($"Error {ex.Message}");
-
-
-#### Method: Put
-  -  Route: /users/{id}
-
-    Description: Updates an admins user details
-                
-    Parameters: Path: id(type:int)
-                Querystring:-
-
-    Response: TypedResults.NotFound("Ingen User hittades")
-              TypedResults.Ok("User updaterades")
-              TypedResults.BadRequest($"Error {ex.Message}")
-              TypedResults.BadRequest("Session not availabel")
-### login:
-
-### categories:
-
-### Method: GET
-
-> #### Route: `/categories/{id}`
->
-> **Description:**  
-> Retrieves the data for all categories belonging to the company where the user's ID is connected.
->
-> **Parameters:**
->
-> - **Path:** `id` (type: `Int32`)
->
-> **Response:**  
-> JSON with category data.
+# README
+
+## Instructions
+
+### Set-up:
+
+1. **Download Project**
+   - Build PostgreSQL database with queries in `/server/databasefiles/swine_sync.txt`
+   - Add mock data from the queries in `/server/databasefiles/mockdata.txt`
+
+2. **Navigate to the server folder**
+   ```sh
+   cd /server/
+   ```
+
+3. **Update Database Password**
+   - Open `Program.cs`
+   - Change the database password to your own or use an environment variable.
+
+4. **Build and Run the Server**
+   ```sh
+   dotnet build
+   dotnet run
+   ```
+
+5. **Hash Passwords**
+   - Open HTTPie or Postman
+   - Make a POST request to:
+     ```
+     http://localhost:5000/api/mockhash
+     ```
+
+6. **Navigate to the Client Folder**
+   ```sh
+   cd /client
+   ```
+
+7. **Install Dependencies**
+   ```sh
+   npm install
+   ```
+
+8. **Run the Client**
+   ```sh
+   npm run dev
+   ```
+
+9. **Access the Application**
+   - Click the local link: [http://localhost:5173/](http://localhost:5173/)
+   - Use the following credentials:
+     - **Super-admin:** `super_gris@mail.com` / `kung`
+     - **Admin:** `grune@grymt.se` / `hejhej`
+     - **Customer Agent:** `tryne@hotmail.com` / `asd123`
+
+### Creating a Ticket:
+1. Navigate to [http://localhost:5173/tech-solutions](http://localhost:5173/tech-solutions)
+2. Create a ticket for the Company Tech-Solution.
+3. Adjust window to mobile view size.
+4. After submitting a ticket with your email, you will receive an email with a link to chat with the company's customer agent.
 
 ---
 
-> #### Route: `/categories/company/`
->
-> **Description:**  
-> Retrieves the data of categories belonging to the company of the logged-in user (admin).  
-> The boolean `active` is passed, and the result consists of all categories where `active` is `true` or `false`.
->
-> **Parameters:**
->
-> - **HttpContext:** (Requires admin role in session)
-> - **Querystring:** `active` (type: `bool`)
+## API Documentation
+
+### API Root Path:
+- `http://localhost:5000/api`
 
 ---
 
-### Method: PUT
+### **Companies**
 
-> #### Route: `/api/categories/status/`
->
-> **Description:**  
-> Changes the status of a category. `Active` will toggle between `true` and `false`.
->
-> **Parameters:**
->
-> - **HttpContext:** (Requires admin role in session)
-> - **Querystring:**
->   - `StatusDTO`
->     - `id` (type: `Int32`)
->     - `active` (type: `bool`)
->
-> **Response:**  
-> Status message (type: `string`)
+#### **GET**
+- **Route:** `/companies`
+  - Retrieves data for all active or soft-deleted companies using Swine Sync CRM.
+  - **Query Parameters:** `active` (bool) – Indicates whether the company is active.
+  - **Response:**
+    - `200 OK`: List of companies.
+    - `400 BadRequest`: Error message.
+
+- **Route:** `/companies/{id}`
+  - Retrieves data for a specific company by ID.
+  - **Path Parameter:** `id` (int) – Company ID.
+  - **Response:**
+    - `200 OK`: Company details.
+    - `400 BadRequest`: Error message.
+
+#### **PUT**
+- **Route:** `/companies/{id}`
+  - Updates a company's details.
+  - **Path Parameter:** `id` (int) – Company ID.
+  - **Body Parameters:**
+    - `name` (string)
+    - `email` (string)
+    - `phone` (string)
+    - `description` (string)
+    - `domain` (string)
+  - **Response:**
+    - `200 OK`: Success message.
+    - `400 BadRequest`: Error message.
+
+- **Route:** `/companies/block/{id}/{active}`
+  - Changes the active status of a company (block/unblock).
+  - **Path Parameters:**
+    - `id` (int) – Company ID.
+    - `active` (bool) – New status.
+  - **Response:**
+    - `200 OK`: Success message.
+    - `400 BadRequest`: Error message.
+
+#### **POST**
+- **Route:** `/companies`
+  - Adds a company to the Swine Sync database.
+  - **Body Parameters:**
+    - `name` (string)
+    - `email` (string)
+    - `phone` (string)
+    - `description` (string)
+    - `domain` (string)
+  - **Response:**
+    - `200 OK`: Success message.
+    - `400 BadRequest`: Error message.
 
 ---
 
-### Method: POST
+### **Users**
 
-> #### Route: `/api/categories/`
->
-> **Description:**  
-> Adds a category to the company.
->
-> **Parameters:**
->
-> - **HttpContext:** (Requires admin role in session)
-> - **Querystring:**
->   - `CategoryDTO`
->     - `name` (type: `string`)
->
-> **Response:**  
-> Status message (type: `string`)
+#### **GET**
+- **Route:** `/users/company/{role}`
+  - Retrieves all users by role in a specific company.
+  - **Path Parameter:** `role` (string) – User role.
+  - **Query Parameters:** `active` (bool) – Active status.
+  - **Response:** JSON object containing user details or error message.
 
-### products:
+- **Route:** `/users/{id}`
+  - Retrieves a specific user by ID.
+  - **Path Parameter:** `id` (int) – User ID.
+  - **Response:** JSON object containing user details or error message.
 
-#### Method: Get
+#### **PUT**
+- **Route:** `/users/{id}`
+  - Updates user details.
+  - **Path Parameter:** `id` (int) – User ID.
+  - **Response:** Success or error message.
 
-- Route: /products/company/
+---
 
-  Description: Retrieves the data for all active products from a registered company. Requires a role to access.
+### **Categories**
 
-  Parameters: path:- querystring: active(type:bool)
+#### **GET**
+- **Route:** `/categories/{id}`
+  - Retrieves all categories for the company of the user.
+  - **Path Parameter:** `id` (int) – User ID.
 
-  Response: Task<Results<Ok<List<Product>>, BadRequest<string>>>
+- **Route:** `/categories/company/`
+  - Retrieves categories for the logged-in admin’s company.
+  - **Query Parameter:** `active` (bool)
 
-- Route: /products/{ProductId}
+#### **PUT**
+- **Route:** `/api/categories/status/`
+  - Toggles the active status of a category.
+  - **Query Parameters:**
+    - `id` (int)
+    - `active` (bool)
 
-  Description: Retrieves the data for a specific product. Requires a role to access.
+#### **POST**
+- **Route:** `/api/categories/`
+  - Adds a new category.
+  - **Body Parameter:** `name` (string)
 
-  Parameters: path:- querystring: ProductId(type:int)
+---
 
-  Response: type:Task<Results<Ok<List<Product>>, BadRequest<string>>>
+### **Products**
 
-- Route: /products/customer-ticket/
+#### **GET**
+- **Route:** `/products/company/`
+  - Retrieves active products for a company.
+  - **Query Parameter:** `active` (bool)
 
-  Description: Retrieves the data for a specific product. Does not require login
+- **Route:** `/products/{ProductId}`
+  - Retrieves a specific product by ID.
+  - **Path Parameter:** `ProductId` (int)
 
-  Parameters: path:- querystring: ProductId(type:int)
+#### **POST**
+- **Route:** `/products`
+  - Adds a new product.
+  - **Body Parameter:** `PostProductDTO` (string, string, int, string, int)
 
-  Response: type:Task<Results<Ok<List<ProductTicketInfo>>, BadRequest<string>>>
+#### **PUT**
+- **Route:** `/products`
+  - Updates product data.
+  - **Body Parameter:** `PutProductDTO` (string, string, int, string, int, int)
 
-#### Method: Post
+- **Route:** `/api/products/block/{id}/{active}`
+  - Updates a product’s active status.
+  - **Path Parameter:** `id` (int)
 
-- Route: /products
+---
 
-  Description: Adds data to create a new product. Requires role to access.
+### **Tickets**
 
-  Parameters: path:- querystring: PostProductDTO(type:(string, string, int, string, int))
+#### **GET**
+- **Route:** `/tickets/{slug}`
+  - Retrieves data for a specific ticket.
+  - **Path Parameter:** `slug` (string)
 
-  Response: type:Task<IResult>
+#### **PUT**
+- **Route:** `/tickets`
+  - Assigns a random ticket to a customer agent.
 
-#### Method: Put
+#### **POST**
+- **Route:** `/tickets`
+  - Creates a ticket based on customer input.
 
-- Route: /products
+---
 
-  Description: Edits the data in a specific product.
+### **Password Hashing**
 
-  Parameters: path:- querystring: PutProductDTO(type:(string, string, int, string, int, int))
-
-  Response: type:Task<IResult>
-
-- Route: /api/products/block/{id}/{active}
-
-  Description: Updates a product status between active and blocked.
-
-  Parameters: path:- querystring: id(type:int)
-
-  Response: type:Task<Results<Ok<string>
-
-### tickets:
-
-#### Method: Get
-- Route : /tickets/{slug}
-  Description: Retrieve data for a specific ticket based on the slug input for customer chat.
-
-Parameters: path:- querystring: slug(type:string)
-
-Response: OK GetTicketDTO (int id,
-int status,
-string customer_email,
-int product_id,
-int ticket_category,
-decimal? rating,
-string slug))
-
-	Error:BadRequest (type:string)
+#### **POST**
+- **Route:** `/password/mockhash/`
+  - Hashes passwords from mock data.
+  - **Response:** Success or error message.
 
 
-#### Method: Put
-- Route: /tickets
-  Descrition: Assign a random ticket to cutomer agent based on hes role and id and Company id.
-
-  Parameters: path:- httpcontext: ctx
-
-  Respone: OK (type:string)
-  .
-  Error:BadRequest (type:string)
-
-#### Method: Post
-- Route: /tickets
-  Desscription: Create a ticket from customer inputs
-
-  Parameters: path:- querystring: NewTicket(int productId,
-  int categoryId,
-  string message,
-  string email,
-  string description);
-
-  Response: OK (type:string)
-
-  Error:BadRequest (type:string)
-
-### password:
-
-#### Method Post:
-
-- Route: /password/mockhash/
-
-  Description:
-
-      Hashes the passwords from the mockdata to be used after importing mockdata
-
-  Parameters:
-
-      path:
-
-        -
-
-      querystring:
-
-        -
-
-      body:
-
-        -
-
-  Response:
-
-       Ok 200: d
-       BadRequest 400: string
