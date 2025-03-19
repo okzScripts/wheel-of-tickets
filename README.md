@@ -45,6 +45,45 @@ After entering a ticket and your mail you will receive an email with a link to t
 
 ### users: 
 
+#### Method: Get
+  -  Route: /users/company/{role}
+
+    Description: Retrieves all users by role in a specific company.
+
+    Parameters: Path: role(type:string) 
+                Querystring: active(type:bool)
+
+    Response: JSON object containing all user details(TypedResults.Ok(users))
+              TypedResults.BadRequest("Session not exisiting")
+              TypedResults.BadRequest("ICKE SA NICKE!");
+              TypedResults.BadRequest($"Error {ex.Message}");
+
+  -  Route: /users/{id}
+
+    Description: Retrieves a specific user based on their ID.
+
+    Parameters: Path: id(type:int)
+                Querystring:-
+    
+    Response: JSON object containing the users details(TypedResults.Ok(user))
+              TypedResults.BadRequest("Ingen admin hittades");
+              TypedResults.BadRequest($"Error {ex.Message}");
+
+
+#### Method: Put
+  -  Route: /users/{id}
+
+    Description: Updates an admins user details
+                
+    Parameters: Path: id(type:int)
+                Querystring:-
+
+    Response: TypedResults.NotFound("Ingen User hittades")
+              TypedResults.Ok("User updaterades")
+              TypedResults.BadRequest($"Error {ex.Message}")
+              TypedResults.BadRequest("Session not availabel")
+    
+
 ### login: 
 
 ## categories: 
