@@ -34,13 +34,7 @@ After entering a ticket and your mail you will receive an email with a link to t
 ### companies:
 
 #### Method: Get
-
-- Route: /companies
-
-  Description: Retrieves the data for all companies using the swine sync CRM system.
-
-#### Method: GET
-
+  
 - Route: /companies
 
   Description:
@@ -189,6 +183,43 @@ After entering a ticket and your mail you will receive an email with a link to t
 
 ### users:
 
+#### Method: Get
+  -  Route: /users/company/{role}
+
+    Description: Retrieves all users by role in a specific company.
+
+    Parameters: Path: role(type:string) 
+                Querystring: active(type:bool)
+
+    Response: JSON object containing all user details(TypedResults.Ok(users))
+              TypedResults.BadRequest("Session not exisiting")
+              TypedResults.BadRequest("ICKE SA NICKE!");
+              TypedResults.BadRequest($"Error {ex.Message}");
+
+  -  Route: /users/{id}
+
+    Description: Retrieves a specific user based on their ID.
+
+    Parameters: Path: id(type:int)
+                Querystring:-
+    
+    Response: JSON object containing the users details(TypedResults.Ok(user))
+              TypedResults.BadRequest("Ingen admin hittades");
+              TypedResults.BadRequest($"Error {ex.Message}");
+
+
+#### Method: Put
+  -  Route: /users/{id}
+
+    Description: Updates an admins user details
+                
+    Parameters: Path: id(type:int)
+                Querystring:-
+
+    Response: TypedResults.NotFound("Ingen User hittades")
+              TypedResults.Ok("User updaterades")
+              TypedResults.BadRequest($"Error {ex.Message}")
+              TypedResults.BadRequest("Session not availabel")
 ### login:
 
 ### categories:
@@ -316,6 +347,47 @@ After entering a ticket and your mail you will receive an email with a link to t
   Response: type:Task<Results<Ok<string>
 
 ### tickets:
+
+#### Method: Get
+- Route : /tickets/{slug}
+  Description: Retrieve data for a specific ticket based on the slug input for customer chat.
+
+Parameters: path:- querystring: slug(type:string)
+
+Response: OK GetTicketDTO (int id,
+int status,
+string customer_email,
+int product_id,
+int ticket_category,
+decimal? rating,
+string slug))
+
+	Error:BadRequest (type:string)
+
+
+#### Method: Put
+- Route: /tickets
+  Descrition: Assign a random ticket to cutomer agent based on hes role and id and Company id.
+
+  Parameters: path:- httpcontext: ctx
+
+  Respone: OK (type:string)
+  .
+  Error:BadRequest (type:string)
+
+#### Method: Post
+- Route: /tickets
+  Desscription: Create a ticket from customer inputs
+
+  Parameters: path:- querystring: NewTicket(int productId,
+  int categoryId,
+  string message,
+  string email,
+  string description);
+
+  Response: OK (type:string)
+
+  Error:BadRequest (type:string)
 
 ### password:
 
