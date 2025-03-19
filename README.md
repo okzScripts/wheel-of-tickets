@@ -185,6 +185,63 @@ After entering a ticket and your mail you will receive an email with a link to t
 ### login: 
 
 ### categories: 
+### Method: GET
+
+> #### Route: `/categories/{id}`
+> **Description:**  
+> Retrieves the data for all categories belonging to the company where the user's ID is connected.  
+>  
+> **Parameters:**  
+> - **Path:** `id` (type: `Int32`)  
+>  
+> **Response:**  
+> JSON with category data.  
+
+---
+
+> #### Route: `/categories/company/`
+> **Description:**  
+> Retrieves the data of categories belonging to the company of the logged-in user (admin).  
+> The boolean `active` is passed, and the result consists of all categories where `active` is `true` or `false`.  
+>  
+> **Parameters:**  
+> - **HttpContext:** (Requires admin role in session)  
+> - **Querystring:** `active` (type: `bool`)  
+
+---
+
+### Method: PUT
+
+> #### Route: `/api/categories/status/`
+> **Description:**  
+> Changes the status of a category. `Active` will toggle between `true` and `false`.  
+>  
+> **Parameters:**  
+> - **HttpContext:** (Requires admin role in session)  
+> - **Querystring:**  
+>   - `StatusDTO`  
+>     - `id` (type: `Int32`)  
+>     - `active` (type: `bool`)  
+>  
+> **Response:**  
+> Status message (type: `string`)  
+
+---
+
+### Method: POST
+
+> #### Route: `/api/categories/`
+> **Description:**  
+> Adds a category to the company.  
+>  
+> **Parameters:**  
+> - **HttpContext:** (Requires admin role in session)  
+> - **Querystring:**  
+>   - `CategoryDTO`  
+>     - `name` (type: `string`)  
+>  
+> **Response:**  
+> Status message (type: `string`)  
 
 ### products:
 
