@@ -1,9 +1,9 @@
-Instructions
+# Instructions
+
+## set-up:  
 1. Download project
   Build Postgressql-db with queries in /server/databasefiles/swine_sync.txt
   Add mockdata from the queries in /server/databasefiles/mockdata.txt
-
-
 
 2. cd to folder
 3. cd /server/
@@ -23,7 +23,35 @@ Instructions
 To make a ticket:
 navigate to http://localhost:5173/tech-solutions (to create a ticket for the Company Tech-Solution.
 Adjust window to mobile view-size
-After entering a ticket and your mail you will recieve an email with a link to the chat with the company's customer_agent
+After entering a ticket and your mail you will receive an email with a link to the chat with the company's customer_agent
+
+## api-documentation: 
+
+### API-root Path: 
+  - http://localhost:5000/api 
+
+### companies: 
+
+#### Method: Get
+  -  Route: /companies 
+    
+    Description: Retrieves the data for all companies using the swine sync CRM system. 
+
+    Parameters: path:- querystring: active(type:bool)  
+
+    Response: 
+  
+  - Route: /companies{id}
+
+### users: 
+
+### login: 
+
+## categories: 
+
+### products:
 
 
+### tickets: 
 
+### password: 

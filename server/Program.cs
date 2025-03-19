@@ -32,7 +32,7 @@ app.MapGet("/api/roles/users/{role}", UserRoutes.GetUsers);
 app.MapGet("/api/users/company/{role}", UserRoutes.GetUsersFromCompany);
 app.MapGet("/api/users/{id}", UserRoutes.GetUser);
 app.MapPut("/api/users/{id}", UserRoutes.EditAdmin);
-app.MapPut("/api/users/block/{id}/{active}", UserRoutes.BlockUser);
+app.MapPut("/api/users/block/{id}/{active}", UserRoutes.BlockUser); // url beskriver en plats inte en uppdatering i sig.  vid uppdatering ska ligga i bodyn. 
 app.MapPut("/api/users/password/", UserRoutes.ChangePassword);
 app.MapPut("/api/users/agent/{id}", UserRoutes.EditAgent);
 app.MapPut("/api/users/password/{id}", UserRoutes.ResetPassword);
