@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 
-export default function LoginPage()
+export default function DebugPage()
 
 {
     return<main>

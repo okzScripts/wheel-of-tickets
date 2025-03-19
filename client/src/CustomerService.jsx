@@ -1,81 +1,63 @@
 import "./styles.css"
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation, useParams } from "react-router";
+import { NavigationBar } from "./components/Navbar";
 import logo from './assets/logo.png';
-
-export default function CustomerService() {
+export function CustomerServiceView() {
     //const [ticket, setTicket] = useState(null);
     const [unassignedTickets, setUnassignedTickets] = useState([]);
-    const [yourAssignedTickets, setYourAssignedTickets] = useState([])
-    const [tickets, setTickets] = useState([])
-    const customerServiceAgent = 29
-    const company = 2
+    const [assignedTickets, setAssignedTickets] = useState([]);
+    const [closedTickets, setClosedTickets] = useState([]);
+    const [showClosed, setShowClosed] = useState(false);
 
-    useEffect(() => {
-        GetTickets()
-    })
+    useEffect(GetUnassignedTickets, []);
+    useEffect(GetAssignedTickets, []);
+    useEffect(GetClosedTickets, []);
 
-    useEffect(() => {
-        getUnassignedTickets();
-    }, []);
-    
-    useEffect(() => {
-        getYourAssignedTickets();
-    }, []);
-  
-    function GetTickets()
-    {
-        fetch("/api/tickets/" + company )
+
+    function GetUnassignedTickets() {
+        fetch("/api/tickets/unassigned/")
             .then((response) => response.json())
-            .then((data) => setTickets(data))
+            .then((data) => setUnassignedTickets(data))
+    }
+
+    function GetAssignedTickets() {
+        fetch("/api/tickets/assigned/")
+            .then((response) => response.json())
+            .then((data) => setAssignedTickets(data))
+    }
+    function GetClosedTickets() {
+        fetch("/api/tickets/closed/")
+            .then((response) => response.json())
+            .then((data) => setClosedTickets(data))
     }
 
 
-    function getUnassignedTickets() {
-        fetch("/api/tickets/" + company + "/unassigned")
-            .then((response) => response.json())
-            .then((data) => setUnassignedTickets(data));
-    }
+
 
     async function randomiser() {
-    if (unassignedTickets.length === 0) {
-        console.error("No unassigned tickets available.");
-        return;
-    }
 
-    const randomTicket = unassignedTickets[Math.floor(Math.random() * unassignedTickets.length)];
+        try {
+            var respons = await fetch(`/api/tickets`, {
+                headers: { "Content-Type": "application/json" },
+                method: "PUT",
+            })
+            if (!respons.ok) {
+                alert("unable to assign a new ticket")
+            }
 
-    if (!randomTicket) {
-        console.error("Failed to select a random ticket.");
-        return;
-    }
 
-    try {
-        const response = await fetch(`/api/tickets/${randomTicket.id}/${customerServiceAgent}`, {
-            headers: { "Content-Type": "application/json" },
-            method: "PUT",
-        });
-
-        const result = await response.text();
-        console.log(result);
-    await GetTickets();
-    await getUnassignedTickets();
-    await getYourAssignedTickets();
-    } catch (error) {
-        console.error("Error assigning ticket:", error);
-    }
-}
-
-    async function getYourAssignedTickets() {
-        const response = await fetch("/api/tickets/" + company + "/" + customerServiceAgent);
-        const data = await response.json();
-        setYourAssignedTickets(data);
+            GetUnassignedTickets();
+            GetAssignedTickets();
+        } catch (error) {
+            console.error("Error assigning ticket:", error);
+        }
     }
 
 
     return (
         <main className="form-main">
-            <nav className="navbar"><img src={logo}></img></nav>
+            <NavigationBar back={"/"} />
             <section className="upper-section">
                 <div className="rollToGetATicket">
                     <button onClick={randomiser} className="middle-button">Roll to get a ticket</button>
@@ -83,44 +65,156 @@ export default function CustomerService() {
             </section>
             <section className="lower-section">
                 <div className="tickets-left">
-                    <h2>YOUR TICKETS:</h2>
-                        {yourAssignedTickets.length > 0 ? (
+                        <h2>YOUR TICKETS:</h2>
+                        {assignedTickets.length > 0 ? (
                             <ul className="ticket-list">
-                                {yourAssignedTickets.map((ticket) => (
-                                    <li key={ticket.id} className="ticket-list-item">
-                                        <h2>{ticket.message}</h2>
-                                        <div className="ticket-info">
-                                        <p>Ticket id: {ticket.id}</p>
-                                            <p>Agent id:{ticket.customer_agent}</p>
-                                        </div>
-                                    </li>
-                                ))}
+                                {assignedTickets.map(TicketCard)}
                             </ul>
 
                         ) : (
-                            <h2>Här var det tomt 😁</h2>
+                            <ul className="ticket-list"><li className="ticket-list-item" key={"emptyassigned"}><div className="ticket-info"><p>Inga tickets</p></div></li></ul>
                         )}
-                 
+                    <section className="closed-tickets-box">
+                        <button onClick={() => setShowClosed(prevState => !prevState)} className="toggle-inactive-btn">
+                            {showClosed ? "Hide closed tickets" : "Show closed tickets"}
+                        </button>
+                        {showClosed && (
+                            <ul className="closed-list">
+                                {closedTickets.map(ClosedTicketCard)}
+                            </ul>
+                        )}
+
+                    </section>
                 </div>
                 <div className="tickets-right">
                     <h2>ALL TICKETS:</h2>
-                    {tickets.length > 0 ? (
+                    {unassignedTickets.length > 0 ? (
                         <ul className="ticket-list">
-                            {tickets.map((ticket) => (
-                                <li key={ticket.id} className="ticket-list-item">
-                                    <h2>{ticket.message}</h2>
-                                    <div className="ticket-info">
-                                        <p>Ticket id {ticket.id}</p>
-                                        {ticket.customer_agent ? <p><b>Assigned to: Customer agent</b> {ticket.customer_agent}</p> : ""}
-                                    </div>
-                                </li>
-                            ))}
+                            {unassignedTickets.map(UnassignedTicketCard)}
                         </ul>
                     ) : (
-                        <ul className="ticket-list"><div className="ticket-list-item"><div className="ticket-info"><p>Inga tickets</p></div></div></ul>
+                        <ul className="ticket-list"><li className="ticket-list-item" key={"emptyunnasigned"}><div className="ticket-info"><p>Inga tickets</p></div></li></ul>
                     )}
                 </div>
             </section>
         </main>
     );
+    function TicketCard(ticket) {
+        return <li key={ticket.id} className="ticket-list-item"><NavLink to={"/customer-service/" + ticket.slug + "/ticket-info"} >
+
+            <h2>{ticket.description}</h2>
+            <div className="ticket-info">
+                <p>Ticket id: {ticket.id}</p>
+            </div></NavLink>
+        </li>
+    }
+    function UnassignedTicketCard(ticket) {
+        return <li key={ticket.id} className="ticket-list-item"><a>
+
+            <h2>{ticket.description}</h2>
+            <div className="ticket-info">
+                <p>Ticket id: {ticket.id}</p>
+            </div></a>
+        </li>
+    }
+
+    function ClosedTicketCard(ticket) {
+        return <li key={ticket.id} className="closed-ticket-list-item"><NavLink to={"/customer-service/" + ticket.slug + "/ticket-info"}>
+            <p>{ticket.description}</p>
+        </NavLink>
+        </li>
+    }
+
+}
+
+
+export function TicketInfoView() {
+    const { slug } = useParams()
+    const [messageText, setMessageText] = useState("");
+    const [messages, setMessages] = useState([])
+    const [ticket, setTicket] = useState("")
+
+    function GetTicketMessages() {
+        fetch(`/api/messages/${slug}`).then(response => response.json()).then(data => { setMessages(data) })
+    }
+    useEffect(GetTicketMessages, [])
+
+    useEffect(() => {
+        const intervalId = setInterval(GetTicketMessages, 2000);
+        return () => clearInterval(intervalId);
+    }, []);
+
+
+
+    function PostMessage(e) {
+        e.preventDefault();
+        const form = e.target;
+        let formData = new FormData(form);
+        let dataObject = Object.fromEntries(formData)
+        dataObject.slug = slug;
+        dataObject.customer = false;
+
+        let dataJson = JSON.stringify(dataObject);
+        console.log(dataJson);
+        fetch("/api/messages/",
+            {
+                headers: { "Content-Type": "application/json" },
+                method: "POST",
+                body: dataJson
+            }).then(response => {
+                if (response.ok) {
+                    GetTicketMessages();
+                    setMessageText("")
+                } else {
+                    console.log(response)
+                    alert("respons");
+                }
+            })
+
+    }
+    useEffect(GetTicket, [])
+
+    function GetTicket() {
+        fetch("/api/tickets/" + slug).then(response => response.json()).then(data => setTicket(data))
+    }
+
+    function ChangeStatus() {
+        fetch("/api/tickets/status/" + slug,
+            {
+                headers: { "Content-Type": "application/json" },
+                method: "PUT",
+                body: JSON.stringify({ status: ticket.status }),
+            }).then(response => {
+                if (response.ok) {
+                    GetTicket();
+                } else {
+                    console.log(response)
+                    alert("respons");
+                }
+            })
+    }
+
+    return (
+        <main className="chat-main">
+            <NavigationBar back={"/customer-service"} />
+            <section className="chat-header"><h1>Chat with Customer</h1></section>
+            <section className="chat">
+                <ul className="chat-ul"> {messages.map(MessageCard)}
+                </ul>
+            </section>
+            <section className="chat-message-box">
+                <form className="chat-message-form" onSubmit={PostMessage} method="POST" >
+                    <textarea value={messageText} onChange={(e) => setMessageText(e.target.value)} name="text" type="textarea" className="text-area"></textarea>
+                    <input className="small-button" type="submit" value="Send" disabled={!messageText || ticket.status > 2}></input>
+                </form>
+                <button className="small-button" onClick={ChangeStatus}>{ticket.status < 3 ? "Close Ticket" : "Open Ticket"}</button>
+            </section>
+        </main>
+    );
+
+    function MessageCard(message) {
+        const messageSender = message.customer ? "chat-left-message" : "chat-right-message"
+        const messageholder = message.customer ? "message-holder-left" : "message-holder-right"
+        return <li key={message.id} className={messageSender}><p className={messageholder}>{message.text}</p><p>{message.time}</p></li>
+    }
 }

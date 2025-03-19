@@ -11,18 +11,19 @@ public class CompanyRoutes
 
 
     public record Company(int id, string name, string email, string phone, string description, string domain, bool active);
-   
+
     public record Category(int id, string category_name);
-    
+
     public record Product(int id, string product_name);
-    
-    public static async Task<Results<Ok<List<Company>>, BadRequest<string>>> GetCompanies(NpgsqlDataSource db)
+
+    public static async Task<Results<Ok<List<Company>>, BadRequest<string>>> GetCompanies(NpgsqlDataSource db, bool active)
     {
         List<Company> companies = new List<Company>();
 
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM companies ORDER BY id ASC");
+            using var cmd = db.CreateCommand("SELECT id,name,email,phone,description,domain,active FROM companies WHERE id != 1 AND active = $1 ORDER BY id ASC ");
+            cmd.Parameters.AddWithValue(active);
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -38,7 +39,7 @@ public class CompanyRoutes
                 ));
             }
 
-            
+
             return TypedResults.Ok(companies);
         }
         catch (Exception ex)
@@ -48,24 +49,39 @@ public class CompanyRoutes
         }
     }
 
-   
-   
-    public static async Task<Results<Ok<List<Category>>, BadRequest<string>>> GetCategories(NpgsqlDataSource db)
+
+
+    public static async Task<Results<Ok<List<Category>>, BadRequest<string>>> GetCategories(NpgsqlDataSource db, int companyId, HttpContext ctx)
     {
         var categories = new List<Category>();
 
         try
         {
             using var cmd = db.CreateCommand(
-                "SELECT id, category_name FROM ticket_categories ORDER BY id ASC"
+                "SELECT id, category_name FROM ticket_categories WHERE company = $1 AND active IS NOT false ORDER BY id ASC"
             );
+            int? companySessionIdNullable = ctx.Session.GetInt32("company");
+            if (companySessionIdNullable.HasValue)
+            {
+
+                if (!companySessionIdNullable.HasValue)
+                {
+                    return TypedResults.BadRequest("Error loading session variables");
+                }
+                int companySessionId = companySessionIdNullable.Value;
+                cmd.Parameters.AddWithValue(companySessionId);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue(companyId);
+            }
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
                 categories.Add(new Category(
-                    reader.GetInt32(0),     
-                    reader.GetString(1)      
+                    reader.GetInt32(0),
+                    reader.GetString(1)
                 ));
             }
 
@@ -76,7 +92,7 @@ public class CompanyRoutes
             return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
     }
-    
+
     public static async Task<Results<Ok<List<Product>>, BadRequest<string>>> GetProducts(NpgsqlDataSource db)
     {
         var products = new List<Product>();
@@ -91,7 +107,7 @@ public class CompanyRoutes
             while (await reader.ReadAsync())
             {
                 products.Add(new Product(
-                    reader.GetInt32(0),   
+                    reader.GetInt32(0),
                     reader.GetString(1)
                 ));
             }
@@ -103,8 +119,8 @@ public class CompanyRoutes
             return TypedResults.BadRequest($"An error occurred: {ex.Message}");
         }
     }
-    
-   
+
+
 
     public static async Task<Results<Ok<Company>, BadRequest<string>>> GetCompany(int id, NpgsqlDataSource db)
     {
@@ -232,6 +248,6 @@ public class CompanyRoutes
         }
 
     }
-    
-    
+
+
 }

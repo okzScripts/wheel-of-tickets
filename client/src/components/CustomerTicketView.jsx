@@ -4,35 +4,33 @@ import logo from '../assets/logo.png';
 import "../styles.css"
 export default function CustomerTicketView() {
 
-    const [companyPick, setCompanyPick] = useState("");
+    
     const [productPick, setProductPick] = useState("");
     const [categoryPick, setCategoryPick] = useState("");
-    const [message, setMessage] = useState("");
-
-    
-    const [companies, setCompanies] = useState([]);
+    const [message, setMessage] = useState("");   
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [email, setEmail] = useState("");
+    const [description, setDescription] = useState("");
+   
 
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const companyId = urlParams.get('companyId');
+   
     useEffect(() => {
-        fetch("/api/companies")
-            .then((response) => response.json())
-            .then((data) => setCompanies(data))
-            .catch((error) => console.error("Error fetching companies:", error));
-    }, []);
-
-    useEffect(() => {
-        if(companyPick){
-            fetch(`/api/products/company/${companyPick}`)
+        if (companyId) {
+            fetch(`/api/products/customer-ticket?companyId=${companyId}`)
                 .then((response) => response.json())
                 .then((data) => setProducts(data))
                 .catch((error) => console.error("Error fetching products:", error));
         }
-    }, [companyPick]);
+    }, []);
+    
       
     useEffect(() => {
-        fetch("/api/tickets/categories")
+        
+        fetch(`/api/tickets/categories?companyId=${companyId}`)
             .then((response) => response.json())
             .then((data) => setCategories(data))
             .catch((error) => console.error("Error fetching categories:", error));
@@ -42,10 +40,11 @@ export default function CustomerTicketView() {
     function handleOnSubmit(e) {
         e.preventDefault();
         const formData = {
-            companyId: companyPick,
             productId: productPick,
             categoryId: categoryPick,
             message: message,
+            email: email,
+            description: description
         };
 
         fetch("/api/tickets", {
@@ -64,28 +63,12 @@ export default function CustomerTicketView() {
 
     return (
         <>
-            <nav className="navbar"><img src={logo} alt="Logo" className="navbar-logo" /></nav>
             <main className="ticket-main">
-                <div className="ticket-form-container">
-                    <form className="ticket-form" onSubmit={handleOnSubmit}>
-                        <h4 className="ticket-selection-tag">Select Company</h4>
-                        <select
-                            name="company"
-                            value={companyPick}
-                            onChange={(e) => setCompanyPick(e.target.value)}
-                            className="ticket-company-select">
-                            <option value="">Select Company</option>
-                            {companies.map((company) => (
-                                <option key={company.id} value={company.id} className="ticket-company-option">
-                                    {company.name}
-                                </option>
-                            ))}
-                        </select>
-
-                        <h4 className="ticket-selection-tag">Select Product</h4>
+                <form className="ticket-form" onSubmit={handleOnSubmit}>
+                    <div className="mobile-ticket-field">
                         <select
                             name="product"
-                            disabled={!companyPick}
+                            disabled={!setEmail}
                             value={productPick}
                             onChange={(e) => setProductPick(e.target.value)}
                             className="ticket-product-select">
@@ -96,8 +79,8 @@ export default function CustomerTicketView() {
                                 </option>
                             ))}
                         </select>
-
-                        <h4 className="ticket-selection-tag">Select Ticket Category</h4>
+                    </div>
+                    <div className="mobile-ticket-field">
                         <select
                             name="category"
                             disabled={!productPick}
@@ -111,22 +94,47 @@ export default function CustomerTicketView() {
                                 </option>
                             ))}
                         </select>
-
-                        <div className="ticket-message-container">
-                            <p className="ticket-message-label">Message</p>
+                    </div>
+                    <div className="mobile-ticket-field">
+                        <input
+                            disabled={!categoryPick}
+                            type="email"
+                            name="email"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            placeholder="Enter your email.."
+                            className="ticket-input"
+                            
+                    />
+                    </div>
+                    <div className="mobile-ticket-field">
+                        <input
+                            disabled={email.trim() === ""}
+                            type="text"
+                            name="description"
+                            value={description}
+                            onChange={e=> setDescription(e.target.value)}
+                            placeholder="Enter title.."
+                            className="ticket-input"
+                            
+                        />
+                    </div>
+                    <div className="mobile-ticket-field">
                             <textarea
+                                disabled={description.trim() === ""}
                                 name="postTicket"
                                 rows={10}
                                 cols={25}
-                                value={message}
+                            value={message}
+                            placeholder="Enter message.."
                                 onChange={(e) => setMessage(e.target.value)}
                                 className="ticket-message-textarea"
+                                required
                             />
-                        </div>
+                    </div>
 
-                        <input type="submit" className="ticket-submit-button" value='Create Ticket' />
+                        <input disabled={!message} type="submit" className="ticket-submit-button" value='Create Ticket'/>
                     </form>
-                </div>
             </main>
         </>
 

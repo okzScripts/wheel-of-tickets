@@ -12,14 +12,21 @@ public class ProductRoutes()
 
     public record Product(int id, string Name, string Description, int Price, string Category, int Company, bool active);
 
-    public static async Task<Results<Ok<List<Product>>, BadRequest<string>>> GetProducts(int company, NpgsqlDataSource db)
+    public static async Task<Results<Ok<List<Product>>, BadRequest<string>>> GetProducts(bool active, HttpContext ctx, NpgsqlDataSource db)
     {
         List<Product> products = new();
+        var company_nullable = ctx.Session.GetInt32("company");
 
+        if (!company_nullable.HasValue)
+        {
+            return TypedResults.BadRequest("Session error accessing Session viables");
+        }
+        int company = company_nullable.Value;
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM products WHERE company = $1  ORDER BY id ASC");
+            using var cmd = db.CreateCommand("SELECT id,product_name,product_description,price,product_category,company,active FROM products WHERE company = $1 AND active = $2  ORDER BY id ASC");
             cmd.Parameters.AddWithValue(company);
+            cmd.Parameters.AddWithValue(active);
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -32,6 +39,34 @@ public class ProductRoutes()
                     reader.GetString(4),
                     reader.GetInt32(5),
                     reader.GetBoolean(6)
+                ));
+            }
+
+            return TypedResults.Ok(products);
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest($"Ett fel uppstod: {ex.Message}");
+        }
+    }
+
+
+    public record ProductTicketInfo(int id, string Name);
+    public static async Task<Results<Ok<List<ProductTicketInfo>>, BadRequest<string>>> GetProductsForTicket(NpgsqlDataSource db, int companyId)
+    {
+        List<ProductTicketInfo> products = new();
+
+        try
+        {
+            using var cmd = db.CreateCommand("SELECT id,product_name FROM products WHERE company = $1  ORDER BY id ASC");
+            cmd.Parameters.AddWithValue(companyId);
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                products.Add(new ProductTicketInfo(
+                    reader.GetInt32(0),
+                    reader.GetString(1)
                 ));
             }
 
@@ -74,7 +109,7 @@ public class ProductRoutes()
     {
         try
         {
-            using var cmd = db.CreateCommand("SELECT * FROM products WHERE id=$1");
+            using var cmd = db.CreateCommand("SELECT id,product_name,product_description,price,product_category,company,active  FROM products WHERE id=$1");
             cmd.Parameters.AddWithValue(ProductId);
 
 
@@ -114,10 +149,16 @@ public class ProductRoutes()
 
     public record PostProductDTO(string Name, string Description, int Price, string Category, int Company);
 
-    public static async Task<IResult> AddProduct(PostProductDTO product, NpgsqlDataSource db)
+    public static async Task<IResult> AddProduct(PostProductDTO product, HttpContext ctx, NpgsqlDataSource db)
     {
         try
         {
+            var companyId_nullable = ctx.Session.GetInt32("company");
+            if (!companyId_nullable.HasValue)
+            {
+                return TypedResults.BadRequest("Error when accessing Session variables");
+            }
+            int companyId = companyId_nullable.Value;
 
             using var cmd = db.CreateCommand(
                 "INSERT INTO products (product_name, product_description, price, product_category, company) VALUES ($1, $2, $3, $4, $5) RETURNING id");
@@ -126,7 +167,7 @@ public class ProductRoutes()
             cmd.Parameters.AddWithValue(product.Description);
             cmd.Parameters.AddWithValue(product.Price);
             cmd.Parameters.AddWithValue(product.Category);
-            cmd.Parameters.AddWithValue(product.Company);
+            cmd.Parameters.AddWithValue(companyId);
 
             var result = await cmd.ExecuteScalarAsync();
 
