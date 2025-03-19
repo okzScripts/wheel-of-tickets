@@ -116,11 +116,11 @@ public class TicketRoutes
                 await using var conn = await db.OpenConnectionAsync();
                 await using var transaction = await conn.BeginTransactionAsync();
 
-                using var cmdRandomSelect = db.CreateCommand(@"select id from tickets  join customer_agentsxticket_category as caXtc 
+                using var cmdRandomSelect =  new NpgsqlCommand(@"select id from tickets  join customer_agentsxticket_category as caXtc 
               on tickets.ticket_category = caXtc.ticket_category
               where caXtc.customer_agent=$1 and tickets.customer_agent is null 
               order by random() 
-              limit 1;");
+              limit 1;",conn,transaction);
 
                 cmdRandomSelect.Parameters.AddWithValue(agent);
                 var reader = await cmdRandomSelect.ExecuteReaderAsync();
@@ -135,7 +135,7 @@ public class TicketRoutes
                 }
 
 
-                using var cmd = db.CreateCommand("UPDATE tickets SET customer_agent = $2, status = 2 WHERE id = $1");
+                using var cmd =  new NpgsqlCommand("UPDATE tickets SET customer_agent = $2, status = 2 WHERE id = $1",conn,transaction);
 
                 cmd.Parameters.AddWithValue(id);
                 cmd.Parameters.AddWithValue(agent);

@@ -16,7 +16,7 @@ public static class LoginRoutes
     public static async Task<Results<Ok<string>, BadRequest, BadRequest<string>>> LoginByRole(Credentials credentials, NpgsqlDataSource db, HttpContext ctx, PasswordHasher<string> hasher)
     {
 
-        var cmd = db.CreateCommand("select id, name, role, company,password from users where email = $1 ");
+        var cmd = db.CreateCommand("select id, name, role, company,password from users where email = $1 and active=true");
         cmd.Parameters.AddWithValue(credentials.Email);
 
 

@@ -39,7 +39,7 @@ public class CategoryRoutes
 
         List<Category> categorylist = new();
 
-        if (ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.Admin)
+        if (ctx.Session.IsAvailable && ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.Admin)
         {
             try
             {
@@ -83,7 +83,7 @@ public class CategoryRoutes
     public record CategoryDTO(string CategoryName);
     public static async Task<Results<Ok<string>, BadRequest<string>>> AddCategory(NpgsqlDataSource db, HttpContext ctx, CategoryDTO categoryNameDTO)
     {
-        if (ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.Admin)
+        if (ctx.Session.IsAvailable && ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.Admin)
         {
             try
             {
@@ -122,7 +122,7 @@ public class CategoryRoutes
     public record StatusDTO(int id, bool active);
     public static async Task<Results<Ok<string>, BadRequest<string>>> ChangeStatus(NpgsqlDataSource db, HttpContext ctx, StatusDTO status)
     {
-        if (ctx.Session.IsAvailable || ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.Admin)
+        if (ctx.Session.IsAvailable && ctx.Session.GetInt32("role") is int roleInt && Enum.IsDefined(typeof(UserRole), roleInt) && (UserRole)roleInt == UserRole.Admin)
         {
             try
             {

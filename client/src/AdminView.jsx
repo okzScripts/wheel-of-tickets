@@ -496,8 +496,8 @@ export function AdminAddSupportView() {
 
     useEffect(() => {
 
-        fetch(`/api/tickets/categories?companyId=1337`)
-            .then((response) => response.json())
+        fetch(`/api/tickets/categories?companyId=1337`) //Querystring not used when session is avilable.   
+            .then((response) => response.json())//the route services customers where no session is aviable and the company is supplied by query string. 
             .then((data) => setCategories(data))
             .catch((error) => console.error("Error fetching categories:", error));
     }, []);
