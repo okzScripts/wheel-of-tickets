@@ -179,29 +179,38 @@ record company` (int id, string name, string email, string phone, string descrip
 - **Route:** `/categories/{id}`
 
   - Retrieves all categories for the company of the user.
-  - **Path Parameter:** `id` (int) – User ID.
+
+  - **Path Parameter:**
+    - `id` (type:int32) – User ID.
   - **Response:**
+
+    - `List<Category>`
 
 - **Route:** `/categories/company/`
   - Retrieves categories for the logged-in admin’s company.
-  - **Query Parameter:** `active` (bool)
+  - **Query Parameter:**
+    - `active` (type:bool)
   - **Response:**
+    - `List<Category>`
 
 #### **PUT**
 
 - **Route:** `/api/categories/status/`
   - Toggles the active status of a category.
   - **Query Parameters:**
-    - `id` (int)
-    - `active` (bool)
-    - **Response:**
+    - `id` (type:int32)
+    - `active` (type:bool)
+  - **Response:**
+    - `StatusCode, string`
 
 #### **POST**
 
 - **Route:** `/api/categories/`
   - Adds a new category.
-  - **Body Parameter:** `name` (string)
+  - **Body Parameter:**
+    - `name` (string)
   - **Response:**
+    - `StatusCode, string`
 
 ---
 
@@ -213,27 +222,27 @@ record company` (int id, string name, string email, string phone, string descrip
 
   - Retrieves active products for a company.
 
-- **Query Parameter:**
-  - `active` (bool)
-- **Response:**
+  - **Query Parameter:**
+    - `active` (bool)
+  - **Response:**
 
-  - `GetProducts` Task(Results(Ok(List(Product)), BadRequest(string)))
+    - `GetProducts` Task(Results(Ok(List(Product)), BadRequest(string)))
 
 - **Route:** `/products/{ProductId}`
   - Retrieves a specific product by ID.
-- **Path Parameter:**
-  - `ProductId` (int)
-- **Response:**
-  - `GetProduct` Task(Results(Ok(Product), BadRequest(string)))
+  - **Path Parameter:**
+    - `ProductId` (int)
+  - **Response:**
+    - `GetProduct` Task(Results(Ok(Product), BadRequest(string)))
 
 #### **POST**
 
 - **Route:** `/products`
   - Adds a new product.
-- **Query Parameter:**
-  - `PostProductDTO` (string, string, int, string, int)
-- **Response:**
-  - `AddProduct` Task(IResult)
+  - **Body Parameter:**
+    - `PostProductDTO` (string, string, int, string, int)
+  - **Response:**
+    - `AddProduct` Task(IResult)
 
 #### **PUT**
 
@@ -247,9 +256,9 @@ record company` (int id, string name, string email, string phone, string descrip
 
 - **Route:** `/api/products/block/{id}/{active}`
   - Updates a product’s active status.
-- **Path Parameter:**
-  - `id` (int) `active` (bool)
-- **Response:** - `BlockProductById` Task(IResult)
+  - **Path Parameter:**
+    - `id` (int) `active` (bool)
+  - **Response:** - `BlockProductById` Task(IResult)
 
 ---
 
@@ -258,18 +267,32 @@ record company` (int id, string name, string email, string phone, string descrip
 #### **GET**
 
 - **Route:** `/tickets/{slug}`
+
   - Retrieves data for a specific ticket.
-  - **Path Parameter:** `slug` (string)
+  - **Path Parameter:**
+    - `slug` (string)
+  - **Response:**
+    - OK `GetTicket` (int id, int status, string customer_email, int product_id, int ticket_category, decimal? rating, string slug)
+    - Error :BadRequest (string)
 
 #### **PUT**
 
 - **Route:** `/tickets`
   - Assigns a random ticket to a customer agent.
+  - **Response:**
+    - OK (string)
+    - Error :BadRequest (string)
 
 #### **POST**
 
 - **Route:** `/tickets`
+
   - Creates a ticket based on customer input.
+  - **Body Parameters:**
+    - `NewTicket`(int productId, int categoryId, string message, string email, string description);
+  - **Response:**
+    - OK (string)
+    - Error:BadRequest (string)
 
 ---
 
@@ -279,4 +302,5 @@ record company` (int id, string name, string email, string phone, string descrip
 
 - **Route:** `/password/mockhash/`
   - Hashes passwords from mock data.
-  - **Response:** Success or error message.
+  - **Response:**
+    - Success or error message.
